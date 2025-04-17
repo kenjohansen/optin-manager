@@ -11,7 +11,7 @@ ENV/
 .env.*
 
 # Alembic
-alembic/versions/
+# alembic/versions/
 
 # IDE
 .vscode/

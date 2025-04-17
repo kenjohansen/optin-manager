@@ -1,0 +1,18 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-8.3.5, pluggy-1.5.0
+rootdir: /home/johnj/CascadeProjects/optin-manager/backend
+plugins: anyio-4.9.0
+collected 38 items
+
+tests/test_api_auth_user.py ....                                         [ 10%]
+tests/test_api_campaign.py ....                                          [ 21%]
+tests/test_api_consent.py ....                                           [ 31%]
+tests/test_api_contact.py ....                                           [ 42%]
+tests/test_api_customization.py ....                                     [ 52%]
+tests/test_api_message.py ..                                             [ 57%]
+tests/test_api_message_crud.py ....                                      [ 68%]
+tests/test_api_message_template.py ....                                  [ 78%]
+tests/test_api_user.py ....                                              [ 89%]
+tests/test_api_verification_code.py ....                                 [100%]
+
+============================== 38 passed in 2.35s ==============================

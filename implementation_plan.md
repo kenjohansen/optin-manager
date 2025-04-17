@@ -4,6 +4,9 @@ This implementation plan defines the phased delivery approach, feature scope, an
 
 ---
 
+**Code Quality and Definition of Done Standards:**
+All implementation must adhere to the code quality standards and definition of done described at the end of this document. No feature is considered complete until these standards are met.
+
 ## Phase 1: Core SMS & Opt-In Management (MVP)
 **Focus:** Basic SMS/email sending, consent management, compliance, and admin UI.
 
@@ -68,6 +71,27 @@ This implementation plan defines the phased delivery approach, feature scope, an
 ---
 
 ## Accountability & Scope Management
+
+---
+
+## Code Quality and Definition of Done Standards
+
+1. **File Comments & Licensing**
+   - Every file must begin with a comment block explaining its purpose, copyright notice, and a reference to the MIT License under which the project is open-sourced.
+
+2. **Docstrings**
+   - Every public method, class, data structure, and enum must include a complete, automated docstring describing its behavior, parameters, and return values.
+
+3. **SonarQube Compliance**
+   - There must be no SonarQube warnings or errors. Any warning that must be suppressed must be suppressed locally and justified with a comment. Global suppressions are not permitted.
+
+4. **Commented-Out Code**
+   - Code must not be commented out unless there is a very good, documented reason for doing so.
+
+These standards apply to all code and documentation in the OptIn Manager project and are required for acceptance of all deliverables.
+
+---
+
 - **Scope Lock:** No additional features or improvements will be added until Phase 1 is delivered.
 - **Task Breakdown:** Each phase will be broken down into detailed tickets/tasks.
 - **Progress Tracking:** Use a project board to monitor status and prevent scope creep.
