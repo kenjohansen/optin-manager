@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtualenv
+venv/
+ENV/
+.env
+.env.*
+
+# Alembic
+alembic/versions/
+
+# IDE
+.vscode/
+.idea/
+*.swp
