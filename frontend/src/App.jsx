@@ -8,21 +8,22 @@ import AdminLogin from './pages/AdminLogin';
 import Customization from './pages/Customization';
 import Dashboard from './pages/Dashboard';
 import ContactOptOut from './pages/ContactOptOut';
-import CampaignSetup from './pages/CampaignSetup';
-import ProductSetup from './pages/ProductSetup';
+import OptInSetup from './pages/OptInSetup';
 import ContactDashboard from './pages/ContactDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const navLinks = [
   { label: 'Dashboard', path: '/dashboard' },
   { label: 'Customization', path: '/customization' },
-  { label: 'Campaigns', path: '/campaigns' },
-  { label: 'Products', path: '/products' },
+  { label: 'Opt-Ins', path: '/optins' },
   { label: 'Contacts', path: '/contacts' },
   { label: 'Opt-Out', path: '/optout' },
   { label: 'Login', path: '/login' },
 ];
 
+
+import { useEffect } from 'react';
+import { fetchCustomization } from './api';
 
 function App() {
   // Theme state: system, light, dark
@@ -33,6 +34,22 @@ function App() {
   const [logoUrl, setLogoUrl] = useState(null);
   const [companyName, setCompanyName] = useState('');
   const [privacyPolicy, setPrivacyPolicy] = useState('');
+
+  // Fetch customization on initial app load
+  useEffect(() => {
+    fetchCustomization().then(data => {
+      if (data) {
+        setLogoUrl(data.logo_url || null);
+        setPrimary(data.primary_color || '');
+        setSecondary(data.secondary_color || '');
+        setCompanyName(data.company_name || '');
+        setPrivacyPolicy(data.privacy_policy_url || '');
+      }
+    }).catch(e => {
+      // Optionally log or show error
+      console.warn('Failed to fetch customization:', e);
+    });
+  }, []);
 
   // Detect system theme if 'system' selected
   const actualMode = mode === 'system'
@@ -60,10 +77,9 @@ function App() {
             <Routes>
               <Route path="/login" element={<AdminLogin />} />
               <Route path="/optout" element={<ContactOptOut />} />
+              <Route path="/optins" element={<OptInSetup />} />
               <Route path="/customization" element={<ProtectedRoute><Customization setLogoUrl={setLogoUrl} setPrimary={setPrimary} setSecondary={setSecondary} setCompanyName={setCompanyName} setPrivacyPolicy={setPrivacyPolicy} /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/campaigns" element={<ProtectedRoute><CampaignSetup /></ProtectedRoute>} />
-              <Route path="/products" element={<ProtectedRoute><ProductSetup /></ProtectedRoute>} />
               <Route path="/contacts" element={<ProtectedRoute><ContactDashboard /></ProtectedRoute>} />
               <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="*" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

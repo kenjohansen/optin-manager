@@ -43,8 +43,8 @@ export default function Dashboard() {
           <Typography variant="h4">{stats?.total_contacts ?? 0}</Typography>
         </Paper>
         <Paper elevation={3} sx={{ p: 3, minWidth: 250, textAlign: 'center' }}>
-          <Typography variant="h6">Active Campaigns</Typography>
-          <Typography variant="h4">{stats?.active_campaigns ?? 0}</Typography>
+          <Typography variant="h6">Active Opt-Ins</Typography>
+          <Typography variant="h4">{stats?.active_optins ?? 0}</Typography>
         </Paper>
         <Paper elevation={3} sx={{ p: 3, minWidth: 250, textAlign: 'center' }}>
           <Typography variant="h6">Opt-Outs (30d)</Typography>

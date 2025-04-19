@@ -3,7 +3,8 @@ import { Typography, Stack, Switch, Button, Alert, CircularProgress, Paper, Form
 import { updateContactPreferences } from '../api';
 
 export default function PreferencesDashboard({ masked, contact, preferences, setPreferences }) {
-  const [localPrefs, setLocalPrefs] = useState(preferences.programs.map(p => ({ ...p })));
+  // Local preferences for opt-ins
+const [localPrefs, setLocalPrefs] = useState(preferences.programs.map(p => ({ ...p })));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -42,7 +43,7 @@ export default function PreferencesDashboard({ masked, contact, preferences, set
     try {
       await updateContactPreferences({ contact, preferences: {}, comment, global_opt_out: true });
       setPreferences({ programs: localPrefs.map(p => ({ ...p, opted_in: false })) });
-      setGlobalSuccess('You have been opted out of all campaigns/products.');
+      setGlobalSuccess('You have been opted out of all opt-ins.');
     } catch {
       setGlobalError('Failed to opt out of everything.');
     } finally {
@@ -94,11 +95,11 @@ export default function PreferencesDashboard({ masked, contact, preferences, set
         {globalSuccess && <Alert severity="success">{globalSuccess}</Alert>}
         <Stack direction="row" spacing={2}>
           <Button variant="contained" onClick={handleSave} disabled={loading || globalLoading}>
-            {loading ? <CircularProgress size={24} /> : 'Save Preferences'}
+            {loading ? <CircularProgress size={24} /> : 'Save Opt-ins'}
           </Button>
           <Button variant="outlined" color="error" onClick={handleGlobalOptOut} disabled={globalLoading || loading}>
-            {globalLoading ? <CircularProgress size={24} /> : 'Opt Out of Everything'}
-          </Button>
+          {globalLoading ? <CircularProgress size={24} /> : 'Opt Out of All Opt-ins'}
+        </Button>
         </Stack>
       </Stack>
       </Paper>
