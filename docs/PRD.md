@@ -38,6 +38,28 @@ A compliant SMS notification management system that handles opt-in/opt-out proce
   - Service updates
   - Appointment reminders
 
+### 2.3.1 Provider Credentials Management and Security
+
+- The provider secrets vault key is managed using a hybrid approach:
+    - Priority: ENV variable (`PROVIDER_VAULT_KEY`), HashiCorp Vault, K8s Secret, OS-protected file, fallback to project dir (dev only)
+    - Linux: `/etc/optin-manager/provider_vault.key`, Windows: `%PROGRAMDATA%\OptInManager\provider_vault.key`
+    - Never store key with vault file unless fallback is required (dev only, with warning)
+    - Production deployments must use K8s Secret, Vault, or OS-protected file
+    - Key rotation and audit trail supported
+    - Rationale: separation of key and lock, compliance (SOC2/ISO27K), extensibility for cloud KMS/secret managers
+
+- Admin UI for configuring branding (company name, privacy policy link, logo, colors)
+- Admin UI for selecting email and SMS providers (e.g., AWS SES/SNS; extensible for others)
+- Separate credential entry for email and SMS providers (access key, secret key, region, etc.)
+- Credentials are stored securely in an **encrypted vault** (never in the main database, never in the frontend, never in plaintext after saving)
+- **Vault Location:** `backend/vault/provider_secrets.vault` (encrypted, audit-ready, never committed to git)
+- In production, may use Kubernetes Secrets or external Vault; in dev/testing, always use the local encrypted vault
+- Admin UI shows only a "configured" status after save
+- "Test Connection" feature for each provider to validate credentials from the UI
+- Backend retrieves credentials from secure vault storage for sending email/SMS
+- System is designed for future extensibility to support additional providers (e.g., Twilio, SendGrid, etc.)
+- **SQLite DB Location (dev):** `backend/optin_manager.db`
+
 ### 2.4 Security & Privacy
 - Encrypted storage of phone numbers
 - Role-based access control

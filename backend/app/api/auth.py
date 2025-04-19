@@ -10,7 +10,7 @@ from app.core.config import settings
 from app.core.database import get_db
 import uuid
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(tags=["auth"])
 
 # Dummy admin user (replace with DB lookup in production)
 ADMIN_USER = {
@@ -18,13 +18,26 @@ ADMIN_USER = {
     "hashed_password": get_password_hash("adminpass")
 }
 
+from app.models.auth_user import AuthUser
+
 @router.post("/login", response_model=Token)
-def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    # Replace with DB lookup for admin user
-    if form_data.username != ADMIN_USER["username"] or not verify_password(form_data.password, ADMIN_USER["hashed_password"]):
+def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    # First, check if any users exist in the DB
+    user_count = db.query(AuthUser).count()
+    if user_count == 0:
+        # Fallback to dummy admin if DB is empty
+        if form_data.username == ADMIN_USER["username"] and verify_password(form_data.password, ADMIN_USER["hashed_password"]):
+            access_token = create_access_token(data={"sub": form_data.username, "scope": "admin"})
+            return Token(access_token=access_token, token_type="bearer", expires_in=3600)
+        else:
+            raise HTTPException(status_code=400, detail="Incorrect username or password")
+    # DB-backed authentication
+    from app.crud.auth_user import get_auth_user_by_username
+    user = get_auth_user_by_username(db, form_data.username)
+    if not user or not user.is_active or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
-    access_token = create_access_token(data={"sub": form_data.username, "scope": "admin"})
-    return {"access_token": access_token, "token_type": "bearer"}
+    access_token = create_access_token(data={"sub": user.username, "scope": user.role})
+    return Token(access_token=access_token, token_type="bearer", expires_in=3600)
 
 @router.post("/verify_code", response_model=Token)
 def verify_code(
@@ -62,4 +75,5 @@ def verify_code(
     db.commit()
     # Issue a token (scope: contact, sub: sent_to)
     access_token = create_access_token(data={"sub": db_code.sent_to, "scope": "contact"})
-    return {"access_token": access_token, "token_type": "bearer"}
+    from app.schemas.auth import Token
+    return Token(access_token=access_token, token_type="bearer", expires_in=3600)

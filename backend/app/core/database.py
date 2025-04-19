@@ -21,6 +21,7 @@ import os
 from app.core.config import settings
 
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL or "sqlite:///./optin_manager.db"
+print(f"[DEBUG] Using database URL: {SQLALCHEMY_DATABASE_URL}")
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
@@ -29,6 +30,12 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+# If DB file does not exist, create all tables from models (no Alembic)
+db_path = SQLALCHEMY_DATABASE_URL.replace('sqlite:///', '')
+if db_path and not os.path.exists(db_path):
+    print(f"[DEBUG] Creating new SQLite DB and all tables at {db_path}")
+    Base.metadata.create_all(bind=engine)
 
 def get_db():
     """

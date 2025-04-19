@@ -36,3 +36,4 @@ class Contact(Base):
     status = Column(String, default=UserStatusEnum.active)
     is_admin = Column(String, default="false")  # Will change to Boolean in Alembic migration
     is_staff = Column(String, default="false")  # Will change to Boolean in Alembic migration
+    comment = Column(String, nullable=True)  # Stores opt-out comment from contact

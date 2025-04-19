@@ -1,6 +1,62 @@
 # OptIn Manager Architecture & ERD
 
 ## Overview
+This document is the single source of truth for the OptIn Manager architecture and data model. All legacy references to a `users` table have been removed. The backend strictly separates:
+- **Contacts:** End-user recipients of opt-in/consent, identified by email or phone (`contacts` table).
+- **Auth Users:** Admin/staff/service accounts for authentication and admin UI (`auth_users` table).
+
+All foreign keys referencing recipients use `contact_id` and point to `contacts.id`. No `users` table exists in the schema. This separation ensures clarity, scalability, and compliance.
+
+### Configuration, Provider Credential Storage, and Security
+
+#### Vault Key Management (Hybrid Approach)
+- The provider secrets vault key is loaded using a prioritized hybrid approach:
+    1. Environment variable (`PROVIDER_VAULT_KEY`)
+    2. HashiCorp Vault (if configured)
+    3. Kubernetes Secret (mounted as file)
+    4. OS-protected file (Linux: `/etc/optin-manager/provider_vault.key`, Windows: `%PROGRAMDATA%\OptInManager\provider_vault.key`)
+    5. Project directory fallback (dev only, with warning)
+- **Key is never stored with the vault file** unless fallback is required for dev/testing.
+- Production deployments should use K8s Secret, HashiCorp Vault, or OS-protected file.
+- Key rotation is supported; all access is auditable.
+- This design is compliant with SOC2/ISO27K and extensible to KMS/cloud secret managers.
+
+
+#### Vault Key Management (Hybrid Approach)
+- The provider secrets vault key is loaded using a prioritized hybrid approach:
+    1. Environment variable (`PROVIDER_VAULT_KEY`)
+    2. HashiCorp Vault (if configured)
+    3. Kubernetes Secret (mounted as file)
+    4. OS-protected file (Linux: `/etc/optin-manager/provider_vault.key`, Windows: `%PROGRAMDATA%\OptInManager\provider_vault.key`)
+    5. Project directory fallback (dev only, with warning)
+- **Key is never stored with the vault file** unless fallback is required for dev/testing.
+- Production deployments should use K8s Secret, HashiCorp Vault, or OS-protected file.
+- Key rotation is supported; all access is auditable.
+- This design is compliant with SOC2/ISO27K and extensible to KMS/cloud secret managers.
+
+- Admin UI allows configuration of:
+    - Company branding (logo, colors, company name, privacy policy link)
+    - Email/SMS provider selection (e.g., AWS SES/SNS; extensible for others)
+    - Separate credentials for email and SMS providers (access key, secret key, region, etc.)
+- **Provider Credentials Vault Design:**
+    - All provider credentials are stored ONLY in a secure, encrypted vault at `backend/vault/provider_secrets.vault` (Fernet/AES-256 encryption).
+    - The vault is never committed to git, never exposed to the frontend, and is not stored in the main database.
+    - Only the backend service can access the vault; access is controlled by a master key provided via environment variable.
+    - All access and modifications to the vault are auditable (API logs, file change times).
+    - In production, external vaults or Kubernetes Secrets may be used, but the dev/test default is the encrypted local vault.
+- **SQLite DB Location (dev):** `backend/optin_manager.db` (all persistent relational data except secrets).
+- **Separation of Sensitive and Non-Sensitive Configuration:**
+    - Sensitive config (provider credentials) is always in the encrypted vault.
+    - Non-sensitive config (branding, connection/test status) is in the customization table (main DB).
+- **Connection/Test Status Persistence:**
+    - Connection/test status is persisted in the customization table, never in the vault.
+    - UI can show connection/test status without exposing secrets.
+- **Delete Credentials Feature:**
+    - Admin UI provides a button to delete provider credentials at any time, resetting connection status to 'untested'.
+    - This ensures customers have full control and can revoke access at any time, supporting compliance (ISO27K, SOC2, etc.).
+- **Test Connection Feature:** For each provider, admin UI can test credentials via backend API (never exposes secrets).
+- **Extensible Design:** System is built to add new providers and vault integrations as needed.
+
 This document describes the architecture and data model (ERD) for the OptIn Manager system, focusing on:
 - Backend: Data layer and API
 - Frontend: Middleware and presentation
@@ -73,10 +129,10 @@ flowchart TD
 
 ```mermaid
 erDiagram
-  USER ||--o{ CONSENT : has
-  USER ||--o{ MESSAGE : receives
-  USER ||--o{ PREFERENCE : sets
-  USER ||--o{ VERIFICATION_CODE : requests
+  CONTACT ||--o{ CONSENT : has
+  CONTACT ||--o{ MESSAGE : receives
+  CONTACT ||--o{ PREFERENCE : sets
+  CONTACT ||--o{ VERIFICATION_CODE : requests
   CAMPAIGN ||--o{ MESSAGE : sends
   CAMPAIGN ||--o{ CONSENT : manages
   MESSAGE }o--|| MESSAGE_TEMPLATE : uses
@@ -114,7 +170,7 @@ erDiagram
   CAMPAIGN {
     id UUID
     name string
-    type string
+    type string // One of: "promotional", "transactional", "alert"
     created_at date
     status string
   }
@@ -150,6 +206,23 @@ erDiagram
 
 ---
 
+## Customization Feature
+
+The backend supports a Customization feature, allowing administrators to:
+- Upload a custom logo (served from `/static/uploads/`)
+- Set primary and secondary UI colors
+
+These settings are stored in the `customization` table and are accessible via secured API endpoints. This enables real-time branding for the web application.
+
+## Migration Policy
+- Migrations create only `contacts` and `auth_users` (not `users`).
+- All tables referencing recipients use `contacts`.
+- Legacy `users` references have been fully removed.
+
+## Testing Policy
+- Authentication dependencies are overridden in tests to allow full coverage of protected endpoints.
+- All backend tests pass as of the latest commit, with evidence in `backend_test_output.txt`.
+
 ## 3. Compliance & Security Features
 - **Encryption:** All PII fields (email, phone, message content) encrypted at rest; TLS for all connections.
 - **Masking:**
@@ -175,6 +248,8 @@ erDiagram
 
 ## 5. Data Retention Policy (Sample)
 - **Consent Records:** Retained for 5 years or as required by law.
+- **Testing:** React Testing Library + Jest for unit/integration testing; @testing-library/jest-dom for improved assertions; Cypress for E2E (optional)
+- **Automated Testing:** All components and user flows will be covered by automated tests. Critical journeys (opt-in, opt-out, customization, dashboard) will have test coverage. Tests run in CI/CD to prevent regressions.
 - **Messages:** Retained for 1 year, then archived or deleted.
 - **User Data:** Deleted upon verified opt-out or inactivity per policy.
 - **Logs:** Masked, retained for 90 days.

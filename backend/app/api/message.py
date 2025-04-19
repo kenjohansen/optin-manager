@@ -100,6 +100,12 @@ def send_message(
             status=MessageStatusEnum.pending
         )
         message = crud_message.create_message(db, message_in)
+        # Block sending messages to closed campaigns
+        if payload.campaignId is not None:
+            from app.models.campaign import Campaign
+            campaign = db.query(Campaign).filter(Campaign.id == payload.campaignId).first()
+            if campaign and campaign.status == 'closed':
+                raise HTTPException(status_code=400, detail="Cannot send message to a closed campaign.")
         # (Phase 1: send opt-in SMS here, mark consent as pending)
         # ... (placeholder for SMS gateway integration)
         # Create/update consent record

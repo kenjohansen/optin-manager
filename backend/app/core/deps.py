@@ -33,8 +33,20 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenData:
 
 # Dependency to require admin scope
 def require_admin_user(current_user: TokenData = Depends(get_current_user)):
+    """
+    Dependency to require admin scope (admin role only).
+    """
     if current_user.scope != "admin":
         raise HTTPException(status_code=403, detail="Admin privileges required")
+    return current_user
+
+# Dependency to require support or admin scope
+def require_support_user(current_user: TokenData = Depends(get_current_user)):
+    """
+    Dependency to require support or admin scope (support or admin roles).
+    """
+    if current_user.scope not in ("admin", "support"):
+        raise HTTPException(status_code=403, detail="Support or admin privileges required")
     return current_user
 
 # Dependency to require contact scope (verified contact)

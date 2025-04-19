@@ -14,11 +14,13 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-import os
+# Import all models and set target_metadata for autogenerate support
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'app')))
 from app.core.database import Base
-from app.models import user, consent, message, message_template, campaign, verification_code
+import app.models.auth_user, app.models.campaign, app.models.customization, app.models.message, app.models.message_template, app.models.user, app.models.verification_code
+
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
@@ -40,11 +42,18 @@ def run_migrations_offline() -> None:
 
     """
     url = config.get_main_option("sqlalchemy.url")
+    # Detect PostgreSQL and set schema
+    schema = None
+    if url.startswith("postgresql"):
+        schema = "optin_manager"
     context.configure(
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        version_table_schema=schema,
+        include_schemas=True if schema else False,
+        default_schema_name=schema if schema else None,
     )
 
     with context.begin_transaction():

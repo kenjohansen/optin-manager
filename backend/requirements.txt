@@ -5,7 +5,12 @@ alembic
 psycopg2-binary
 python-dotenv
 pydantic
+pydantic-settings
+email-validator
+python-jose
+python-multipart
 cryptography
 passlib
 pytest
 httpx
+boto3

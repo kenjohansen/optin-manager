@@ -23,6 +23,7 @@ class CampaignStatusEnum(str, Enum):
     active = "active"
     paused = "paused"
     archived = "archived"
+    closed = "closed"  # New status for closed campaigns
 
 class Campaign(Base):
     """
@@ -32,7 +33,7 @@ class Campaign(Base):
         name (str): Name of the campaign.
         type (str): Campaign type (transactional/promotional).
         created_at (datetime): Creation timestamp.
-        status (str): Status of the campaign.
+        status (str): Status of the campaign. Can be 'active', 'paused', 'archived', or 'closed'.
     """
     __tablename__ = "campaigns"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

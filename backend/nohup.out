@@ -1,0 +1,270 @@
+Traceback (most recent call last):
+  File "/home/johnj/.local/bin/uvicorn", line 8, in <module>
+    sys.exit(main())
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 1161, in __call__
+    return self.main(*args, **kwargs)
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 1082, in main
+    rv = self.invoke(ctx)
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 1443, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 788, in invoke
+    return __callback(*args, **kwargs)
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/main.py", line 413, in main
+    run(
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/main.py", line 580, in run
+    server.run()
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/server.py", line 66, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "/usr/lib/python3.10/asyncio/runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "/usr/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/server.py", line 70, in serve
+    await self._serve(sockets)
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/server.py", line 77, in _serve
+    config.load()
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/config.py", line 435, in load
+    self.loaded_app = import_from_string(self.app)
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/importer.py", line 22, in import_from_string
+    raise exc from None
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/home/johnj/CascadeProjects/optin-manager/backend/app/main.py", line 1, in <module>
+    from fastapi import FastAPI
+ModuleNotFoundError: No module named 'fastapi'
+(trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/home/johnj/CascadeProjects/optin-manager/venv/lib/python3.10/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+INFO:     Started server process [208375]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+[INFO] Default admin user created: admin / TestAdmin123 (please change this password on first login)
+INFO:     127.0.0.1:55748 - "POST /api/v1/customization HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:55764 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55764 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55764 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55764 - "GET /api/v1/customization HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:55764 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55764 - "GET /api/v1/customization HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:55764 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55764 - "POST /api/v1/customization HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:33976 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33976 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33976 - "GET /api/v1/dashboard/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33976 - "GET /api/v1/customization HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:33976 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:33984 - "GET /api/v1/customization HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:33976 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:48176 - "OPTIONS /api/v1/customization HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48176 - "POST /api/v1/customization HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40056 - "OPTIONS /api/v1/campaigns HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40064 - "OPTIONS /api/v1/campaigns HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40056 - "GET /api/v1/campaigns HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40056 - "GET /api/v1/campaigns HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40056 - "GET /api/v1/customization HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:40056 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40064 - "GET /api/v1/customization HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:40056 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40078 - "GET /api/v1/customization HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:40078 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40078 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40078 - "GET /api/v1/customization HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:36860 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:36860 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:36856 - "GET /api/v1/customization/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36856 - "GET /api/v1/customization/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39526 - "GET /static/uploads/logo.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39526 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41002 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40992 - "GET /api/v1/customization/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41002 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40992 - "GET /api/v1/customization/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57034 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57034 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57032 - "GET /api/v1/customization/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57032 - "GET /api/v1/customization/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41702 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41702 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41700 - "GET /api/v1/customization/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41700 - "GET /api/v1/customization/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43224 - "GET /api/v1/customization HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:36482 - "GET /api/v1/customization/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36484 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:36484 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:36482 - "GET /api/v1/customization/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36498 - "GET /api/v1/static/uploads/logo.png HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:45734 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:45734 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:45720 - "GET /api/v1/customization/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45720 - "GET /api/v1/customization/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45754 - "GET /api/v1/static/uploads/logo.png HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:45930 - "HEAD /static/uploads/logo.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44008 - "HEAD /static/uploads/logo.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52666 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:52656 - "GET /api/v1/customization/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52666 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:52656 - "GET /api/v1/customization/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52686 - "GET /static/uploads/logo.png HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:38554 - "GET /static/uploads/logo.png HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:60426 - "OPTIONS /api/v1/provider-secrets/test HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60426 - "POST /api/v1/provider-secrets/test HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60428 - "POST /api/v1/provider-secrets/test HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60428 - "OPTIONS /api/v1/provider-secrets/set HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60430 - "POST /api/v1/provider-secrets/set HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60430 - "POST /api/v1/provider-secrets/set HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55278 - "HEAD /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:38024 - "POST /api/v1/provider-secrets/set HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:52948 - "POST /api/v1/provider-secrets/set HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58028 - "GET /api/v1/customization/provider-secrets/status HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:39056 - "POST /api/v1/provider-secrets/set HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:39070 - "POST /api/v1/provider-secrets/test HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:39070 - "POST /api/v1/provider-secrets/test HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:39070 - "POST /api/v1/provider-secrets/test HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:39070 - "POST /api/v1/provider-secrets/set HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:35606 - "GET /api/v1/provider-secrets/status HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58460 - "GET /api/v1/customization/provider-secrets/status HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58390 - "OPTIONS /api/v1/provider-secrets/test HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58390 - "POST /api/v1/provider-secrets/test HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58390 - "OPTIONS /api/v1/provider-secrets/set HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58404 - "POST /api/v1/provider-secrets/set HTTP/1.1" 404 Not Found
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [208375]
+Traceback (most recent call last):
+  File "/home/johnj/.local/bin/uvicorn", line 8, in <module>
+    sys.exit(main())
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 1161, in __call__
+    return self.main(*args, **kwargs)
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 1082, in main
+    rv = self.invoke(ctx)
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 1443, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 788, in invoke
+    return __callback(*args, **kwargs)
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/main.py", line 413, in main
+    run(
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/main.py", line 580, in run
+    server.run()
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/server.py", line 66, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "/usr/lib/python3.10/asyncio/runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "/usr/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/server.py", line 70, in serve
+    await self._serve(sockets)
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/server.py", line 77, in _serve
+    config.load()
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/config.py", line 435, in load
+    self.loaded_app = import_from_string(self.app)
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/importer.py", line 22, in import_from_string
+    raise exc from None
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/home/johnj/CascadeProjects/optin-manager/backend/app/main.py", line 1, in <module>
+    from fastapi import FastAPI
+ModuleNotFoundError: No module named 'fastapi'
+Traceback (most recent call last):
+  File "/home/johnj/.local/bin/uvicorn", line 8, in <module>
+    sys.exit(main())
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 1161, in __call__
+    return self.main(*args, **kwargs)
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 1082, in main
+    rv = self.invoke(ctx)
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 1443, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 788, in invoke
+    return __callback(*args, **kwargs)
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/main.py", line 413, in main
+    run(
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/main.py", line 580, in run
+    server.run()
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/server.py", line 66, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "/usr/lib/python3.10/asyncio/runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "/usr/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/server.py", line 70, in serve
+    await self._serve(sockets)
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/server.py", line 77, in _serve
+    config.load()
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/config.py", line 435, in load
+    self.loaded_app = import_from_string(self.app)
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/importer.py", line 22, in import_from_string
+    raise exc from None
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/home/johnj/CascadeProjects/optin-manager/backend/app/main.py", line 1, in <module>
+    from fastapi import FastAPI
+ModuleNotFoundError: No module named 'fastapi'
+Traceback (most recent call last):
+  File "/home/johnj/.local/bin/uvicorn", line 8, in <module>
+    sys.exit(main())
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 1161, in __call__
+    return self.main(*args, **kwargs)
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 1082, in main
+    rv = self.invoke(ctx)
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 1443, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/johnj/.local/lib/python3.10/site-packages/click/core.py", line 788, in invoke
+    return __callback(*args, **kwargs)
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/main.py", line 413, in main
+    run(
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/main.py", line 580, in run
+    server.run()
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/server.py", line 66, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "/usr/lib/python3.10/asyncio/runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "/usr/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/server.py", line 70, in serve
+    await self._serve(sockets)
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/server.py", line 77, in _serve
+    config.load()
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/config.py", line 435, in load
+    self.loaded_app = import_from_string(self.app)
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/importer.py", line 22, in import_from_string
+    raise exc from None
+  File "/home/johnj/.local/lib/python3.10/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/home/johnj/CascadeProjects/optin-manager/backend/app/main.py", line 1, in <module>
+    from fastapi import FastAPI
+ModuleNotFoundError: No module named 'fastapi'

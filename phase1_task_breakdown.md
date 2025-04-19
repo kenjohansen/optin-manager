@@ -48,8 +48,10 @@ This document breaks down all Phase 1 deliverables into actionable tasks. Each t
   _Status: COMPLETED – All CRUD endpoints and tests implemented._
 - [x] Minimal admin endpoints: list contacts, messages, analytics
     _Status: COMPLETED – Admin endpoints for listing contacts, messages, and analytics are implemented and admin-protected._
-- [ ] Verification endpoints (send code, verify code)
-- [ ] Opt-in/Opt-out endpoints (with verification flow)
+- [x] Verification endpoints (send code, verify code)
+    _Status: ENDPOINTS ADDED – Backend endpoints for sending and verifying codes implemented, but not yet verified in DEV due to SQLite/Postgres config issue. Next: ensure backend runs with SQLite, endpoints available, and frontend can complete opt-out flow._
+- [x] Opt-in/Opt-out endpoints (with verification flow)
+    _Status: ENDPOINTS ADDED – Backend endpoints for opt-in/opt-out with verification flow implemented, but not yet verified in DEV due to SQLite/Postgres config issue. Next: ensure backend runs with SQLite, endpoints available, and frontend can complete opt-out flow._
 - [ ] Smart helper API: `POST /api/v1/messages/send_with_consent`
 - [ ] Status check endpoint for messages
 - [ ] Audit logging for all consent/message changes

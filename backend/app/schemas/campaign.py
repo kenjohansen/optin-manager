@@ -12,6 +12,14 @@ from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
 import uuid
+from enum import Enum
+
+class CampaignStatusEnum(str, Enum):
+    """Enumeration for campaign status values."""
+    active = "active"
+    paused = "paused"
+    archived = "archived"
+    closed = "closed"
 
 class CampaignBase(BaseModel):
     """
@@ -19,11 +27,11 @@ class CampaignBase(BaseModel):
     Attributes:
         name (str): Name of the campaign.
         type (Optional[str]): Campaign type (transactional/promotional).
-        status (Optional[str]): Campaign status (active/paused/archived).
+        status (Optional[str]): Campaign status (active/paused/archived/closed).
     """
     name: str
     type: Optional[str] = "transactional"
-    status: Optional[str] = "active"
+    status: Optional[CampaignStatusEnum] = CampaignStatusEnum.active
 
 class CampaignCreate(CampaignBase):
     """Schema for creating a new campaign record."""

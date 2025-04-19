@@ -66,3 +66,14 @@ def delete_campaign(db: Session, db_campaign: Campaign):
     """
     db.delete(db_campaign)
     db.commit()
+
+def list_campaigns(db: Session):
+    """
+    List all campaigns.
+    Args:
+        db (Session): SQLAlchemy database session.
+    Returns:
+        List[Campaign]: List of all Campaign objects.
+    """
+    return db.query(Campaign).all()
+
