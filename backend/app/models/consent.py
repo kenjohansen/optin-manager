@@ -8,18 +8,20 @@ This file is part of the OptIn Manager project and is licensed under the MIT Lic
 See the root LICENSE file for details.
 """
 
-from sqlalchemy import Column, String, DateTime, Enum, ForeignKey, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, DateTime, ForeignKey, func
+import enum
+# Use String type for UUID in SQLite
+from sqlalchemy import String as UUID
 import uuid
 from app.core.database import Base
 
-class ConsentStatusEnum(str, Enum):
+class ConsentStatusEnum(str, enum.Enum):
     """Enumeration for consent status values."""
     opt_in = "opt-in"
     opt_out = "opt-out"
     pending = "pending"
 
-class ConsentChannelEnum(str, Enum):
+class ConsentChannelEnum(str, enum.Enum):
     """Enumeration for consent channels."""
     sms = "sms"
     email = "email"
@@ -30,7 +32,7 @@ class Consent(Base):
     Attributes:
         id (UUID): Primary key.
         user_id (UUID): Foreign key to user.
-        campaign_id (UUID): Foreign key to campaign.
+        optin_id (UUID): Foreign key to optin.
         channel (str): Channel for consent (sms/email).
         status (str): Consent status (pending/opt-in/opt-out).
         consent_timestamp (datetime): When consent was given.
@@ -39,12 +41,13 @@ class Consent(Base):
         record (str): Encrypted JSON record.
     """
     __tablename__ = "consents"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("contacts.id"), nullable=False)
-    campaign_id = Column(UUID(as_uuid=True), ForeignKey("campaigns.id"), nullable=True)
+    id = Column(UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(UUID, ForeignKey("contacts.id"), nullable=False)
+    optin_id = Column(UUID, ForeignKey("optins.id"), nullable=True)
     channel = Column(String, nullable=False)
-    status = Column(String, default=ConsentStatusEnum.pending)
+    status = Column(String, default=ConsentStatusEnum.pending.value)
     consent_timestamp = Column(DateTime(timezone=True))
     revoked_timestamp = Column(DateTime(timezone=True), nullable=True)
-    verification_id = Column(UUID(as_uuid=True), ForeignKey("verification_codes.id"), nullable=True)
+    verification_id = Column(UUID, ForeignKey("verification_codes.id"), nullable=True)
     record = Column(String, nullable=True)  # Encrypted JSON
+    notes = Column(String, nullable=True)  # Freeform notes from contact

@@ -31,11 +31,11 @@ def create_consent(consent: ConsentCreate, db: Session = Depends(get_db)):
     return db_consent
 
 @router.get("/{consent_id}", response_model=ConsentOut)
-def read_consent(consent_id: uuid.UUID, db: Session = Depends(get_db)):
+def read_consent(consent_id: str, db: Session = Depends(get_db)):
     """
     Retrieve a consent record by its ID.
     Args:
-        consent_id (uuid.UUID): Consent unique identifier.
+        consent_id (str): Consent unique identifier.
         db (Session): SQLAlchemy database session.
     Returns:
         ConsentOut: Consent object if found.
@@ -48,7 +48,7 @@ def read_consent(consent_id: uuid.UUID, db: Session = Depends(get_db)):
     return db_consent
 
 @router.put("/{consent_id}", response_model=ConsentOut)
-def update_consent(consent_id: uuid.UUID, consent_update: ConsentUpdate, db: Session = Depends(get_db)):
+def update_consent(consent_id: str, consent_update: ConsentUpdate, db: Session = Depends(get_db)):
     """
     Update a consent record by its ID.
     Args:
@@ -65,12 +65,12 @@ def update_consent(consent_id: uuid.UUID, consent_update: ConsentUpdate, db: Ses
         raise HTTPException(status_code=404, detail="Consent not found")
     return crud_consent.update_consent(db, db_consent, consent_update)
 
-@router.delete("/{consent_id}")
-def delete_consent(consent_id: uuid.UUID, db: Session = Depends(get_db)):
+@router.delete("/{consent_id}", response_model=dict)
+def delete_consent(consent_id: str, db: Session = Depends(get_db)):
     """
     Delete a consent record by its ID.
     Args:
-        consent_id (uuid.UUID): Consent unique identifier.
+        consent_id (str): Consent unique identifier.
         db (Session): SQLAlchemy database session.
     Returns:
         dict: {"ok": True} on successful deletion.

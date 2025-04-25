@@ -13,15 +13,22 @@ from app.models.consent import Consent
 from app.schemas.consent import ConsentCreate, ConsentUpdate
 import uuid
 
-def get_consent(db: Session, consent_id: uuid.UUID):
+def get_consent(db: Session, consent_id):
     """
     Retrieve a consent record by its ID.
     Args:
         db (Session): SQLAlchemy database session.
-        consent_id (uuid.UUID): Consent unique identifier.
+        consent_id: Consent unique identifier (string or UUID).
     Returns:
         Consent: Consent object if found, else None.
     """
+    # Handle both string and UUID inputs for backward compatibility
+    if isinstance(consent_id, uuid.UUID):
+        consent_id = str(consent_id)
+    elif isinstance(consent_id, str) and '-' not in consent_id and len(consent_id) == 32:
+        # Handle non-hyphenated UUIDs by converting to hyphenated format
+        consent_id = str(uuid.UUID(consent_id))
+    
     return db.query(Consent).filter(Consent.id == consent_id).first()
 
 def create_consent(db: Session, consent: ConsentCreate):
