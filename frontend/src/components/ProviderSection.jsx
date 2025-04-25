@@ -7,6 +7,16 @@ export default function ProviderSection({
   const isTested = status === 'tested';
   return (
     <Stack spacing={2} alignItems="center" mb={4}>
+      {type === 'email' && (
+        <TextField
+          label="Sender Email Address"
+          fullWidth
+          value={creds.fromAddress || ''}
+          onChange={e => setCreds(c => ({ ...c, fromAddress: e.target.value }))}
+          helperText="This must be a valid sender address for your chosen provider."
+
+        />
+      )}
       <TextField label={`${type === 'email' ? 'Email' : 'SMS'} Provider`} select SelectProps={{ native: true }} value={provider} onChange={e => setProvider(e.target.value)} fullWidth>
         <option value={type === 'email' ? 'aws_ses' : 'aws_sns'}>{type === 'email' ? 'AWS SES' : 'AWS SNS'}</option>
       </TextField>
