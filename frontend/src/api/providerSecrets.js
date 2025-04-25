@@ -2,13 +2,14 @@ import axios from 'axios';
 
 const API_BASE = 'http://localhost:8000/api/v1/provider-secrets';
 
-export const setProviderSecret = async ({ providerType, accessKey, secretKey, region }) => {
+export const setProviderSecret = async ({ providerType, accessKey, secretKey, region, fromAddress }) => {
   const token = localStorage.getItem('access_token');
   return axios.post(`${API_BASE}/set`, {
     provider_type: providerType,
     access_key: accessKey,
     secret_key: secretKey,
     region,
+    from_address: fromAddress,
   }, {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),

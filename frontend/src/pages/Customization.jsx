@@ -108,8 +108,13 @@ export default function Customization({ setLogoUrl, setPrimary, setSecondary, se
     setCredSaving(cs => ({ ...cs, [type]: true }));
     setCredError(ce => ({ ...ce, [type]: '' }));
     try {
-      const creds = type === 'email' ? emailCreds : smsCreds;
-      await setProviderSecret({ providerType: type, ...creds });
+      let creds = type === 'email' ? emailCreds : smsCreds;
+      // Ensure fromAddress is sent for email
+      if (type === 'email') {
+        await setProviderSecret({ providerType: type, ...creds, fromAddress: creds.fromAddress });
+      } else {
+        await setProviderSecret({ providerType: type, ...creds });
+      }
       setCredsSaved(s => ({ ...s, [type]: true }));
       refreshCustomization();
     } catch (e) {
@@ -126,7 +131,10 @@ export default function Customization({ setLogoUrl, setPrimary, setSecondary, se
       setTestResult(tr => ({ ...tr, [type]: res.message || 'Success!' }));
       refreshCustomization();
     } catch (e) {
-      setTestResult(tr => ({ ...tr, [type]: 'Failed to connect.' }));
+      // Extract detailed error message from the response if available
+      const errorDetail = e.response?.data?.detail || e.message || 'Failed to connect.';
+      console.error(`Test connection error (${type}):`, errorDetail);
+      setTestResult(tr => ({ ...tr, [type]: errorDetail }));
     }
   };
 

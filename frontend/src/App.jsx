@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ThemeProvider, CssBaseline, Box } from '@mui/material';
 import { getTheme } from './theme';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import AppHeader from './components/AppHeader';
 import AdminLogin from './pages/AdminLogin';
@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import ContactOptOut from './pages/ContactOptOut';
 import OptInSetup from './pages/OptInSetup';
 import ContactDashboard from './pages/ContactDashboard';
+import UserManagement from './pages/UserManagement';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const navLinks = [
@@ -17,10 +18,11 @@ const navLinks = [
   { label: 'Customization', path: '/customization' },
   { label: 'Opt-Ins', path: '/optins' },
   { label: 'Contacts', path: '/contacts' },
-  { label: 'Opt-Out', path: '/optout' },
+  { label: 'Verbal Opt-in', path: '/verbal-optin' },
+  { label: 'Users', path: '/users', adminOnly: true },
+  { label: 'Preferences', path: '/preferences', always: true },
   { label: 'Login', path: '/login' },
 ];
-
 
 import { useEffect } from 'react';
 import { fetchCustomization } from './api';
@@ -76,11 +78,17 @@ function App() {
           <Box sx={{ width: '100%' }}>
             <Routes>
               <Route path="/login" element={<AdminLogin />} />
-              <Route path="/optout" element={<ContactOptOut />} />
-              <Route path="/optins" element={<OptInSetup />} />
+              {/* Redirect /optout to /preferences for backward compatibility */}
+              <Route path="/optout" element={<Navigate to="/preferences" replace />} />
+              {/* Preferences page is accessible to everyone */}
+              <Route path="/preferences" element={<ContactOptOut mode="preferences" />} />
+              {/* Verbal Opt-in is only for authenticated users */}
+              <Route path="/verbal-optin" element={<ProtectedRoute><ContactOptOut mode="verbal" /></ProtectedRoute>} />
+              <Route path="/optins" element={<ProtectedRoute><OptInSetup /></ProtectedRoute>} />
               <Route path="/customization" element={<ProtectedRoute><Customization setLogoUrl={setLogoUrl} setPrimary={setPrimary} setSecondary={setSecondary} setCompanyName={setCompanyName} setPrivacyPolicy={setPrivacyPolicy} /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/contacts" element={<ProtectedRoute><ContactDashboard /></ProtectedRoute>} />
+              <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
               <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="*" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             </Routes>
