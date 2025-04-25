@@ -13,15 +13,22 @@ from app.models.verification_code import VerificationCode
 from app.schemas.verification_code import VerificationCodeCreate, VerificationCodeUpdate
 import uuid
 
-def get_verification_code(db: Session, code_id: uuid.UUID):
+def get_verification_code(db: Session, code_id):
     """
     Retrieve a verification code record by its ID.
     Args:
         db (Session): SQLAlchemy database session.
-        code_id (uuid.UUID): VerificationCode unique identifier.
+        code_id: VerificationCode unique identifier (string or UUID).
     Returns:
         VerificationCode: VerificationCode object if found, else None.
     """
+    # Handle both string and UUID inputs for backward compatibility
+    if isinstance(code_id, uuid.UUID):
+        code_id = str(code_id)
+    elif isinstance(code_id, str) and '-' not in code_id and len(code_id) == 32:
+        # Handle non-hyphenated UUIDs by converting to hyphenated format
+        code_id = str(uuid.UUID(code_id))
+    
     return db.query(VerificationCode).filter(VerificationCode.id == code_id).first()
 
 def create_verification_code(db: Session, code: VerificationCodeCreate):

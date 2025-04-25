@@ -29,9 +29,9 @@ class Message(Base):
     """
     SQLAlchemy model for message records.
     Attributes:
-        id (UUID): Primary key.
-        user_id (UUID): Foreign key to user.
-        campaign_id (UUID): Foreign key to campaign.
+        id (str): Primary key (UUID as string).
+        user_id (str): Foreign key to user (string ID).
+        optin_id (str): Foreign key to optin (string ID).
         template_id (UUID): Foreign key to message template.
         channel (str): Message channel (sms/email).
         content (str): Encrypted message content.
@@ -40,9 +40,9 @@ class Message(Base):
         delivery_status (str): Delivery status JSON string.
     """
     __tablename__ = "messages"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("contacts.id"), nullable=False)
-    campaign_id = Column(UUID(as_uuid=True), ForeignKey("campaigns.id"), nullable=True)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, ForeignKey("contacts.id"), nullable=False)
+    optin_id = Column(String, ForeignKey("optins.id"), nullable=False)
     template_id = Column(UUID(as_uuid=True), ForeignKey("message_templates.id"), nullable=True)
     channel = Column(String, nullable=False)
     content = Column(String, nullable=False)  # Encrypted

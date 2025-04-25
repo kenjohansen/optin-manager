@@ -22,7 +22,7 @@ router = APIRouter(prefix="/verification-codes", tags=["verification_codes"])
 
 @router.post("/send")
 def send_verification_code(
-    user_id: uuid.UUID = Body(...),
+    user_id: str = Body(...),
     channel: str = Body(...),
     sent_to: str = Body(...),
     purpose: str = Body(...),
@@ -71,7 +71,7 @@ def create_verification_code(code: VerificationCodeCreate, db: Session = Depends
     return db_code
 
 @router.get("/{code_id}", response_model=VerificationCodeOut)
-def read_verification_code(code_id: uuid.UUID, db: Session = Depends(get_db)):
+def read_verification_code(code_id: str, db: Session = Depends(get_db)):
     """
     Retrieve a verification code record by its ID.
     Args:
@@ -88,7 +88,7 @@ def read_verification_code(code_id: uuid.UUID, db: Session = Depends(get_db)):
     return db_code
 
 @router.put("/{code_id}", response_model=VerificationCodeOut)
-def update_verification_code(code_id: uuid.UUID, code_update: VerificationCodeUpdate, db: Session = Depends(get_db)):
+def update_verification_code(code_id: str, code_update: VerificationCodeUpdate, db: Session = Depends(get_db)):
     """
     Update a verification code record by its ID.
     Args:
@@ -105,12 +105,12 @@ def update_verification_code(code_id: uuid.UUID, code_update: VerificationCodeUp
         raise HTTPException(status_code=404, detail="Verification code not found")
     return crud_code.update_verification_code(db, db_code, code_update)
 
-@router.delete("/{code_id}")
-def delete_verification_code(code_id: uuid.UUID, db: Session = Depends(get_db)):
+@router.delete("/{code_id}", response_model=dict)
+def delete_verification_code(code_id: str, db: Session = Depends(get_db)):
     """
     Delete a verification code record by its ID.
     Args:
-        code_id (uuid.UUID): Verification code unique identifier.
+        code_id (str): Verification code unique identifier.
         db (Session): SQLAlchemy database session.
     Returns:
         dict: {"ok": True} on successful deletion.

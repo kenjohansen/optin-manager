@@ -13,12 +13,12 @@ from app.models.message import Message
 from app.schemas.message import MessageCreate, MessageUpdate
 import uuid
 
-def get_message(db: Session, message_id: uuid.UUID):
+def get_message(db: Session, message_id: str):
     """
     Retrieve a message by its ID.
     Args:
         db (Session): SQLAlchemy database session.
-        message_id (uuid.UUID): Message unique identifier.
+        message_id (str): Message unique identifier.
     Returns:
         Message: Message object if found, else None.
     """

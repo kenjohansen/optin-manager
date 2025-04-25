@@ -17,16 +17,16 @@ class VerificationCodeBase(BaseModel):
     """
     Shared fields for VerificationCode schemas.
     Attributes:
-        user_id (uuid.UUID): User unique identifier.
+        user_id (str): User unique identifier.
         code (str): Verification code value.
         channel (str): Channel used (sms/email).
         sent_to (str): Recipient contact (phone/email).
-        expires_at (str): Expiration timestamp.
-        verified_at (Optional[str]): When code was verified.
+        expires_at (datetime): Expiration timestamp.
+        verified_at (Optional[datetime]): When code was verified.
         purpose (str): Purpose of verification (opt-in/opt-out/etc).
         status (Optional[str]): Verification status.
     """
-    user_id: uuid.UUID
+    user_id: str
     code: str
     channel: str
     sent_to: str
@@ -34,20 +34,30 @@ class VerificationCodeBase(BaseModel):
     verified_at: Optional[datetime] = None
     purpose: str
     status: Optional[str] = "pending"
+    
+    model_config = ConfigDict(from_attributes=True)
 
 class VerificationCodeCreate(VerificationCodeBase):
     """Schema for creating a new verification code record."""
     pass
 
-class VerificationCodeUpdate(VerificationCodeBase):
+class VerificationCodeUpdate(BaseModel):
     """Schema for updating an existing verification code record."""
-    pass
+    user_id: Optional[str] = None
+    code: Optional[str] = None
+    channel: Optional[str] = None
+    sent_to: Optional[str] = None
+    expires_at: Optional[datetime] = None
+    verified_at: Optional[datetime] = None
+    purpose: Optional[str] = None
+    status: Optional[str] = None
+    
+    model_config = ConfigDict(from_attributes=True)
 
 class VerificationCodeOut(VerificationCodeBase):
     """
     Schema for returning verification code records via API.
     Attributes:
-        id (uuid.UUID): Verification code unique identifier.
+        id (str): Verification code unique identifier.
     """
-    id: uuid.UUID
-    model_config = ConfigDict(from_attributes=True)
+    id: str
