@@ -1,0 +1,62 @@
+name: SonarQube Analysis
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  sonarqube:
+    name: SonarQube Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for better relevancy of analysis
+      
+      # Set up Python for backend analysis
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      # Set up Node.js for frontend analysis
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      # Install backend dependencies and run tests with coverage
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+          
+      - name: Run backend tests with coverage
+        run: |
+          cd backend
+          pytest --cov=app --cov-report=xml:coverage.xml --junitxml=test-results.xml
+        continue-on-error: true  # Continue even if tests fail
+          
+      # Install frontend dependencies and run tests with coverage
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm ci
+          
+      - name: Run frontend tests with coverage
+        run: |
+          cd frontend
+          npm test -- --coverage
+        continue-on-error: true  # Continue even if tests fail
+          
+      # Run SonarQube scan
+      - name: SonarQube Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}    # Generate this in SonarCloud

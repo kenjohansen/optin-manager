@@ -1,0 +1,40 @@
+"""Add consents table
+
+Revision ID: custom_add_consents
+Revises: 055578f88857
+Create Date: 2025-04-24 09:10:00.000000
+
+"""
+from alembic import op
+import sqlalchemy as sa
+
+
+# revision identifiers, used by Alembic.
+revision = 'custom_add_consents'
+down_revision = '055578f88857'
+branch_labels = None
+depends_on = None
+
+
+def upgrade():
+    # Create consents table directly without modifying other tables
+    op.create_table('consents',
+        sa.Column('id', sa.String(), nullable=False),
+        sa.Column('user_id', sa.String(), nullable=False),
+        sa.Column('optin_id', sa.String(), nullable=True),
+        sa.Column('channel', sa.String(), nullable=False),
+        sa.Column('status', sa.String(), nullable=True, default='pending'),
+        sa.Column('consent_timestamp', sa.DateTime(timezone=True), nullable=True),
+        sa.Column('revoked_timestamp', sa.DateTime(timezone=True), nullable=True),
+        sa.Column('verification_id', sa.String(), nullable=True),
+        sa.Column('record', sa.String(), nullable=True),
+        sa.Column('notes', sa.String(), nullable=True),
+        sa.ForeignKeyConstraint(['optin_id'], ['optins.id'], ),
+        sa.ForeignKeyConstraint(['user_id'], ['contacts.id'], ),
+        sa.ForeignKeyConstraint(['verification_id'], ['verification_codes.id'], ),
+        sa.PrimaryKeyConstraint('id')
+    )
+
+
+def downgrade():
+    op.drop_table('consents')

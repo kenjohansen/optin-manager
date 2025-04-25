@@ -19,10 +19,23 @@ engine = create_engine(
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 core_db.engine = engine
 core_db.SessionLocal = TestingSessionLocal
-# Import all models to register tables
-from app.models import user, consent, campaign, message, message_template, verification_code
+# Import all models to register tables - ensure all models are included
+# Note: The model for contacts is actually named 'user.py' in the codebase
+
+# Explicitly import all models to ensure they're registered with SQLAlchemy
+import app.models.consent
+import app.models.optin
+import app.models.message
+import app.models.message_template
+import app.models.verification_code
+import app.models.user  # This is the contact model
+import app.models.auth_user
+import app.models.customization
+# Drop all tables first to ensure clean state
+Base.metadata.drop_all(bind=engine)
+# Create all tables
 Base.metadata.create_all(bind=engine)
-print("Tables after create_all:", Base.metadata.tables)
+print("Tables after create_all:", Base.metadata.tables.keys())
 
 @pytest.fixture
 def db_session():
