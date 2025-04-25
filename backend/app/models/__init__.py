@@ -1,1 +1,1 @@
-# Models package for OptIn Manager
+# Models Manager
