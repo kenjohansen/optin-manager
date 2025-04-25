@@ -41,6 +41,54 @@ A compliant SMS notification management system that handles opt-in/opt-out proce
 ### 2.3.1 Provider Credentials Management and Security
 
 - The provider secrets vault key is managed using a hybrid approach:
+
+### 2.4 Verification & Preferences Workflows
+
+#### 2.4.1 Contact Self-Service (Opt-In/Opt-Out)
+- A contact (user) visits the Preferences page (formerly Opt-Out page) to check or change their opt-in/out status for email or SMS.
+- The contact enters their email or phone number.
+- The backend sends a verification code to the entered contact info (email/SMS).
+- The contact enters the received code on the Preferences page.
+- If the code is correct, the user is granted access to view and update their opt-in/out preferences for all campaigns associated with their contact info.
+- This workflow ensures only the owner of the email/phone can access or change preferences.
+
+#### 2.4.2 Verbal Opt-In (Double Opt-In by Authorized User)
+- A Sales or Marketing team member (authenticated user) receives a verbal opt-in from a customer.
+- The team member enters the customer’s email or phone and desired preferences into the system.
+- The backend triggers a Double Opt-In:
+    - Sends an email/SMS to the contact with: (a) the verbal authorization statement, (b) a link to the Preferences page, and (c) a verification code.
+- The contact clicks the link to the Preferences page, which detects that the session is a Verbal Auth (because the user is logged in, or via a special link parameter).
+- The contact enters the verification code (or requests a new one) to confirm their consent.
+- The contact can then review and adjust their preferences as needed.
+
+#### 2.4.3 Unified Preferences Page
+- The Preferences page supports both workflows:
+    - If there is **no authenticated user**, assume a contact is self-managing preferences (self-service).
+    - If there **is an authenticated user**, assume this is a Verbal Auth/Double Opt-In flow.
+- The page UI adapts to show the appropriate prompts and actions for each case.
+- All verification codes are single-use, time-limited, and tracked for audit/compliance.
+
+#### 2.4.4 Post-Verification Confirmation Messages
+- After a contact has successfully verified their opt-in status, the system sends a confirmation SMS with the following elements:
+  - Confirmation of successful opt-in
+  - Company name identification
+  - Description of message types they'll receive
+  - HELP and STOP keyword instructions
+  - Message and data rates disclaimer
+  - Message frequency information
+- Sample confirmation message template:
+  ```
+  Thank you for confirming your opt-in to {company_name} messages. You will now receive {message_types} from us. Reply HELP for assistance or STOP to unsubscribe at any time. Msg&data rates may apply. {frequency_info}
+  ```
+- HELP response message template:
+  ```
+  Thank you for contacting {company_name}. For assistance with your messaging preferences, please visit {preferences_url} or reply STOP to unsubscribe from all messages. Standard message & data rates may apply.
+  ```
+- STOP response message template:
+  ```
+  You have been unsubscribed from {company_name} messages. You will no longer receive SMS messages from this number. Reply HELP for help or visit {preferences_url} to manage your preferences.
+  ```
+
     - Priority: ENV variable (`PROVIDER_VAULT_KEY`), HashiCorp Vault, K8s Secret, OS-protected file, fallback to project dir (dev only)
     - Linux: `/etc/optin-manager/provider_vault.key`, Windows: `%PROGRAMDATA%\OptInManager\provider_vault.key`
     - Never store key with vault file unless fallback is required (dev only, with warning)

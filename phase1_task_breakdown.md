@@ -30,8 +30,8 @@ This document breaks down all Phase 1 deliverables into actionable tasks. Each t
     _Status: COMPLETED – /messages/send and /messages/{id} endpoints fully implemented with opt-in and timeline logic._
 - [x] Consent management: status checking, timeline, event logging
     _Status: COMPLETED – Consent status and timeline included in message details and event logging._
-- [x] Campaign model (for grouping messages)  
-  _Status: COMPLETED – Model, schema, CRUD, API, and tests implemented._
+- [x] OptIn model (unified for all opt-in/out items; replaces Campaign and Product)
+  _Status: IN PROGRESS – Model, schema, CRUD, API, and tests being implemented. Campaign and Product are being removed._
 - [x] VerificationCode model (for identity verification)  
   _Status: COMPLETED – Model, schema, CRUD, API, and tests implemented._
 - [ ] Alembic migrations for all models
@@ -44,8 +44,8 @@ This document breaks down all Phase 1 deliverables into actionable tasks. Each t
 - [x] Ensure contacts cannot authenticate or access as users
 - [x] Authentication & Authorization (OAuth2/JWT, code verification, backend-enforced)
     _Status: COMPLETED – Admin/staff endpoints protected. Contacts are non-authenticated._
-- [x] CRUD endpoints for all models (User, Consent, Message, MessageTemplate, Campaign, VerificationCode)  
-  _Status: COMPLETED – All CRUD endpoints and tests implemented._
+- [x] CRUD endpoints for all models (User, Consent, Message, MessageTemplate, OptIn, VerificationCode)  
+  _Status: OptIn endpoints in progress. Campaign and Product endpoints are being removed._
 - [x] Minimal admin endpoints: list contacts, messages, analytics
     _Status: COMPLETED – Admin endpoints for listing contacts, messages, and analytics are implemented and admin-protected._
 - [x] Verification endpoints (send code, verify code)

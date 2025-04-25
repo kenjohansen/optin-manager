@@ -4,6 +4,7 @@
 This document is the single source of truth for the OptIn Manager architecture and data model. All legacy references to a `users` table have been removed. The backend strictly separates:
 - **Contacts:** End-user recipients of opt-in/consent, identified by email or phone (`contacts` table).
 - **Auth Users:** Admin/staff/service accounts for authentication and admin UI (`auth_users` table).
+- **OptIns:** Items a contact can opt in or out of (e.g., promotional, transactional, alert communications). All prior references to Campaign and Product are now unified as OptIn.
 
 All foreign keys referencing recipients use `contact_id` and point to `contacts.id`. No `users` table exists in the schema. This separation ensures clarity, scalability, and compliance.
 
@@ -67,6 +68,31 @@ This document describes the architecture and data model (ERD) for the OptIn Mana
 - All templates must include opt-out/unsubscribe language as appropriate
 - Extensible design for web form templates (future phase)
 - Smart helper API for compliant message delivery
+
+### OptIn Model Unification (Design Decision)
+
+#### Motivation
+To simplify the data model, reduce duplication, and align with regulatory requirements, all entities representing items a user can opt in or out of (previously "Campaign" and "Product") are now unified under a single `optin` model. This model supports different types (promotional, transactional, alert) and is extensible for future needs.
+
+#### OptIn Model
+- **optin** (table): Represents a single item a contact can opt in or out of.
+    - `id`: UUID
+    - `name`: str (display name)
+    - `type`: Enum ("promotional", "transactional", "alert")
+    - `status`: Enum ("active", "paused", "archived", "closed")
+    - `description`: Optional[str]
+    - `created_at`, `updated_at`: timestamps
+- All endpoints, UI, and business logic now use `optin` in code and "Opt-In" in UI.
+- All references to Campaign and Product in the backend and frontend are removed.
+
+#### API Endpoints
+- `/api/v1/optins` (CRUD for Opt-In items)
+- `/api/v1/optins/{id}` (GET, PUT/PATCH, DELETE)
+- Opt-in/out actions are managed via consent endpoints referencing the optin_id.
+
+#### UI
+- The UI displays all Opt-Ins, grouped or filtered by type (Promotional, Transactional, Alert).
+- Users/admins can manage Opt-Ins from a unified interface.
 
 ### Phased Approach
 - **Phase 1 (MVP):** Core consent management, message templates, smart send-with-consent API, standard web forms
