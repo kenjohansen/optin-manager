@@ -41,13 +41,34 @@ function App() {
   useEffect(() => {
     fetchCustomization().then(data => {
       if (data) {
-        setLogoUrl(data.logo_url || null);
+        // Handle logo URL - ensure it has the backend domain and cache busting
+        if (data.logo_url) {
+          let logoUrl = data.logo_url;
+          // Check if the URL is a relative path (starts with /) and doesn't already contain the backend origin
+          if (logoUrl && logoUrl.startsWith('/') && !logoUrl.includes('://')) {
+            // Get the backend origin from the API_BASE
+            const API_BASE = 'http://127.0.0.1:8000/api/v1';
+            let backendOrigin = API_BASE.replace(/\/api\/v1\/?$/, '');
+            logoUrl = backendOrigin + logoUrl;
+          }
+          
+          // Add cache-busting timestamp to prevent browser caching
+          const timestamp = new Date().getTime();
+          logoUrl = `${logoUrl}?t=${timestamp}`;
+          
+          console.log('App: Setting logo URL with cache busting:', logoUrl);
+          setLogoUrl(logoUrl);
+        } else {
+          setLogoUrl(null);
+        }
+        
         setPrimary(data.primary_color || '');
         setSecondary(data.secondary_color || '');
         setCompanyName(data.company_name || '');
         setPrivacyPolicy(data.privacy_policy_url || '');
       }
     }).catch(e => {
+      console.error('Error fetching customization in App:', e);
       // Optionally log or show error
       console.warn('Failed to fetch customization:', e);
     });

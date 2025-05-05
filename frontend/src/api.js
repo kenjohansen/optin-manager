@@ -3,8 +3,29 @@ import axios from 'axios';
 export const API_BASE = 'http://127.0.0.1:8000/api/v1';
 
 export const fetchCustomization = async () => {
-  const res = await axios.get(`${API_BASE}/customization/`);
-  return res.data;
+  const token = localStorage.getItem('access_token');
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  
+  try {
+    const res = await axios.get(`${API_BASE}/customization/`, { headers });
+    console.log('Fetched customization:', res.data);
+    
+    // Process the logo URL to ensure it's properly formatted
+    if (res.data && res.data.logo_url) {
+      let logoUrl = res.data.logo_url;
+      // Check if the URL is a relative path (starts with /) and doesn't already contain the backend origin
+      if (logoUrl && logoUrl.startsWith('/') && !logoUrl.includes('://')) {
+        let backendOrigin = API_BASE.replace(/\/api\/v1\/?$/, '');
+        res.data.logo_url = backendOrigin + logoUrl;
+      }
+    }
+    
+    return res.data;
+  } catch (error) {
+    console.error('Error fetching customization:', error.response?.data || error.message);
+    // Return empty object instead of throwing to prevent UI errors
+    return {};
+  }
 };
 
 export const saveCustomization = async ({ logo, primary, secondary, company_name, privacy_policy_url, email_provider, sms_provider }) => {
@@ -16,14 +37,33 @@ export const saveCustomization = async ({ logo, primary, secondary, company_name
   if (privacy_policy_url) formData.append('privacy_policy_url', privacy_policy_url);
   if (email_provider) formData.append('email_provider', email_provider);
   if (sms_provider) formData.append('sms_provider', sms_provider);
+  
   const token = localStorage.getItem('access_token');
-  const res = await axios.post(`${API_BASE}/customization`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-  return res.data;
+  
+  // Enhanced debugging
+  console.log('Saving customization with logo:', logo ? logo.name : 'none');
+  console.log('Authentication token present:', token ? 'Yes' : 'No');
+  
+  if (!token) {
+    console.error('No authentication token found. User must be logged in to save customization.');
+    throw new Error('Authentication required. Please log in and try again.');
+  }
+  
+  try {
+    // Ensure we're using the correct URL with trailing slash to match backend expectations
+    const res = await axios.post(`${API_BASE}/customization/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log('Customization saved successfully:', res.data);
+    return res.data;
+  } catch (error) {
+    console.error('Error saving customization:', error.response?.data || error.message);
+    console.error('Status code:', error.response?.status);
+    throw error;
+  }
 };
 
 export const login = async ({ username, password }) => {
@@ -53,8 +93,6 @@ export const fetchContacts = async ({ search, consent, timeWindow }) => {
   const res = await axios.get(`${API_BASE}/contacts`, { params });
   return res.data;
 };
-
-
 
 export const optOutById = async (id) => {
   const res = await axios.post(`${API_BASE}/contacts/${id}/optout`);
@@ -211,5 +249,3 @@ export const updateOptIn = async ({ id, name, status }) => {
   );
   return res.data;
 };
-
-// Add more API calls as needed for contacts, campaigns, products, etc.

@@ -25,5 +25,18 @@ export function isSupport(token) {
 }
 
 export function isAuthenticated(token) {
-  return !!getRoleFromToken(token);
+  const payload = parseJwt(token);
+  if (!payload) return false;
+  
+  // Check if token has expiration claim
+  if (payload.exp) {
+    // exp is in seconds, Date.now() is in milliseconds
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (currentTime >= payload.exp) {
+      // Token has expired
+      return false;
+    }
+  }
+  
+  return !!payload.scope; // Check if the token has a valid role
 }

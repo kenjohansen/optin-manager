@@ -33,18 +33,49 @@ export default function Customization({ setLogoUrl, setPrimary, setSecondary, se
 
   const refreshCustomization = () => {
     setLoading(true);
+    setError('');
+    
+    // Check if user is authenticated
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      setError('Authentication required. Please log in to access customization settings.');
+      setLoading(false);
+      return;
+    }
+    
     fetchCustomization()
       .then(data => {
+        // Check if data is empty (could happen if there was an error)
+        if (!data || Object.keys(data).length === 0) {
+          console.warn('Received empty customization data');
+          setLoading(false);
+          return;
+        }
+        
         setCustomization(data);
         if (data.logo_url) {
           let logoUrl = data.logo_url;
-          if (logoUrl && logoUrl.startsWith('/')) {
+          // Check if the URL is a relative path (starts with /) and doesn't already contain the backend origin
+          if (logoUrl && logoUrl.startsWith('/') && !logoUrl.includes('://')) {
             let backendOrigin = API_BASE.replace(/\/api\/v1\/?$/, '');
             logoUrl = backendOrigin + logoUrl;
           }
+          
+          // Add cache-busting timestamp to prevent browser caching
+          const timestamp = new Date().getTime();
+          logoUrl = `${logoUrl}?t=${timestamp}`;
+          
+          console.log('Setting logo URL with cache busting:', logoUrl);
+          
           setLogoPreview(logoUrl);
           if (setLogoUrl) setLogoUrl(logoUrl);
+        } else {
+          console.log('No logo URL in customization data');
+          // Clear the logo preview if there's no logo URL
+          setLogoPreview(null);
+          if (setLogoUrl) setLogoUrl(null);
         }
+        
         if (data.primary_color) {
           setPrimaryLocal(data.primary_color);
           if (setPrimary) setPrimary(data.primary_color);
@@ -59,8 +90,9 @@ export default function Customization({ setLogoUrl, setPrimary, setSecondary, se
         if (data.sms_provider) setSmsProvider(data.sms_provider);
         setLoading(false);
       })
-      .catch(() => {
-        setError('Failed to load customization.');
+      .catch((err) => {
+        console.error('Error refreshing customization:', err);
+        setError('Failed to load customization. ' + (err.message || ''));
         setLoading(false);
       });
   };
@@ -71,9 +103,17 @@ export default function Customization({ setLogoUrl, setPrimary, setSecondary, se
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
+    if (!file) return;
+    
+    console.log('Selected logo file:', file.name);
     setLogo(file);
-    const preview = file ? URL.createObjectURL(file) : null;
+    
+    // Create a preview URL
+    const preview = URL.createObjectURL(file);
+    console.log('Created preview URL:', preview);
     setLogoPreview(preview);
+    
+    // Update the app header logo
     if (setLogoUrl) setLogoUrl(preview);
   };
 
@@ -82,8 +122,19 @@ export default function Customization({ setLogoUrl, setPrimary, setSecondary, se
     setSaving(true);
     setError('');
     setSuccess(false);
+    
+    // Check if user is authenticated
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      setError('Authentication required. Please log in to save customization settings.');
+      setSaving(false);
+      return;
+    }
+    
+    console.log('Saving customization with logo:', logo ? logo.name : 'none');
+    
     try {
-      await saveCustomization({
+      const result = await saveCustomization({
         logo,
         primary,
         secondary,
@@ -92,13 +143,30 @@ export default function Customization({ setLogoUrl, setPrimary, setSecondary, se
         email_provider: emailProvider,
         sms_provider: smsProvider,
       });
+      
+      console.log('Save customization result:', result);
       setSuccess(true);
+      
       if (setPrimary) setPrimary(primary);
       if (setSecondary) setSecondary(secondary);
       if (setCompanyName) setCompanyName(companyName);
       if (setPrivacyPolicy) setPrivacyPolicy(privacyPolicy);
-    } catch {
-      setError('Failed to save customization.');
+      
+      // After successful save, refresh to get the updated logo URL from the backend
+      // Increased timeout to ensure file is fully processed
+      setTimeout(() => {
+        refreshCustomization();
+      }, 1000);
+    } catch (error) {
+      console.error('Error saving customization:', error);
+      // Provide more specific error message if available
+      const errorMessage = error.response?.data?.detail || error.message || 'Failed to save customization.';
+      setError(errorMessage);
+      
+      // If it's an authentication error, suggest logging in again
+      if (error.response?.status === 401) {
+        setError('Your session has expired. Please log in again.');
+      }
     } finally {
       setSaving(false);
     }

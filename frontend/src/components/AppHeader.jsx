@@ -5,7 +5,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { isAdmin, isAuthenticated } from '../utils/auth';
+import { isAdmin, isAuthenticated as checkAuthentication } from '../utils/auth';
 
 export default function AppHeader({ mode, setMode, logoUrl, navLinks = [] }) {
   const theme = useTheme();
@@ -16,7 +16,7 @@ export default function AppHeader({ mode, setMode, logoUrl, navLinks = [] }) {
     );
   };
   const themeIcon = theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />;
-  const isAuthenticated = !!localStorage.getItem('access_token');
+  const isAuthenticatedLocal = !!localStorage.getItem('access_token');
   const handleLogout = () => {
     localStorage.removeItem('access_token');
     navigate('/login');
@@ -24,7 +24,7 @@ export default function AppHeader({ mode, setMode, logoUrl, navLinks = [] }) {
 
   const token = localStorage.getItem('access_token');
   const userIsAdmin = isAdmin(token);
-  const userIsAuthenticated = isAuthenticated(token);
+  const userIsAuthenticated = checkAuthentication(token);
 
   const filteredLinks = navLinks.filter(link => {
     if (link.always) return true;
@@ -77,7 +77,7 @@ export default function AppHeader({ mode, setMode, logoUrl, navLinks = [] }) {
                   ))}
                 </List>
                 <Divider />
-                {isAuthenticated && (
+                {isAuthenticatedLocal && (
                   <List>
                     <ListItem disablePadding>
                       <ListItemButton onClick={handleLogout}>
@@ -102,7 +102,7 @@ export default function AppHeader({ mode, setMode, logoUrl, navLinks = [] }) {
                 {link.label}
               </Button>
             ))}
-            {isAuthenticated && (
+            {isAuthenticatedLocal && (
               <Button color="inherit" onClick={handleLogout} sx={{ ml: 1 }}>Logout</Button>
             )}
             <IconButton color="inherit" onClick={handleThemeToggle} sx={{ ml: 1 }}>
