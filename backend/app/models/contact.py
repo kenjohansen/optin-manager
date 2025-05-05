@@ -1,7 +1,7 @@
 """
-models/user.py
+models/contact.py
 
-SQLAlchemy model for the User entity in the OptIn Manager backend.
+SQLAlchemy model for the Contact entity in the OptIn Manager backend.
 
 Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
 This file is part of the OptIn Manager project and is licensed under the MIT License.

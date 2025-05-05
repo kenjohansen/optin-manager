@@ -9,8 +9,8 @@ import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 from app.core.database import get_db
-from app.models.user import Contact
-from app.schemas.user import ContactCreate
+from app.models.contact import Contact
+from app.schemas.contact import ContactCreate
 
 client = TestClient(app)
 

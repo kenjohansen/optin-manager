@@ -8,11 +8,11 @@ from fastapi import APIRouter, Depends, HTTPException, Body, status, Request, Qu
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from app.models.user import Contact
+from app.models.contact import Contact
 from app.models.optin import OptIn
 from app.models.consent import Consent, ConsentStatusEnum
 from app.models.verification_code import VerificationCode, VerificationPurposeEnum, VerificationStatusEnum
-from app.schemas.user import ContactOut
+from app.schemas.contact import ContactOut
 from app.core.database import get_db
 from app.core.auth import create_access_token, oauth2_scheme
 from jose import jwt, JWTError
@@ -52,7 +52,7 @@ optional_bearer = OptionalBearerAuth(auto_error=False)
 def get_or_create_contact(db: Session, contact_value: str, contact_type: str = None):
     # Import encryption utilities
     from app.core.encryption import encrypt_pii, generate_deterministic_id
-    from app.models.user import ContactTypeEnum
+    from app.models.contact import ContactTypeEnum
     
     # Determine contact type if not provided
     if not contact_type:
@@ -447,7 +447,7 @@ def get_preferences(
         logger.info(f"Generated deterministic ID: {contact_id} for contact: {contact_value}")
         
         # Look up contact by deterministic ID
-        from app.models.user import Contact
+        from app.models.contact import Contact
         db_contact = db.query(Contact).filter(Contact.id == contact_id).first()
         
         if db_contact:

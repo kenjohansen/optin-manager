@@ -86,12 +86,36 @@ export const optOutContact = async ({ contact }) => {
 };
 
 export const fetchContacts = async ({ search, consent, timeWindow }) => {
+  const token = localStorage.getItem('access_token');
+  
+  // Enhanced debugging
+  console.log('Fetching contacts with params:', { search, consent, timeWindow });
+  console.log('Authentication token present:', token ? 'Yes' : 'No');
+  
+  if (!token) {
+    console.error('No authentication token found. User must be logged in to fetch contacts.');
+    throw new Error('Authentication required. Please log in and try again.');
+  }
+  
   const params = {};
   if (search) params.search = search;
   if (consent) params.consent = consent;
   if (timeWindow) params.time_window = timeWindow;
-  const res = await axios.get(`${API_BASE}/contacts`, { params });
-  return res.data;
+  
+  try {
+    const res = await axios.get(`${API_BASE}/contacts/`, { 
+      params,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    console.log('Contacts fetched successfully:', res.data);
+    return res.data;
+  } catch (error) {
+    console.error('Error fetching contacts:', error.response?.data || error.message);
+    console.error('Status code:', error.response?.status);
+    throw error;
+  }
 };
 
 export const optOutById = async (id) => {

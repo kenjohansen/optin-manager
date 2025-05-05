@@ -28,7 +28,7 @@ import app.models.optin
 import app.models.message
 import app.models.message_template
 import app.models.verification_code
-import app.models.user  # This is the contact model
+import app.models.contact  # This is the contact model
 import app.models.auth_user
 import app.models.customization
 # Drop all tables first to ensure clean state

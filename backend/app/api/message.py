@@ -18,8 +18,8 @@ import uuid
 router = APIRouter(prefix="/messages", tags=["messages"])
 
 from fastapi import Body
-from app.schemas.user import ContactOut as UserOut, ContactCreate as UserCreate
-from app.crud.user import create_contact, update_contact, delete_contact
+from app.schemas.contact import ContactOut as UserOut, ContactCreate as UserCreate
+from app.crud.contact import create_contact, update_contact, delete_contact
 from app.schemas.optin import OptInOut
 from app.schemas.consent import ConsentOut, ConsentCreate
 from app.crud.consent import create_consent
@@ -61,7 +61,7 @@ def send_message(
         SendMessageResponse: Message delivery status and info.
     """
     # 1. Lookup contact by recipient (phone/email)
-    from app.models.user import Contact
+    from app.models.contact import Contact
     # Use the new Contact model structure with contact_value
     user = db.query(Contact).filter(Contact.encrypted_value == payload.recipient).first()
     if not user:

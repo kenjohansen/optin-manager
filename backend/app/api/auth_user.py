@@ -14,8 +14,8 @@ import uuid
 
 router = APIRouter(prefix="/auth_users", tags=["auth_users"])
 
-from app.crud import user as crud_contact, message as crud_message
-from app.schemas.user import ContactOut
+from app.crud import contact as crud_contact, message as crud_message
+from app.schemas.contact import ContactOut
 from app.schemas.message import MessageOut
 from fastapi import Query
 

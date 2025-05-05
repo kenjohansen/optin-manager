@@ -7,11 +7,11 @@ Implements Phase 1: send/verify code, fetch/update preferences for a contact.
 from fastapi import APIRouter, Depends, HTTPException, Body, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
-from app.models.user import Contact
+from app.models.contact import Contact
 from app.models.optin import OptIn
 from app.models.consent import Consent, ConsentStatusEnum
 from app.models.verification_code import VerificationCode, VerificationPurposeEnum, VerificationStatusEnum
-from app.schemas.user import ContactOut
+from app.schemas.contact import ContactOut
 from app.core.database import get_db
 from app.core.auth import create_access_token, oauth2_scheme
 from jose import jwt, JWTError

@@ -9,7 +9,7 @@ import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 from app.core.database import get_db
-from app.models.user import Contact
+from app.models.contact import Contact
 from app.schemas.consent import ConsentCreate
 from tests.auth_test_utils import get_auth_headers
 from tests.test_utils import remove_timestamp_fields

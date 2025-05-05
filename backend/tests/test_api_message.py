@@ -50,7 +50,7 @@ def override_get_db(db_session):
 def test_send_message_opted_in(override_get_db, db_session):
     from fastapi.testclient import TestClient
     from app.main import app
-    from app.models.user import Contact
+    from app.models.contact import Contact
     from app.models.consent import Consent, ConsentStatusEnum
     import uuid
     client = TestClient(app)

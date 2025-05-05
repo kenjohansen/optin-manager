@@ -1,5 +1,5 @@
 """
-crud/user.py
+crud/contact.py
 
 CRUD operations for the Contact model in the OptIn Manager backend.
 
@@ -9,8 +9,8 @@ See the root LICENSE file for details.
 """
 
 from sqlalchemy.orm import Session
-from app.models.user import Contact, ContactTypeEnum
-from app.schemas.user import ContactCreate, ContactUpdate
+from app.models.contact import Contact, ContactTypeEnum
+from app.schemas.contact import ContactCreate, ContactUpdate
 import logging
 from app.core.encryption import encrypt_pii, decrypt_pii, generate_deterministic_id, mask_email, mask_phone
 
@@ -128,6 +128,109 @@ def list_contacts(db: Session, skip=0, limit=100):
         list: List of Contact objects.
     """
     return db.query(Contact).offset(skip).limit(limit).all()
+
+def list_contacts_with_filters(db: Session, search=None, consent=None, time_window=None, skip=0, limit=100):
+    """
+    Return filtered contacts based on search criteria.
+    Args:
+        db (Session): SQLAlchemy database session.
+        search (str, optional): Email or phone to search for.
+        consent (str, optional): Filter by consent status ('opted_in' or 'opted_out').
+        time_window (int, optional): Filter by contacts updated in the last N days.
+        skip (int): Number of records to skip.
+        limit (int): Maximum number of records to return.
+    Returns:
+        list: List of Contact objects matching the filters.
+    """
+    import logging
+    from datetime import datetime, timedelta
+    from sqlalchemy import or_
+    
+    logger = logging.getLogger(__name__)
+    
+    # Start with a base query
+    query = db.query(Contact)
+    
+    # Apply search filter if provided
+    if search:
+        logger.info(f"Applying search filter: {search}")
+        # Since values are encrypted, we can't do a direct search
+        # Instead, we'll generate a deterministic ID for the search term
+        # and check if any contact IDs start with that pattern
+        # This is an approximation and won't catch all matches
+        
+        # For email searches
+        if '@' in search:
+            # This is likely an email search
+            search_id = generate_deterministic_id(search)
+            logger.info(f"Searching for email with deterministic ID starting with: {search_id[:10]}")
+            query = query.filter(
+                Contact.id.startswith(search_id[:10])
+            )
+        else:
+            # For phone searches or partial searches, we'll need to fetch all and filter in memory
+            # This is not ideal for large datasets but works for our current needs
+            logger.info("Using fallback search method for non-email or partial search")
+            # We'll fetch all and filter later in Python code
+            pass
+    
+    # Apply consent filter if provided
+    if consent:
+        logger.info(f"Applying consent filter: {consent}")
+        # We need to join with the Consent table to filter by consent status
+        from app.models.consent import Consent, ConsentStatusEnum
+        
+        if consent.lower() == 'opted_in':
+            query = query.join(Consent, Contact.id == Consent.user_id)
+            query = query.filter(Consent.status == ConsentStatusEnum.opt_in.value)
+        elif consent.lower() == 'opted_out':
+            query = query.join(Consent, Contact.id == Consent.user_id)
+            query = query.filter(Consent.status == ConsentStatusEnum.opt_out.value)
+    
+    # Apply time window filter if provided
+    if time_window:
+        logger.info(f"Applying time window filter: {time_window} days")
+        cutoff_date = datetime.utcnow() - timedelta(days=int(time_window))
+        # Handle NULL updated_at values - include them in results
+        from sqlalchemy import or_
+        query = query.filter(
+            or_(
+                Contact.updated_at >= cutoff_date,
+                Contact.updated_at == None
+            )
+        )
+        logger.info(f"Modified time window filter to include NULL updated_at values")
+    
+    # Apply pagination
+    query = query.offset(skip).limit(limit)
+    
+    # Log the SQL query for debugging
+    logger.info(f"SQL Query: {query}")
+    
+    # Execute query
+    results = query.all()
+    logger.info(f"Initial query returned {len(results)} results")
+    
+    # For non-email searches or partial searches, we need to do post-filtering
+    if search and '@' not in search:
+        # We need to decrypt and check each contact value
+        filtered_results = []
+        for contact in results:
+            try:
+                # Decrypt the contact value
+                decrypted_value = decrypt_pii(contact.encrypted_value)
+                
+                # Check if the search term is in the decrypted value
+                if search.lower() in decrypted_value.lower():
+                    filtered_results.append(contact)
+            except Exception as e:
+                logger.error(f"Error decrypting contact value: {str(e)}")
+        
+        logger.info(f"Post-filtering reduced results from {len(results)} to {len(filtered_results)}")
+        results = filtered_results
+    
+    logger.info(f"Found {len(results)} contacts matching filters")
+    return results
 
 def get_masked_contact_value(contact):
     """

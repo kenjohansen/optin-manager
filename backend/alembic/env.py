@@ -19,7 +19,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'app')))
 from app.core.database import Base
-import app.models.auth_user, app.models.optin, app.models.customization, app.models.message, app.models.message_template, app.models.user, app.models.verification_code, app.models.consent
+import app.models.auth_user, app.models.optin, app.models.customization, app.models.message, app.models.message_template, app.models.contact, app.models.verification_code, app.models.consent
 
 target_metadata = Base.metadata
 

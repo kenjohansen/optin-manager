@@ -1,7 +1,7 @@
 """
-schemas/user.py
+schemas/contact.py
 
-Pydantic schemas for the User entity in the OptIn Manager backend.
+Pydantic schemas for the Contact entity in the OptIn Manager backend.
 
 Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
 This file is part of the OptIn Manager project and is licensed under the MIT License.
@@ -12,7 +12,7 @@ from pydantic import BaseModel, EmailStr, ConfigDict, field_validator, Field
 from typing import Optional, Literal, Union
 from datetime import datetime
 from enum import Enum
-from app.models.user import ContactTypeEnum
+from app.models.contact import ContactTypeEnum
 
 class ContactBase(BaseModel):
     """
@@ -59,14 +59,30 @@ class ContactOut(BaseModel):
         status (str): Contact status.
         is_admin (bool): Whether the contact has admin privileges.
         is_staff (bool): Whether the contact has staff privileges.
+        consent (str): Consent status (Opted In/Opted Out).
+        email (str): Email address (will be masked in API responses).
+        phone (str): Phone number (will be masked in API responses).
     """
     id: str
     masked_value: str
     contact_type: str
     status: str
-    is_admin: bool
-    is_staff: bool
+    is_admin: bool = False
+    is_staff: bool = False
     created_at: Optional[Union[datetime, str]] = None
     updated_at: Optional[Union[datetime, str]] = None
     comment: Optional[str] = None
+    consent: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    
     model_config = ConfigDict(from_attributes=True)
+
+
+class ContactListResponse(BaseModel):
+    """
+    Schema for returning a list of contacts with pagination metadata.
+    Attributes:
+        contacts (List[ContactOut]): List of contact records.
+    """
+    contacts: list[ContactOut]

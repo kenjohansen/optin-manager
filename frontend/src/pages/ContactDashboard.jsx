@@ -25,7 +25,7 @@ export default function ContactDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [consent, setConsent] = useState('');
-  const [timeWindow, setTimeWindow] = useState('');
+  const [timeWindow, setTimeWindow] = useState('365'); // Default to 365 days to show more contacts
   // Added missing state for runtime errors
   const [prefDialogId, setPrefDialogId] = useState(null);
   const [optOutLoadingId, setOptOutLoadingId] = useState(null);
@@ -37,8 +37,14 @@ export default function ContactDashboard() {
     setError('');
     try {
       const data = await fetchContacts({ search, consent, timeWindow });
+      console.log('API Response:', data);
+      console.log('Contacts:', data.contacts);
+      if (data.contacts && data.contacts.length > 0) {
+        console.log('First contact:', data.contacts[0]);
+      }
       setContacts(data.contacts || []);
-    } catch {
+    } catch (error) {
+      console.error('Error fetching contacts:', error);
       setError('Failed to load contacts.');
     } finally {
       setLoading(false);
@@ -46,6 +52,7 @@ export default function ContactDashboard() {
   };
 
   useEffect(() => {
+    // Initial fetch with the default time window of 7 days
     fetchAndSetContacts();
     // eslint-disable-next-line
   }, []);
@@ -69,7 +76,7 @@ export default function ContactDashboard() {
       }}
     >
       <Paper elevation={3} sx={{ p: 3, maxWidth: 600, width: '100%', mx: 'auto', textAlign: 'center' }}>
-          <Typography variant="h5" mb={2}>Contact Dashboard</Typography>
+          <Typography variant="h5" mb={2}>Contacts Lookup</Typography>
         <Typography variant="caption" color="text.secondary" mb={2}>
           For compliance, all contact info is masked. No names or unmasked PII are ever shown.
         </Typography>
@@ -109,42 +116,70 @@ export default function ContactDashboard() {
         ) : error ? (
           <Alert severity="error">{error}</Alert>
         ) : (
-          <List>
-            {contacts.map(c => (
-              <div key={c.id}>
-                <ListItem>
-                  <ListItemText
-                    primary={c.email ? maskEmail(c.email) : maskPhone(c.phone)}
-                    secondary={`Consent: ${c.consent}`}
-                  />
-                  <Button variant="outlined" color="primary" size="small" sx={{ mr: 1 }} onClick={() => setPrefDialogId(c.id)}>Preferences</Button>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    size="small"
-                    disabled={optOutLoadingId === c.id}
-                    onClick={async () => {
-                      setOptOutLoadingId(c.id);
-                      setOptOutError('');
-                      setOptOutSuccess('');
-                      try {
-                        await optOutById(c.id);
-                        setContacts(contacts => contacts.map(contact => contact.id === c.id ? { ...contact, consent: 'Opted Out' } : contact));
-                        setOptOutSuccess('Contact opted out.');
-                      } catch {
-                        setOptOutError('Failed to opt out contact.');
-                      } finally {
-                        setOptOutLoadingId(null);
-                      }
-                    }}
-                  >
-                    {optOutLoadingId === c.id ? <CircularProgress size={18} /> : 'Opt-Out'}
-                  </Button>
-                </ListItem>
-                <Divider />
-              </div>
-            ))}
-          </List>
+          <Box sx={{ mt: 3, width: '100%' }}>
+            <Typography variant="h6" align="left" sx={{ mb: 1, borderBottom: '1px solid', borderColor: 'divider', pb: 1 }}>
+              Contact Results
+            </Typography>
+            
+            {contacts.length === 0 ? (
+              <Alert severity="info" sx={{ mt: 2 }}>
+                No contacts found matching your search criteria. Try adjusting your filters.
+              </Alert>
+            ) : (
+              <>
+                <Typography variant="body2" align="left" color="text.secondary" sx={{ mb: 1 }}>
+                  Showing {contacts.length} contact(s) from the last {timeWindow} days
+                </Typography>
+                <List sx={{ width: '100%', bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+                  {contacts.map(c => (
+                    <div key={c.id}>
+                      <ListItem>
+                        <ListItemText
+                          primary={c.email ? maskEmail(c.email) : maskPhone(c.phone)}
+                          secondary={
+                            <>
+                              <Typography component="span" variant="body2" color={c.consent === 'Opted Out' ? 'error.main' : 'success.main'}>
+                                {c.consent}
+                              </Typography>
+                              {c.last_updated && (
+                                <Typography component="span" variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+                                  • Updated: {new Date(c.last_updated).toLocaleDateString()}
+                                </Typography>
+                              )}
+                            </>
+                          }
+                        />
+                        <Button variant="outlined" color="primary" size="small" sx={{ mr: 1 }} onClick={() => setPrefDialogId(c.id)}>Preferences</Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size="small"
+                          disabled={optOutLoadingId === c.id || c.consent === 'Opted Out'}
+                          onClick={async () => {
+                            setOptOutLoadingId(c.id);
+                            setOptOutError('');
+                            setOptOutSuccess('');
+                            try {
+                              await optOutById(c.id);
+                              setContacts(contacts => contacts.map(contact => contact.id === c.id ? { ...contact, consent: 'Opted Out' } : contact));
+                              setOptOutSuccess('Contact opted out successfully.');
+                            } catch {
+                              setOptOutError('Failed to opt out contact.');
+                            } finally {
+                              setOptOutLoadingId(null);
+                            }
+                          }}
+                        >
+                          {optOutLoadingId === c.id ? <CircularProgress size={18} /> : 'Opt-Out'}
+                        </Button>
+                      </ListItem>
+                      <Divider />
+                    </div>
+                  ))}
+                </List>
+              </>
+            )}
+          </Box>
         )}
       </Paper>
     </Box>
