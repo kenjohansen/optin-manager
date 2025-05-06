@@ -252,14 +252,14 @@ const UserManagement = () => {
       <Paper elevation={3} sx={{ p: 3, width: '90%', mx: 'auto' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" component="h1">
-          User Management
+          Authorized User Management
         </Typography>
         <Button 
           variant="contained" 
           color="primary" 
           onClick={() => handleOpenDialog('create')}
         >
-          Add New User
+          Add New Authorized User
         </Button>
       </Box>
 
@@ -342,7 +342,7 @@ const UserManagement = () => {
       {/* Create/Edit User Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
         <DialogTitle>
-          {dialogMode === 'create' ? 'Create New User' : 'Edit User'}
+          {dialogMode === 'create' ? 'Create New Authorized User' : 'Edit Authorized User'}
         </DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
