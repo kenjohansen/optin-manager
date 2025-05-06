@@ -76,8 +76,10 @@ export const login = async ({ username, password }) => {
   return res.data;
 };
 
-export const fetchDashboardStats = async () => {
-  const res = await axios.get(`${API_BASE}/dashboard/stats`);
+export const fetchDashboardStats = async (days = 30) => {
+  const token = localStorage.getItem('access_token');
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const res = await axios.get(`${API_BASE}/dashboard/stats?days=${days}`, { headers });
   return res.data;
 };
 

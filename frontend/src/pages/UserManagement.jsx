@@ -237,7 +237,19 @@ const UserManagement = () => {
   }
 
   return (
-    <Box sx={{ width: '90vw', margin: 'auto', mt: 4 }}>
+    <Box
+      sx={{
+        minHeight: 'calc(100vh - 64px - 48px)',
+        bgcolor: 'background.default',
+        py: 4,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100vw',
+      }}
+    >
+      <Paper elevation={3} sx={{ p: 3, width: '90%', mx: 'auto' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" component="h1">
           User Management
@@ -415,6 +427,7 @@ const UserManagement = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+      </Paper>
     </Box>
   );
 };
