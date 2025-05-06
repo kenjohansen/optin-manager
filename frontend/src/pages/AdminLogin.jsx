@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Box, Button, TextField, Typography, Paper, Stack, CircularProgress, Alert } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Box, Button, TextField, Typography, Paper, Stack, CircularProgress, Alert, Link } from '@mui/material';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { login } from '../api';
 
 export default function AdminLogin() {
@@ -68,6 +68,11 @@ export default function AdminLogin() {
             <Button type="submit" variant="contained" color="primary" disabled={loading}>
               {loading ? <CircularProgress size={24} /> : 'Login'}
             </Button>
+            <Box sx={{ mt: 2, textAlign: 'right' }}>
+              <Link component={RouterLink} to="/forgot-password" variant="body2">
+                Forgot password?
+              </Link>
+            </Box>
           </Stack>
         </form>
       </Paper>

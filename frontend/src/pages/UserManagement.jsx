@@ -26,7 +26,10 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import LockResetIcon from '@mui/icons-material/LockReset';
+import axios from 'axios';
 import { isAdmin } from '../utils/auth';
+import { API_BASE } from '../api';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -38,6 +41,8 @@ const UserManagement = () => {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
+    name: '',
+    email: '',
     role: 'support', // Default role is support
     is_active: true
   });
@@ -58,7 +63,7 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/v1/auth_users', {
+      const response = await fetch(`${API_BASE}/auth_users/`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -85,6 +90,8 @@ const UserManagement = () => {
       setFormData({
         username: user.username,
         password: '', // Don't show password in edit mode
+        name: user.name || '',
+        email: user.email || '',
         role: user.role,
         is_active: user.is_active
       });
@@ -93,6 +100,8 @@ const UserManagement = () => {
       setFormData({
         username: '',
         password: '',
+        name: '',
+        email: '',
         role: 'support',
         is_active: true
       });
@@ -123,7 +132,7 @@ const UserManagement = () => {
       }
 
       if (dialogMode === 'create') {
-        response = await fetch('/api/v1/auth_users/', {
+        response = await fetch(`${API_BASE}/auth_users/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -132,7 +141,7 @@ const UserManagement = () => {
           body: JSON.stringify(payload)
         });
       } else {
-        response = await fetch(`/api/v1/auth_users/${currentUser.id}`, {
+        response = await fetch(`${API_BASE}/auth_users/${currentUser.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -160,7 +169,7 @@ const UserManagement = () => {
     }
 
     try {
-      const response = await fetch(`/api/v1/auth_users/${userId}`, {
+      const response = await fetch(`${API_BASE}/auth_users/${userId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -175,6 +184,29 @@ const UserManagement = () => {
       showSnackbar('User deleted successfully', 'success');
     } catch (err) {
       showSnackbar(err.message, 'error');
+    }
+  };
+  
+  const handleForcePasswordReset = async (user) => {
+    if (!window.confirm(`Are you sure you want to force a password reset for ${user.username}?`)) {
+      return;
+    }
+    
+    try {
+      const response = await axios.post(
+        `${API_BASE}/auth/reset-password`,
+        { username: user.username },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      showSnackbar(`Password reset initiated for ${user.username}. They will receive an email with instructions.`, 'success');
+    } catch (err) {
+      showSnackbar(err.response?.data?.detail || 'Failed to reset password', 'error');
     }
   };
 
@@ -229,6 +261,8 @@ const UserManagement = () => {
             <TableHead>
               <TableRow>
                 <TableCell>Username</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Email</TableCell>
                 <TableCell>Role</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Created At</TableCell>
@@ -238,12 +272,14 @@ const UserManagement = () => {
             <TableBody>
               {users.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} align="center">No users found</TableCell>
+                  <TableCell colSpan={7} align="center">No users found</TableCell>
                 </TableRow>
               ) : (
                 users.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell>{user.username}</TableCell>
+                    <TableCell>{user.name || '-'}</TableCell>
+                    <TableCell>{user.email || '-'}</TableCell>
                     <TableCell>
                       <Chip 
                         label={user.role} 
@@ -258,18 +294,27 @@ const UserManagement = () => {
                       />
                     </TableCell>
                     <TableCell>
-                      {new Date(user.created_at).toLocaleDateString()}
+                      {user.created_at ? new Date(user.created_at).toLocaleDateString() : '-'}
                     </TableCell>
                     <TableCell>
                       <IconButton 
                         color="primary" 
                         onClick={() => handleOpenDialog('edit', user)}
+                        title="Edit User"
                       >
                         <EditIcon />
                       </IconButton>
                       <IconButton 
+                        color="secondary" 
+                        onClick={() => handleForcePasswordReset(user)}
+                        title="Force Password Reset"
+                      >
+                        <LockResetIcon />
+                      </IconButton>
+                      <IconButton 
                         color="error" 
                         onClick={() => handleDeleteUser(user.id)}
+                        title="Delete User"
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -307,6 +352,23 @@ const UserManagement = () => {
               fullWidth
               required={dialogMode === 'create'} // Password is required only in create mode
               helperText={dialogMode === 'edit' ? 'Leave blank to keep current password' : ''}
+            />
+            <TextField
+              label="Full Name"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              fullWidth
+              placeholder="John Doe"
+            />
+            <TextField
+              label="Email Address"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              fullWidth
+              placeholder="john.doe@example.com"
             />
             <FormControl fullWidth>
               <InputLabel>Role</InputLabel>

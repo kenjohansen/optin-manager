@@ -140,6 +140,7 @@ def auto_run_alembic_upgrade():
     import os
     import sys
     import subprocess
+    import json
     db_url = str(engine.url)
     # Only run for SQLite/Postgres, not in-memory/test
     if db_url.startswith("sqlite") or db_url.startswith("postgresql"):
@@ -150,8 +151,42 @@ def auto_run_alembic_upgrade():
             inspector = inspect(engine)
             tables = inspector.get_table_names()
             
+            # Backup customization data if it exists
+            customization_data = None
+            if 'customization' in tables:
+                from app.core.database import SessionLocal
+                from app.models.customization import Customization
+                from sqlalchemy.orm import Session
+                
+                db: Session = SessionLocal()
+                try:
+                    customization = db.query(Customization).first()
+                    if customization:
+                        print("[STARTUP] Backing up customization data before migrations")
+                        customization_data = {
+                            "logo_path": customization.logo_path,
+                            "primary_color": customization.primary_color,
+                            "secondary_color": customization.secondary_color,
+                            "company_name": customization.company_name,
+                            "privacy_policy_url": customization.privacy_policy_url,
+                            "email_provider": customization.email_provider,
+                            "sms_provider": customization.sms_provider,
+                            "email_connection_status": customization.email_connection_status,
+                            "sms_connection_status": customization.sms_connection_status
+                        }
+                        # Save backup to file
+                        backup_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "customization_backup.json")
+                        with open(backup_path, 'w') as f:
+                            json.dump(customization_data, f)
+                        print(f"[STARTUP] Customization data backed up to {backup_path}")
+                finally:
+                    db.close()
+            
             if 'consents' in tables:
                 print("[STARTUP] Consents table already exists, skipping migrations.")
+                # Restore customization data if we have a backup
+                if customization_data:
+                    restore_customization(customization_data)
                 return
                 
             # Try to run migrations, but don't fail if they don't work
@@ -161,13 +196,57 @@ def auto_run_alembic_upgrade():
             
             if result.returncode == 0:
                 print("[STARTUP] Alembic migrations complete.")
+                # Restore customization data if we have a backup
+                if customization_data:
+                    restore_customization(customization_data)
             else:
                 print(f"[STARTUP][WARNING] Alembic migrations had issues, but continuing anyway.")
+                # Try to restore customization data anyway
+                if customization_data:
+                    restore_customization(customization_data)
         except Exception as e:
             print(f"[STARTUP][WARNING] Alembic migration error: {e}")
             print("[STARTUP] Continuing without migrations...")
+            # Try to restore from backup file if it exists
+            try:
+                backup_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "customization_backup.json")
+                if os.path.exists(backup_path):
+                    with open(backup_path, 'r') as f:
+                        customization_data = json.load(f)
+                    restore_customization(customization_data)
+            except Exception as restore_error:
+                print(f"[STARTUP][WARNING] Failed to restore customization data: {restore_error}")
     else:
         print("[STARTUP] Skipping Alembic migrations: unsupported DB URL.")
+
+def restore_customization(customization_data):
+    """Restore customization data from backup"""
+    try:
+        from app.core.database import SessionLocal
+        from app.models.customization import Customization
+        from sqlalchemy.orm import Session
+        
+        print("[STARTUP] Restoring customization data from backup")
+        db: Session = SessionLocal()
+        try:
+            customization = db.query(Customization).first()
+            if not customization:
+                customization = Customization()
+                db.add(customization)
+            
+            # Restore all fields
+            for key, value in customization_data.items():
+                if hasattr(customization, key):
+                    setattr(customization, key, value)
+            
+            db.commit()
+            print("[STARTUP] Customization data restored successfully")
+        finally:
+            db.close()
+    except Exception as e:
+        print(f"[STARTUP][WARNING] Error restoring customization data: {e}")
+        print("[STARTUP] Continuing without restoring customization...")
+
 
 # Run Alembic migrations before anything else
 auto_run_alembic_upgrade()

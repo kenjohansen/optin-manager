@@ -11,6 +11,9 @@ import ContactOptOut from './pages/ContactOptOut';
 import OptInSetup from './pages/OptInSetup';
 import ContactDashboard from './pages/ContactDashboard';
 import UserManagement from './pages/UserManagement';
+import VerbalOptIn from './pages/VerbalOptIn';
+import ForgotPassword from './pages/ForgotPassword';
+import ChangePassword from './pages/ChangePassword';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const navLinks = [
@@ -20,7 +23,7 @@ const navLinks = [
   { label: 'Contacts', path: '/contacts' },
   { label: 'Verbal Opt-in', path: '/verbal-optin' },
   { label: 'Users', path: '/users', adminOnly: true },
-  { label: 'Preferences', path: '/preferences', always: true },
+  { label: 'Preferences', path: '/preferences' },
   { label: 'Login', path: '/login' },
 ];
 
@@ -99,12 +102,14 @@ function App() {
           <Box sx={{ width: '100%' }}>
             <Routes>
               <Route path="/login" element={<AdminLogin />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
               {/* Redirect /optout to /preferences for backward compatibility */}
               <Route path="/optout" element={<Navigate to="/preferences" replace />} />
               {/* Preferences page is accessible to everyone */}
               <Route path="/preferences" element={<ContactOptOut mode="preferences" />} />
               {/* Verbal Opt-in is only for authenticated users */}
-              <Route path="/verbal-optin" element={<ProtectedRoute><ContactOptOut mode="verbal" /></ProtectedRoute>} />
+              <Route path="/verbal-optin" element={<ProtectedRoute><VerbalOptIn /></ProtectedRoute>} />
               <Route path="/optins" element={<ProtectedRoute><OptInSetup /></ProtectedRoute>} />
               <Route path="/customization" element={<ProtectedRoute><Customization setLogoUrl={setLogoUrl} setPrimary={setPrimary} setSecondary={setSecondary} setCompanyName={setCompanyName} setPrivacyPolicy={setPrivacyPolicy} /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

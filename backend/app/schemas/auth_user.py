@@ -10,6 +10,8 @@ import uuid
 
 class AuthUserBase(BaseModel):
     username: str
+    name: Optional[str] = None
+    email: Optional[str] = None
     role: str = "staff"
     is_active: bool = True
 
@@ -18,8 +20,11 @@ class AuthUserCreate(AuthUserBase):
 
 class AuthUserUpdate(BaseModel):
     password: Optional[str] = None
+    name: Optional[str] = None
+    email: Optional[str] = None
     role: Optional[str] = None
     is_active: Optional[bool] = None
 
 class AuthUserOut(AuthUserBase):
-    id: uuid.UUID
+    id: str
+    created_at: Optional[str] = None

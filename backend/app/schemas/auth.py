@@ -1,7 +1,7 @@
 """
 Pydantic schemas for authentication and token handling.
 """
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 
 class Token(BaseModel):
@@ -12,3 +12,10 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: Optional[str] = None
     scope: Optional[str] = None
+
+class PasswordResetRequest(BaseModel):
+    username: str
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str

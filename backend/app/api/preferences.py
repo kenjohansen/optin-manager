@@ -212,8 +212,9 @@ def send_code(payload: dict = Body(...), db: Session = Depends(get_db)):
             logger.info("Determining template based on purpose")
             purpose = payload.get("purpose", "self_service")
             auth_user_name = payload.get("auth_user_name")
+            auth_user_email = payload.get("auth_user_email")
             channel = "email" if "@" in contact_val else "SMS"
-            logger.info(f"Template parameters: purpose={purpose}, auth_user_name={auth_user_name}, channel={channel}")
+            logger.info(f"Template parameters: purpose={purpose}, auth_user_name={auth_user_name}, auth_user_email={auth_user_email}, channel={channel}")
             
             # Get or construct the preferences URL
             logger.info("Getting preferences URL")
@@ -230,10 +231,21 @@ def send_code(payload: dict = Body(...), db: Session = Depends(get_db)):
             # Create appropriate email/SMS template based on purpose
             logger.info("Creating email/SMS template")
             url = preferences_url
-            if purpose == "verbal_auth" and auth_user_name:
+            
+            # Check if a custom message was provided (for password reset, etc.)
+            custom_message = payload.get("custom_message")
+            if custom_message:
+                # Use the custom message directly
+                subject = f"Important Message from {company_name}"
+                body = custom_message
+            elif purpose == "verbal_auth" and auth_user_name:
                 # Verbal Auth template (Double Opt-In)
                 subject = f"Your {company_name} Preferences Verification Code"
-                body = f"""Hello from {company_name} Compliant Optin Manager!\n\n{auth_user_name} has submitted your verbal authorization to opt in to receive notifications from our products and services.\n\nIf you wish to update or confirm your preferences, please visit this site and enter this code.\n\n{url}\nCode: {code}\n\nThanks!\n\nThe Compliance team at {company_name}"""
+                auth_contact_info = f"{auth_user_name}"
+                if auth_user_email:
+                    auth_contact_info += f" ({auth_user_email})"
+                
+                body = f"""Hello from {company_name} Compliant Optin Manager!\n\n{auth_contact_info} has submitted your verbal authorization to opt in to receive notifications from our products and services.\n\nIf you wish to update or confirm your preferences, please visit this site and enter this code.\n\n{url}\nCode: {code}\n\nThanks!\n\nThe Compliance team at {company_name}"""
             else:
                 # Self-service template
                 subject = f"Your {company_name} Preferences Verification Code"

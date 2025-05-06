@@ -4,11 +4,19 @@ API endpoints for authentication and code verification.
 from fastapi import APIRouter, Depends, HTTPException, status, Body
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from app.core.auth import verify_password, get_password_hash, create_access_token, oauth2_scheme
-from app.schemas.auth import Token
+from app.core.auth import verify_password, get_password_hash, create_access_token, oauth2_scheme, get_current_user
+from app.schemas.auth import Token, PasswordResetRequest, ChangePasswordRequest
+from app.schemas.auth_user import AuthUserUpdate
 from app.core.config import settings
 from app.core.database import get_db
 import uuid
+import os
+from pydantic import EmailStr
+from typing import Optional
+from app.api.preferences import send_code
+from app.crud import auth_user as crud_auth_user
+import secrets
+import string
 
 router = APIRouter(tags=["auth"])
 
@@ -38,6 +46,89 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     access_token = create_access_token(data={"sub": user.username, "scope": user.role})
     return Token(access_token=access_token, token_type="bearer", expires_in=3600)
+
+@router.post("/reset-password")
+async def reset_password(request: PasswordResetRequest, db: Session = Depends(get_db)):
+    """Request a password reset for an authenticated user."""
+    # Find the user by username
+    user = crud_auth_user.get_auth_user_by_username(db, request.username)
+    
+    # For security reasons, always return a success response even if user doesn't exist
+    # This prevents username enumeration attacks
+    if not user or not user.email:
+        return {"message": "If the account exists, a password reset email has been sent."}
+    
+    # Generate a random reset token
+    alphabet = string.ascii_letters + string.digits
+    reset_token = ''.join(secrets.choice(alphabet) for _ in range(8))
+    
+    # Generate a temporary password
+    temp_password = ''.join(secrets.choice(alphabet) for _ in range(12))
+    
+    # Hash the new temporary password
+    hashed_password = get_password_hash(temp_password)
+    
+    # Update the user's password in the database
+    user_update = AuthUserUpdate(password=temp_password)
+    crud_auth_user.update_auth_user(db, user, user_update)
+    
+    # Send the reset email with the temporary password
+    # Use the contact's email address and the verification code system
+    try:
+        # Get the frontend URL from environment or use default
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+        login_url = f"{frontend_url}/login"
+        
+        # Format the email message
+        message = f"You requested a password reset for your OptIn Manager account.\n\n"
+        message += f"Your temporary password is: {temp_password}\n\n"
+        message += f"Please log in at: {login_url}\n\n"
+        message += f"Use this temporary password and change it immediately after logging in.\n\n"
+        message += f"If you did not request this password reset, please contact your administrator."
+        
+        # Send the email
+        # Note: We're using the preferences.send_code function but with a custom message
+        # This assumes the user has an email address stored in their profile
+        send_code(
+            db=db,
+            payload={
+                "contact": user.email,  # Changed from contact_value to contact
+                "contact_type": "email",
+                "code": temp_password,  # Using the temp password as the "code"
+                "purpose": "password_reset",
+                "preferences_url": "",  # No URL needed
+                "custom_message": message,
+                "auth_user_name": "System"
+            }
+        )
+    except Exception as e:
+        # Log the error but don't expose details to the client
+        print(f"Error sending password reset email: {str(e)}")
+    
+    # Always return the same message regardless of success or failure
+    # This prevents username enumeration attacks
+    return {"message": "If the account exists, a password reset email has been sent."}
+
+@router.post("/change-password")
+async def change_password(
+    request: ChangePasswordRequest,
+    current_user: AuthUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Change password for the authenticated user."""
+    # Verify current password
+    if not verify_password(request.current_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    
+    # Validate new password
+    if len(request.new_password) < 8:
+        raise HTTPException(status_code=400, detail="New password must be at least 8 characters long")
+    
+    # Update password
+    user_update = AuthUserUpdate(password=request.new_password)
+    crud_auth_user.update_auth_user(db, current_user, user_update)
+    
+    return {"message": "Password changed successfully"}
 
 @router.post("/verify_code", response_model=Token)
 def verify_code(

@@ -1,0 +1,1 @@
+{"logo_path": "logo.png", "primary_color": "#2954d6", "secondary_color": "#10cb26", "company_name": "Link Labs, Inc.", "privacy_policy_url": "https://www.link-labs.com/privacy-policy", "email_provider": "aws_ses", "sms_provider": "aws_sns", "email_connection_status": "tested", "sms_connection_status": "tested"}

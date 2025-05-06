@@ -16,9 +16,13 @@ class AuthUserRoleEnum(str, Enum):
 
 class AuthUser(Base):
     __tablename__ = "auth_users"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    # Use String type for ID to be compatible with both UUID and integer formats
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     username = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
+    # Add name and email fields
+    name = Column(String, nullable=True)  # Full name of the user
+    email = Column(String, nullable=True)  # Email address for contact
     role = Column(String, default=AuthUserRoleEnum.staff)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
