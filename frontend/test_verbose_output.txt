@@ -1,0 +1,1544 @@
+
+> frontend@0.0.0 test
+> jest --verbose
+
+  console.log
+    Fetched customization: {
+      logo_url: '/media/logo.png',
+      primary: '#123456',
+      secondary: '#654321',
+      company_name: 'Test Company'
+    }
+
+      at Object.log [as fetchCustomization] (src/api.js:51:13)
+
+  console.log
+    Fetched customization: {
+      logo_url: '/media/logo.png',
+      primary: '#123456',
+      secondary: '#654321',
+      company_name: 'Test Company'
+    }
+
+      at Object.log [as fetchCustomization] (src/api.js:51:13)
+
+  console.error
+    Error fetching customization: Network error
+
+      63 |     return res.data;
+      64 |   } catch (error) {
+    > 65 |     console.error('Error fetching customization:', error.response?.data || error.message);
+         |             ^
+      66 |     // Return empty object instead of throwing to prevent UI errors
+      67 |     return {};
+      68 |   }
+
+      at Object.error [as fetchCustomization] (src/api.js:65:13)
+      at Object.<anonymous> (src/api.test.js:120:22)
+
+  console.log
+    Sending verification code with params: {
+      contactValue: 'user@example.com',
+      contactType: 'email',
+      purposeValue: 'self_service',
+      authUserName: undefined
+    }
+
+      at Object.log [as sendVerificationCode] (src/api.js:260:11)
+
+  console.log
+    Sending verification code with params: {
+      contactValue: '+15551234567',
+      contactType: 'phone',
+      purposeValue: 'self_service',
+      authUserName: undefined
+    }
+
+      at Object.log [as sendVerificationCode] (src/api.js:260:11)
+
+  console.log
+    Sending verification code with params: {
+      contactValue: 'nonexistent@example.com',
+      contactType: 'email',
+      purposeValue: 'self_service',
+      authUserName: undefined
+    }
+
+      at Object.log [as sendVerificationCode] (src/api.js:260:11)
+
+PASS src/components/ProtectedRoute.test.jsx
+  ProtectedRoute Component
+    ✓ redirects to login page when user is not authenticated (71 ms)
+    ✓ renders children when user is authenticated (10 ms)
+
+PASS src/api.test.js
+  API Utilities
+    fetchCustomization
+      ✓ should fetch customization settings with auth token when available (79 ms)
+      ✓ should fetch customization settings without auth token when not available (5 ms)
+      ✓ should handle errors gracefully (10 ms)
+    login
+      ✓ should authenticate user and store token on successful login (4 ms)
+      ✓ should handle login errors (2 ms)
+    sendVerificationCode
+      ✓ should send verification code to email (15 ms)
+      ✓ should send verification code to phone (5 ms)
+      ✓ should handle errors when sending verification code (5 ms)
+    verifyCode
+      ✓ should verify code and return token (2 ms)
+      ✓ should handle invalid verification code (2 ms)
+    fetchOptIns
+      ✓ should fetch opt-in programs with auth token (5 ms)
+      ✓ should handle errors when fetching opt-ins (114 ms)
+
+PASS src/App.test.jsx
+  App Component
+    ✓ renders OptIn Manager header and footer (75 ms)
+    ✓ fetches customization on initial load (31 ms)
+    ✓ renders the app with header and footer (11 ms)
+    ✓ shows login component (8 ms)
+    ✓ calls fetchCustomization on load (12 ms)
+
+PASS src/utils/auth.test.js
+  Auth Utilities
+    parseJwt
+      ✓ should parse a valid JWT token (4 ms)
+      ✓ should return null for an invalid token (2 ms)
+      ✓ should return null for no token (1 ms)
+    getRoleFromToken
+      ✓ should extract admin role from token (1 ms)
+      ✓ should extract support role from token (1 ms)
+      ✓ should return null for invalid token (2 ms)
+      ✓ should return null for no token (1 ms)
+    isAdmin
+      ✓ should return true for admin token (1 ms)
+      ✓ should return false for support token (1 ms)
+      ✓ should return false for invalid token (1 ms)
+      ✓ should return false for no token (1 ms)
+    isSupport
+      ✓ should return true for support token (1 ms)
+      ✓ should return false for admin token (1 ms)
+      ✓ should return false for invalid token (1 ms)
+      ✓ should return false for no token (1 ms)
+    isAuthenticated
+      ✓ should return true for valid admin token (2 ms)
+      ✓ should return true for valid support token (1 ms)
+      ✓ should return false for expired token
+      ✓ should return false for invalid token
+      ✓ should return false for no token (1 ms)
+
+PASS src/utils/phoneUtils.test.js
+  Phone Utilities
+    formatPhoneToE164
+      ✓ should format a 10-digit US number correctly (4 ms)
+      ✓ should handle numbers with country code (1 ms)
+      ✓ should handle numbers with country code but no plus sign (1 ms)
+      ✓ should add US country code to partial numbers (1 ms)
+      ✓ should handle empty or null input (6 ms)
+      ✓ should strip non-digit characters (1 ms)
+    isValidPhoneNumber
+      ✓ should validate proper phone numbers (5 ms)
+      ✓ should validate international numbers (1 ms)
+      ✓ should reject numbers that are too short (2 ms)
+      ✓ should handle empty or null input (3 ms)
+      ✓ should validate numbers with non-digit characters (2 ms)
+
+  console.log
+    PreferencesDashboard received: {
+      masked: 't***@example.com',
+      token: 'mock-token',
+      preferences: {
+        contact: { value: 'test@example.com', type: 'email' },
+        programs: [ [Object], [Object] ],
+        last_comment: 'Previous update reason'
+      }
+    }
+
+      at log (src/pages/PreferencesDashboard.jsx:44:11)
+
+  console.log
+    Programs from backend: [
+      {
+        id: 1,
+        name: 'Marketing',
+        type: 'email',
+        opted_in: true,
+        last_updated: '2025-01-01T00:00:00Z'
+      },
+      {
+        id: 2,
+        name: 'Promotions',
+        type: 'sms',
+        opted_in: false,
+        last_updated: '2025-01-02T00:00:00Z'
+      }
+    ]
+
+      at log (src/pages/PreferencesDashboard.jsx:59:13)
+
+  console.log
+    Program Marketing (ID: 1): opted_in=true
+
+      at log (src/pages/PreferencesDashboard.jsx:61:15)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    Program Promotions (ID: 2): opted_in=false
+
+      at log (src/pages/PreferencesDashboard.jsx:61:15)
+          at Array.forEach (<anonymous>)
+
+  console.error
+    An update to UserManagement inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      116 |       
+      117 |       const data = await response.json();
+    > 118 |       setUsers(data);
+          |       ^
+      119 |       setLoading(false);
+      120 |     } catch (err) {
+      121 |       setError(err.message);
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setUsers (src/pages/UserManagement.jsx:118:7)
+
+  console.error
+    An update to UserManagement inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      117 |       const data = await response.json();
+      118 |       setUsers(data);
+    > 119 |       setLoading(false);
+          |       ^
+      120 |     } catch (err) {
+      121 |       setError(err.message);
+      122 |       setLoading(false);
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setLoading (src/pages/UserManagement.jsx:119:7)
+
+  console.error
+    An update to UserManagement inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      116 |       
+      117 |       const data = await response.json();
+    > 118 |       setUsers(data);
+          |       ^
+      119 |       setLoading(false);
+      120 |     } catch (err) {
+      121 |       setError(err.message);
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setUsers (src/pages/UserManagement.jsx:118:7)
+
+  console.error
+    An update to UserManagement inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      117 |       const data = await response.json();
+      118 |       setUsers(data);
+    > 119 |       setLoading(false);
+          |       ^
+      120 |     } catch (err) {
+      121 |       setError(err.message);
+      122 |       setLoading(false);
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setLoading (src/pages/UserManagement.jsx:119:7)
+
+PASS src/pages/UserManagement.test.jsx
+  UserManagement Component
+    ✓ renders access denied message for non-admin users (176 ms)
+    ✓ renders user management interface for admin users (58 ms)
+
+PASS src/pages/Customization.test.jsx
+  Customization Component
+    ✓ handles authentication errors (386 ms)
+
+  console.log
+    PreferencesDashboard received: {
+      masked: 't***@example.com',
+      token: 'mock-token',
+      preferences: {
+        contact: { value: 'test@example.com', type: 'email' },
+        programs: [],
+        last_comment: 'Previous update reason'
+      }
+    }
+
+      at log (src/pages/PreferencesDashboard.jsx:44:11)
+
+  console.log
+    Programs from backend: []
+
+      at log (src/pages/PreferencesDashboard.jsx:59:13)
+
+PASS src/components/AppHeader.test.jsx
+  AppHeader Component
+    ✓ renders with logo when provided (221 ms)
+    ✓ renders app title (28 ms)
+    ✓ shows theme toggle button (69 ms)
+    ✓ shows login link when user is not authenticated (20 ms)
+    ✓ shows user menu when user is authenticated (25 ms)
+    ✓ handles logout when user is authenticated (44 ms)
+    ✓ filters navigation links based on authentication status (27 ms)
+
+PASS src/pages/PreferencesDashboard.test.jsx
+  PreferencesDashboard Component
+    ✓ renders the preferences dashboard with programs (564 ms)
+    ✓ renders info alert when no programs are available (26 ms)
+
+  console.error
+    Error fetching contacts: Error: Failed to load contacts
+        at Object.<anonymous> (/home/johnj/CascadeProjects/optin-manager/frontend/src/pages/ContactDashboard.test.jsx:105:41)
+        at Promise.then.completed (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/utils.js:298:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/utils.js:231:10)
+        at _callCircusTest (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:316:40)
+        at processTicksAndRejections (node:internal/process/task_queues:95:5)
+        at _runTest (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:252:3)
+        at _runTestsForDescribeBlock (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:126:9)
+        at _runTestsForDescribeBlock (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:121:9)
+        at run (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:71:3)
+        at runAndTransformResultsToJestFormat (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+        at jestAdapter (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+        at runTestInternal (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-runner/build/runTest.js:367:16)
+        at runTest (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-runner/build/runTest.js:444:34)
+        at Object.worker (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-runner/build/testWorker.js:106:12)
+
+      118 |       setContacts(data.contacts || []);
+      119 |     } catch (error) {
+    > 120 |       console.error('Error fetching contacts:', error);
+          |               ^
+      121 |       setError('Failed to load contacts.');
+      122 |     } finally {
+      123 |       setLoading(false);
+
+      at error (src/pages/ContactDashboard.jsx:120:15)
+
+  console.log
+    API Response: {
+      contacts: [
+        {
+          id: '1',
+          contact_type: 'email',
+          email: 'john.doe@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-01T10:30:00Z'
+        },
+        {
+          id: '2',
+          contact_type: 'phone',
+          email: null,
+          phone: '+15551234567',
+          masked_value: '+1*********67',
+          consent: 'Opted Out',
+          last_updated: '2025-04-02T14:45:00Z'
+        },
+        {
+          id: '3',
+          contact_type: 'email',
+          email: 'jane.smith@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-03T09:15:00Z'
+        }
+      ]
+    }
+
+      at log (src/pages/ContactDashboard.jsx:113:15)
+
+  console.log
+    Contacts: [
+      {
+        id: '1',
+        contact_type: 'email',
+        email: 'john.doe@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-01T10:30:00Z'
+      },
+      {
+        id: '2',
+        contact_type: 'phone',
+        email: null,
+        phone: '+15551234567',
+        masked_value: '+1*********67',
+        consent: 'Opted Out',
+        last_updated: '2025-04-02T14:45:00Z'
+      },
+      {
+        id: '3',
+        contact_type: 'email',
+        email: 'jane.smith@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-03T09:15:00Z'
+      }
+    ]
+
+      at log (src/pages/ContactDashboard.jsx:114:15)
+
+  console.log
+    First contact: {
+      id: '1',
+      contact_type: 'email',
+      email: 'john.doe@example.com',
+      phone: null,
+      masked_value: 'j***@example.com',
+      consent: 'Opted In',
+      last_updated: '2025-04-01T10:30:00Z'
+    }
+
+      at log (src/pages/ContactDashboard.jsx:116:17)
+
+  console.error
+    Dashboard error: Error: Failed to load data
+        at Object.<anonymous> (/home/johnj/CascadeProjects/optin-manager/frontend/src/pages/Dashboard.test.jsx:153:47)
+        at Promise.then.completed (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/utils.js:298:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/utils.js:231:10)
+        at _callCircusTest (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:316:40)
+        at processTicksAndRejections (node:internal/process/task_queues:95:5)
+        at _runTest (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:252:3)
+        at _runTestsForDescribeBlock (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:126:9)
+        at _runTestsForDescribeBlock (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:121:9)
+        at run (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:71:3)
+        at runAndTransformResultsToJestFormat (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+        at jestAdapter (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+        at runTestInternal (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-runner/build/runTest.js:367:16)
+        at runTest (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-runner/build/runTest.js:444:34)
+        at Object.worker (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-runner/build/testWorker.js:106:12)
+
+      178 |       })
+      179 |       .catch((err) => {
+    > 180 |         console.error('Dashboard error:', err);
+          |                 ^
+      181 |         setError('Failed to load dashboard stats.');
+      182 |         setLoading(false);
+      183 |       });
+
+      at error (src/pages/Dashboard.jsx:180:17)
+
+  console.log
+    API Response: {
+      contacts: [
+        {
+          id: '1',
+          contact_type: 'email',
+          email: 'john.doe@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-01T10:30:00Z'
+        },
+        {
+          id: '2',
+          contact_type: 'phone',
+          email: null,
+          phone: '+15551234567',
+          masked_value: '+1*********67',
+          consent: 'Opted Out',
+          last_updated: '2025-04-02T14:45:00Z'
+        },
+        {
+          id: '3',
+          contact_type: 'email',
+          email: 'jane.smith@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-03T09:15:00Z'
+        }
+      ]
+    }
+
+      at log (src/pages/ContactDashboard.jsx:113:15)
+
+  console.log
+    Contacts: [
+      {
+        id: '1',
+        contact_type: 'email',
+        email: 'john.doe@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-01T10:30:00Z'
+      },
+      {
+        id: '2',
+        contact_type: 'phone',
+        email: null,
+        phone: '+15551234567',
+        masked_value: '+1*********67',
+        consent: 'Opted Out',
+        last_updated: '2025-04-02T14:45:00Z'
+      },
+      {
+        id: '3',
+        contact_type: 'email',
+        email: 'jane.smith@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-03T09:15:00Z'
+      }
+    ]
+
+      at log (src/pages/ContactDashboard.jsx:114:15)
+
+  console.log
+    First contact: {
+      id: '1',
+      contact_type: 'email',
+      email: 'john.doe@example.com',
+      phone: null,
+      masked_value: 'j***@example.com',
+      consent: 'Opted In',
+      last_updated: '2025-04-01T10:30:00Z'
+    }
+
+      at log (src/pages/ContactDashboard.jsx:116:17)
+
+  console.error
+    Password reset error: { response: { data: { detail: 'User not found' } } }
+
+      22 |       setSuccess(true);
+      23 |     } catch (err) {
+    > 24 |       console.error('Password reset error:', err);
+         |               ^
+      25 |       setError(err.response?.data?.detail || 'An error occurred. Please try again.');
+      26 |     } finally {
+      27 |       setLoading(false);
+
+      at error (src/pages/ForgotPassword.jsx:24:15)
+
+  console.warn
+    MUI Grid: The `item` prop has been removed and is no longer necessary. You can safely remove it.
+
+      at node_modules/@mui/system/Grid/deleteLegacyGridProps.js:43:17
+          at Array.forEach (<anonymous>)
+      at deleteLegacyGridProps (node_modules/@mui/system/Grid/deleteLegacyGridProps.js:40:17)
+      at Grid (node_modules/@mui/system/Grid/createGrid.js:90:40)
+      at Object.react-stack-bottom-frame (node_modules/react-dom/cjs/react-dom-client.development.js:23863:20)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom-client.development.js:5529:22)
+      at updateForwardRef (node_modules/react-dom/cjs/react-dom-client.development.js:8645:19)
+      at beginWork (node_modules/react-dom/cjs/react-dom-client.development.js:10861:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:15140:22)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:14956:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:14936:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:14419:13)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:16216:7)
+      at performWorkUntilDeadline (node_modules/scheduler/cjs/scheduler.development.js:45:48)
+      at Timeout.task [as _onTimeout] (node_modules/jsdom/lib/jsdom/browser/Window.js:520:19)
+
+  console.warn
+    MUI Grid: The `xs` prop has been removed. See https://mui.com/material-ui/migration/upgrade-to-grid-v2/ for migration instructions.
+
+      at node_modules/@mui/system/Grid/deleteLegacyGridProps.js:43:17
+          at Array.forEach (<anonymous>)
+      at deleteLegacyGridProps (node_modules/@mui/system/Grid/deleteLegacyGridProps.js:40:17)
+      at Grid (node_modules/@mui/system/Grid/createGrid.js:90:40)
+      at Object.react-stack-bottom-frame (node_modules/react-dom/cjs/react-dom-client.development.js:23863:20)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom-client.development.js:5529:22)
+      at updateForwardRef (node_modules/react-dom/cjs/react-dom-client.development.js:8645:19)
+      at beginWork (node_modules/react-dom/cjs/react-dom-client.development.js:10861:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:15140:22)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:14956:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:14936:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:14419:13)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:16216:7)
+      at performWorkUntilDeadline (node_modules/scheduler/cjs/scheduler.development.js:45:48)
+      at Timeout.task [as _onTimeout] (node_modules/jsdom/lib/jsdom/browser/Window.js:520:19)
+
+  console.warn
+    MUI Grid: The `sm` prop has been removed. See https://mui.com/material-ui/migration/upgrade-to-grid-v2/ for migration instructions.
+
+      at node_modules/@mui/system/Grid/deleteLegacyGridProps.js:43:17
+          at Array.forEach (<anonymous>)
+      at deleteLegacyGridProps (node_modules/@mui/system/Grid/deleteLegacyGridProps.js:40:17)
+      at Grid (node_modules/@mui/system/Grid/createGrid.js:90:40)
+      at Object.react-stack-bottom-frame (node_modules/react-dom/cjs/react-dom-client.development.js:23863:20)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom-client.development.js:5529:22)
+      at updateForwardRef (node_modules/react-dom/cjs/react-dom-client.development.js:8645:19)
+      at beginWork (node_modules/react-dom/cjs/react-dom-client.development.js:10861:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:15140:22)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:14956:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:14936:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:14419:13)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:16216:7)
+      at performWorkUntilDeadline (node_modules/scheduler/cjs/scheduler.development.js:45:48)
+      at Timeout.task [as _onTimeout] (node_modules/jsdom/lib/jsdom/browser/Window.js:520:19)
+
+  console.warn
+    MUI Grid: The `md` prop has been removed. See https://mui.com/material-ui/migration/upgrade-to-grid-v2/ for migration instructions.
+
+      at node_modules/@mui/system/Grid/deleteLegacyGridProps.js:43:17
+          at Array.forEach (<anonymous>)
+      at deleteLegacyGridProps (node_modules/@mui/system/Grid/deleteLegacyGridProps.js:40:17)
+      at Grid (node_modules/@mui/system/Grid/createGrid.js:90:40)
+      at Object.react-stack-bottom-frame (node_modules/react-dom/cjs/react-dom-client.development.js:23863:20)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom-client.development.js:5529:22)
+      at updateForwardRef (node_modules/react-dom/cjs/react-dom-client.development.js:8645:19)
+      at beginWork (node_modules/react-dom/cjs/react-dom-client.development.js:10861:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:15140:22)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:14956:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:14936:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:14419:13)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:16216:7)
+      at performWorkUntilDeadline (node_modules/scheduler/cjs/scheduler.development.js:45:48)
+      at Timeout.task [as _onTimeout] (node_modules/jsdom/lib/jsdom/browser/Window.js:520:19)
+
+FAIL src/pages/ContactOptOut.test.jsx
+  ContactOptOut Component
+    Utility Functions
+      ✓ maskEmail should properly mask email addresses (9 ms)
+      ✓ maskPhone should properly mask phone numbers (2 ms)
+    Rendering
+      ✓ renders the component in preferences mode (138 ms)
+      ✓ redirects to login if not authenticated in verbal mode (37 ms)
+    URL Parameter Handling
+      ✓ loads contact from URL parameters (42 ms)
+      ✓ loads email from URL parameters (32 ms)
+      ✓ loads phone from URL parameters (42 ms)
+    Form Validation
+      ✓ validates empty contact input (211 ms)
+      ✓ validates email format (115 ms)
+      ✓ validates phone number format (94 ms)
+      ✓ validates invalid phone format (86 ms)
+    Component Methods
+      ✓ maskEmail function works correctly (1 ms)
+      ✓ maskPhone function works correctly (1 ms)
+    API Interactions
+      ✓ handles code verification with URL parameters (61 ms)
+      ✕ handles preferences token from localStorage (37 ms)
+
+  ● ContactOptOut Component › API Interactions › handles preferences token from localStorage
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "preferences_token"
+
+    Number of calls: 0
+
+      322 |       
+      323 |       // Verify localStorage was checked for token
+    > 324 |       expect(localStorageMock.getItem).toHaveBeenCalledWith('preferences_token');
+          |                                        ^
+      325 |     });
+      326 |   });
+      327 | });
+
+      at Object.toHaveBeenCalledWith (src/pages/ContactOptOut.test.jsx:324:40)
+
+  console.log
+    API Response: {
+      contacts: [
+        {
+          id: '1',
+          contact_type: 'email',
+          email: 'john.doe@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-01T10:30:00Z'
+        },
+        {
+          id: '2',
+          contact_type: 'phone',
+          email: null,
+          phone: '+15551234567',
+          masked_value: '+1*********67',
+          consent: 'Opted Out',
+          last_updated: '2025-04-02T14:45:00Z'
+        },
+        {
+          id: '3',
+          contact_type: 'email',
+          email: 'jane.smith@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-03T09:15:00Z'
+        }
+      ]
+    }
+
+      at log (src/pages/ContactDashboard.jsx:113:15)
+
+  console.log
+    Contacts: [
+      {
+        id: '1',
+        contact_type: 'email',
+        email: 'john.doe@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-01T10:30:00Z'
+      },
+      {
+        id: '2',
+        contact_type: 'phone',
+        email: null,
+        phone: '+15551234567',
+        masked_value: '+1*********67',
+        consent: 'Opted Out',
+        last_updated: '2025-04-02T14:45:00Z'
+      },
+      {
+        id: '3',
+        contact_type: 'email',
+        email: 'jane.smith@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-03T09:15:00Z'
+      }
+    ]
+
+      at log (src/pages/ContactDashboard.jsx:114:15)
+
+  console.log
+    First contact: {
+      id: '1',
+      contact_type: 'email',
+      email: 'john.doe@example.com',
+      phone: null,
+      masked_value: 'j***@example.com',
+      consent: 'Opted In',
+      last_updated: '2025-04-01T10:30:00Z'
+    }
+
+      at log (src/pages/ContactDashboard.jsx:116:17)
+
+  console.error
+    Password reset error: Error: Network Error
+        at Object.<anonymous> (/home/johnj/CascadeProjects/optin-manager/frontend/src/pages/ForgotPassword.test.jsx:113:38)
+        at Promise.then.completed (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/utils.js:298:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/utils.js:231:10)
+        at _callCircusTest (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:316:40)
+        at _runTest (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:252:3)
+        at _runTestsForDescribeBlock (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:126:9)
+        at _runTestsForDescribeBlock (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:121:9)
+        at run (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:71:3)
+        at runAndTransformResultsToJestFormat (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+        at jestAdapter (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+        at runTestInternal (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-runner/build/runTest.js:367:16)
+        at runTest (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-runner/build/runTest.js:444:34)
+        at Object.worker (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-runner/build/testWorker.js:106:12)
+
+      22 |       setSuccess(true);
+      23 |     } catch (err) {
+    > 24 |       console.error('Password reset error:', err);
+         |               ^
+      25 |       setError(err.response?.data?.detail || 'An error occurred. Please try again.');
+      26 |     } finally {
+      27 |       setLoading(false);
+
+      at error (src/pages/ForgotPassword.jsx:24:15)
+
+PASS src/pages/ChangePassword.test.jsx
+  ChangePassword Component
+    ✓ renders without crashing (356 ms)
+    ✓ cancel button navigates back (125 ms)
+    ✓ validates form - empty current password (123 ms)
+    ✓ validates form - empty new password (129 ms)
+    ✓ validates form - password too short (169 ms)
+    ✓ validates form - passwords do not match (222 ms)
+    ✓ redirects to login if not authenticated (230 ms)
+
+PASS src/pages/ForgotPassword.test.jsx
+  ForgotPassword Component
+    ✓ renders the forgot password form (331 ms)
+    ✓ submits the form with username (172 ms)
+    ✓ displays error message on API failure (315 ms)
+    ✓ handles network error gracefully (198 ms)
+    ✓ shows loading state while submitting (206 ms)
+
+  console.error
+    An update to Dashboard inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      174 |     fetchDashboardStats(timeRange)
+      175 |       .then(data => {
+    > 176 |         setStats(data);
+          |         ^
+      177 |         setLoading(false);
+      178 |       })
+      179 |       .catch((err) => {
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setStats (src/pages/Dashboard.jsx:176:9)
+
+  console.error
+    An update to Dashboard inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      175 |       .then(data => {
+      176 |         setStats(data);
+    > 177 |         setLoading(false);
+          |         ^
+      178 |       })
+      179 |       .catch((err) => {
+      180 |         console.error('Dashboard error:', err);
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setLoading (src/pages/Dashboard.jsx:177:9)
+
+  console.log
+    API Response: {
+      contacts: [
+        {
+          id: '1',
+          contact_type: 'email',
+          email: 'john.doe@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-01T10:30:00Z'
+        }
+      ]
+    }
+
+      at log (src/pages/ContactDashboard.jsx:113:15)
+
+  console.log
+    Contacts: [
+      {
+        id: '1',
+        contact_type: 'email',
+        email: 'john.doe@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-01T10:30:00Z'
+      }
+    ]
+
+      at log (src/pages/ContactDashboard.jsx:114:15)
+
+  console.log
+    First contact: {
+      id: '1',
+      contact_type: 'email',
+      email: 'john.doe@example.com',
+      phone: null,
+      masked_value: 'j***@example.com',
+      consent: 'Opted In',
+      last_updated: '2025-04-01T10:30:00Z'
+    }
+
+      at log (src/pages/ContactDashboard.jsx:116:17)
+
+  console.log
+    API Response: {
+      contacts: [
+        {
+          id: '1',
+          contact_type: 'email',
+          email: 'john.doe@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-01T10:30:00Z'
+        },
+        {
+          id: '2',
+          contact_type: 'phone',
+          email: null,
+          phone: '+15551234567',
+          masked_value: '+1*********67',
+          consent: 'Opted Out',
+          last_updated: '2025-04-02T14:45:00Z'
+        },
+        {
+          id: '3',
+          contact_type: 'email',
+          email: 'jane.smith@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-03T09:15:00Z'
+        }
+      ]
+    }
+
+      at log (src/pages/ContactDashboard.jsx:113:15)
+
+  console.log
+    Contacts: [
+      {
+        id: '1',
+        contact_type: 'email',
+        email: 'john.doe@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-01T10:30:00Z'
+      },
+      {
+        id: '2',
+        contact_type: 'phone',
+        email: null,
+        phone: '+15551234567',
+        masked_value: '+1*********67',
+        consent: 'Opted Out',
+        last_updated: '2025-04-02T14:45:00Z'
+      },
+      {
+        id: '3',
+        contact_type: 'email',
+        email: 'jane.smith@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-03T09:15:00Z'
+      }
+    ]
+
+      at log (src/pages/ContactDashboard.jsx:114:15)
+
+  console.log
+    First contact: {
+      id: '1',
+      contact_type: 'email',
+      email: 'john.doe@example.com',
+      phone: null,
+      masked_value: 'j***@example.com',
+      consent: 'Opted In',
+      last_updated: '2025-04-01T10:30:00Z'
+    }
+
+      at log (src/pages/ContactDashboard.jsx:116:17)
+
+PASS src/pages/OptInSetup.test.jsx (5.301 s)
+  OptInSetup Component
+    ✓ renders the component with title (367 ms)
+    ✓ handles creating a new opt-in program (851 ms)
+    ✓ handles errors when creating an opt-in program (547 ms)
+    ✓ enforces role-based access control for admin-only actions (202 ms)
+    ✓ does not render when user is not authenticated (4 ms)
+
+  console.log
+    Attempting login with username: admin
+
+      at log (src/pages/AdminLogin.jsx:60:15)
+
+  console.log
+    API Response: {
+      contacts: [
+        {
+          id: '1',
+          contact_type: 'email',
+          email: 'john.doe@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-01T10:30:00Z'
+        },
+        {
+          id: '3',
+          contact_type: 'email',
+          email: 'jane.smith@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-03T09:15:00Z'
+        }
+      ]
+    }
+
+      at log (src/pages/ContactDashboard.jsx:113:15)
+
+  console.log
+    Contacts: [
+      {
+        id: '1',
+        contact_type: 'email',
+        email: 'john.doe@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-01T10:30:00Z'
+      },
+      {
+        id: '3',
+        contact_type: 'email',
+        email: 'jane.smith@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-03T09:15:00Z'
+      }
+    ]
+
+      at log (src/pages/ContactDashboard.jsx:114:15)
+
+  console.log
+    First contact: {
+      id: '1',
+      contact_type: 'email',
+      email: 'john.doe@example.com',
+      phone: null,
+      masked_value: 'j***@example.com',
+      consent: 'Opted In',
+      last_updated: '2025-04-01T10:30:00Z'
+    }
+
+      at log (src/pages/ContactDashboard.jsx:116:17)
+
+  console.log
+    API Response: {
+      contacts: [
+        {
+          id: '1',
+          contact_type: 'email',
+          email: 'john.doe@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-01T10:30:00Z'
+        },
+        {
+          id: '2',
+          contact_type: 'phone',
+          email: null,
+          phone: '+15551234567',
+          masked_value: '+1*********67',
+          consent: 'Opted Out',
+          last_updated: '2025-04-02T14:45:00Z'
+        },
+        {
+          id: '3',
+          contact_type: 'email',
+          email: 'jane.smith@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-03T09:15:00Z'
+        }
+      ]
+    }
+
+      at log (src/pages/ContactDashboard.jsx:113:15)
+
+  console.log
+    Contacts: [
+      {
+        id: '1',
+        contact_type: 'email',
+        email: 'john.doe@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-01T10:30:00Z'
+      },
+      {
+        id: '2',
+        contact_type: 'phone',
+        email: null,
+        phone: '+15551234567',
+        masked_value: '+1*********67',
+        consent: 'Opted Out',
+        last_updated: '2025-04-02T14:45:00Z'
+      },
+      {
+        id: '3',
+        contact_type: 'email',
+        email: 'jane.smith@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-03T09:15:00Z'
+      }
+    ]
+
+      at log (src/pages/ContactDashboard.jsx:114:15)
+
+  console.log
+    First contact: {
+      id: '1',
+      contact_type: 'email',
+      email: 'john.doe@example.com',
+      phone: null,
+      masked_value: 'j***@example.com',
+      consent: 'Opted In',
+      last_updated: '2025-04-01T10:30:00Z'
+    }
+
+      at log (src/pages/ContactDashboard.jsx:116:17)
+
+  console.log
+    Login response: { access_token: 'test-token' }
+
+      at log (src/pages/AdminLogin.jsx:62:15)
+
+  console.log
+    API Response: {
+      contacts: [
+        {
+          id: '1',
+          contact_type: 'email',
+          email: 'john.doe@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-01T10:30:00Z'
+        },
+        {
+          id: '2',
+          contact_type: 'phone',
+          email: null,
+          phone: '+15551234567',
+          masked_value: '+1*********67',
+          consent: 'Opted Out',
+          last_updated: '2025-04-02T14:45:00Z'
+        }
+      ]
+    }
+
+      at log (src/pages/ContactDashboard.jsx:113:15)
+
+  console.log
+    Contacts: [
+      {
+        id: '1',
+        contact_type: 'email',
+        email: 'john.doe@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-01T10:30:00Z'
+      },
+      {
+        id: '2',
+        contact_type: 'phone',
+        email: null,
+        phone: '+15551234567',
+        masked_value: '+1*********67',
+        consent: 'Opted Out',
+        last_updated: '2025-04-02T14:45:00Z'
+      }
+    ]
+
+      at log (src/pages/ContactDashboard.jsx:114:15)
+
+  console.log
+    First contact: {
+      id: '1',
+      contact_type: 'email',
+      email: 'john.doe@example.com',
+      phone: null,
+      masked_value: 'j***@example.com',
+      consent: 'Opted In',
+      last_updated: '2025-04-01T10:30:00Z'
+    }
+
+      at log (src/pages/ContactDashboard.jsx:116:17)
+
+  console.log
+    API Response: {
+      contacts: [
+        {
+          id: '1',
+          contact_type: 'email',
+          email: 'john.doe@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-01T10:30:00Z'
+        },
+        {
+          id: '2',
+          contact_type: 'phone',
+          email: null,
+          phone: '+15551234567',
+          masked_value: '+1*********67',
+          consent: 'Opted Out',
+          last_updated: '2025-04-02T14:45:00Z'
+        },
+        {
+          id: '3',
+          contact_type: 'email',
+          email: 'jane.smith@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-03T09:15:00Z'
+        }
+      ]
+    }
+
+      at log (src/pages/ContactDashboard.jsx:113:15)
+
+  console.log
+    Contacts: [
+      {
+        id: '1',
+        contact_type: 'email',
+        email: 'john.doe@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-01T10:30:00Z'
+      },
+      {
+        id: '2',
+        contact_type: 'phone',
+        email: null,
+        phone: '+15551234567',
+        masked_value: '+1*********67',
+        consent: 'Opted Out',
+        last_updated: '2025-04-02T14:45:00Z'
+      },
+      {
+        id: '3',
+        contact_type: 'email',
+        email: 'jane.smith@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-03T09:15:00Z'
+      }
+    ]
+
+      at log (src/pages/ContactDashboard.jsx:114:15)
+
+  console.log
+    First contact: {
+      id: '1',
+      contact_type: 'email',
+      email: 'john.doe@example.com',
+      phone: null,
+      masked_value: 'j***@example.com',
+      consent: 'Opted In',
+      last_updated: '2025-04-01T10:30:00Z'
+    }
+
+      at log (src/pages/ContactDashboard.jsx:116:17)
+
+PASS src/pages/VerbalOptIn.test.jsx (5.819 s)
+  VerbalOptIn Component
+    ✓ renders the verbal opt-in form (409 ms)
+    ✓ validates email input correctly (302 ms)
+    ✓ validates phone input correctly (240 ms)
+    ✓ loads existing preferences for a contact (226 ms)
+    ✓ handles API errors when fetching opt-ins (64 ms)
+    ✓ toggles preferences and saves them (510 ms)
+    ✓ handles back button to return to contact entry (223 ms)
+    ✓ handles API errors when saving preferences (284 ms)
+
+  console.log
+    API Response: {
+      contacts: [
+        {
+          id: '1',
+          contact_type: 'email',
+          email: 'john.doe@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-01T10:30:00Z'
+        },
+        {
+          id: '2',
+          contact_type: 'phone',
+          email: null,
+          phone: '+15551234567',
+          masked_value: '+1*********67',
+          consent: 'Opted Out',
+          last_updated: '2025-04-02T14:45:00Z'
+        },
+        {
+          id: '3',
+          contact_type: 'email',
+          email: 'jane.smith@example.com',
+          phone: null,
+          masked_value: 'j***@example.com',
+          consent: 'Opted In',
+          last_updated: '2025-04-03T09:15:00Z'
+        }
+      ]
+    }
+
+      at log (src/pages/ContactDashboard.jsx:113:15)
+
+  console.log
+    Contacts: [
+      {
+        id: '1',
+        contact_type: 'email',
+        email: 'john.doe@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-01T10:30:00Z'
+      },
+      {
+        id: '2',
+        contact_type: 'phone',
+        email: null,
+        phone: '+15551234567',
+        masked_value: '+1*********67',
+        consent: 'Opted Out',
+        last_updated: '2025-04-02T14:45:00Z'
+      },
+      {
+        id: '3',
+        contact_type: 'email',
+        email: 'jane.smith@example.com',
+        phone: null,
+        masked_value: 'j***@example.com',
+        consent: 'Opted In',
+        last_updated: '2025-04-03T09:15:00Z'
+      }
+    ]
+
+      at log (src/pages/ContactDashboard.jsx:114:15)
+
+  console.log
+    First contact: {
+      id: '1',
+      contact_type: 'email',
+      email: 'john.doe@example.com',
+      phone: null,
+      masked_value: 'j***@example.com',
+      consent: 'Opted In',
+      last_updated: '2025-04-01T10:30:00Z'
+    }
+
+      at log (src/pages/ContactDashboard.jsx:116:17)
+
+  console.log
+    Attempting login with username: admin
+
+      at log (src/pages/AdminLogin.jsx:60:15)
+
+  console.log
+    Login response: { access_token: 'test-token' }
+
+      at log (src/pages/AdminLogin.jsx:62:15)
+
+  console.log
+    API Response: { contacts: [] }
+
+      at log (src/pages/ContactDashboard.jsx:113:15)
+
+  console.log
+    Contacts: []
+
+      at log (src/pages/ContactDashboard.jsx:114:15)
+
+PASS src/pages/ContactDashboard.test.jsx (5.987 s)
+  ContactDashboard Component
+    ✓ renders loading state initially (332 ms)
+    ✓ renders error state when API fails (198 ms)
+    ✓ renders contacts when API succeeds (216 ms)
+    ✓ handles search functionality (705 ms)
+    ✓ handles consent status filtering (244 ms)
+    ✓ handles time window selection (257 ms)
+    ✓ handles opt-out functionality (186 ms)
+    ✓ handles opt-out error (174 ms)
+    ✓ displays empty state when no contacts are found (53 ms)
+
+PASS src/pages/Dashboard.test.jsx (6.141 s)
+  Dashboard Component
+    ✓ renders loading state initially (112 ms)
+    ✓ renders error state when API fails (117 ms)
+    ✓ renders dashboard with data when API succeeds (397 ms)
+    ✓ handles time range selection (390 ms)
+    ✓ handles tab switching (1015 ms)
+
+  console.log
+    Attempting login with username: wrong
+
+      at log (src/pages/AdminLogin.jsx:60:15)
+
+  console.error
+    Login error: Error: Invalid credentials
+        at Object.<anonymous> (/home/johnj/CascadeProjects/optin-manager/frontend/src/pages/AdminLogin.test.jsx:153:33)
+        at Promise.then.completed (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/utils.js:298:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/utils.js:231:10)
+        at _callCircusTest (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:316:40)
+        at _runTest (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:252:3)
+        at _runTestsForDescribeBlock (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:126:9)
+        at _runTestsForDescribeBlock (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:121:9)
+        at run (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/run.js:71:3)
+        at runAndTransformResultsToJestFormat (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+        at jestAdapter (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+        at runTestInternal (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-runner/build/runTest.js:367:16)
+        at runTest (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-runner/build/runTest.js:444:34)
+        at Object.worker (/home/johnj/CascadeProjects/optin-manager/frontend/node_modules/jest-runner/build/testWorker.js:106:12)
+
+      69 |       navigate('/dashboard');
+      70 |     } catch (err) {
+    > 71 |       console.error('Login error:', err);
+         |               ^
+      72 |       setError('Invalid credentials or server error.');
+      73 |     } finally {
+      74 |       setLoading(false);
+
+      at error (src/pages/AdminLogin.jsx:71:15)
+
+  console.log
+    Attempting login with username: admin
+
+      at log (src/pages/AdminLogin.jsx:60:15)
+
+  console.log
+    Login response: { user: 'admin', role: 'admin' }
+
+      at log (src/pages/AdminLogin.jsx:62:15)
+
+  console.warn
+    No access_token in response: { user: 'admin', role: 'admin' }
+
+      62 |       console.log('Login response:', data);
+      63 |       if (!data.access_token) {
+    > 64 |         console.warn('No access_token in response:', data);
+         |                 ^
+      65 |         setError('Login succeeded but no access token returned.');
+      66 |         return;
+      67 |       }
+
+      at warn (src/pages/AdminLogin.jsx:64:17)
+
+PASS src/pages/AdminLogin.test.jsx (6.605 s)
+  AdminLogin Component
+    ✓ renders login form correctly (360 ms)
+    ✓ handles form input changes (635 ms)
+    ✓ shows loading state during login (718 ms)
+    ✓ handles successful login and redirects to dashboard (544 ms)
+    ✓ handles login error and displays error message (277 ms)
+    ✓ handles missing token in response (306 ms)
+    ✓ navigates to forgot password page when link is clicked (22 ms)
+
+---------------------------|---------|----------|---------|---------|----------------------------------------------------------------------------
+File                       | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                                          
+---------------------------|---------|----------|---------|---------|----------------------------------------------------------------------------
+All files                  |   54.36 |    49.42 |   48.59 |   56.66 |                                                                            
+ src                       |   25.98 |    18.25 |      25 |   28.39 |                                                                            
+  App.jsx                  |       0 |        0 |       0 |       0 | 47-129                                                                     
+  api.js                   |   31.94 |    24.21 |   35.71 |   35.38 | 94-127,167-170,174,178-206,211-212,249-253,313-342,365-394,418-424,459-468 
+  theme.js                 |       0 |        0 |       0 |       0 | 32-33                                                                      
+ src/api                   |   31.25 |        0 |       0 |   31.25 |                                                                            
+  providerSecrets.js       |   31.25 |        0 |       0 |   31.25 | 6-7,21-27,31-37,41-47                                                      
+ src/components            |      55 |    51.31 |   24.24 |   59.09 |                                                                            
+  AppHeader.jsx            |   64.28 |    36.84 |   35.71 |   68.08 | 67,74,84,90-94,98-99,120,128-131,164                                       
+  BrandingSection.jsx      |      20 |       50 |      20 |      20 | 53-65                                                                      
+  ProtectedRoute.jsx       |     100 |      100 |     100 |     100 |                                                                            
+  ProviderSection.jsx      |      20 |    65.62 |    7.69 |   27.27 | 61-104                                                                     
+ src/pages                 |   58.99 |    55.26 |      56 |   61.22 |                                                                            
+  AdminLogin.jsx           |     100 |      100 |     100 |     100 |                                                                            
+  ChangePassword.jsx       |      80 |     62.5 |    87.5 |      80 | 56-82                                                                      
+  ContactDashboard.jsx     |   90.74 |    90.62 |      80 |      94 | 168,179,225                                                                
+  ContactOptOut.jsx        |    47.4 |    59.57 |      50 |   47.01 | 117-134,170,212-271,277-337,400-446                                        
+  Customization.jsx        |   23.87 |        8 |   14.28 |   28.12 | 96-146,155-167,171-221,226-241,246-255,260-264,306-308                     
+  Dashboard.jsx            |   94.87 |    66.66 |   84.61 |   94.59 | 152,159                                                                    
+  ForgotPassword.jsx       |     100 |      100 |     100 |     100 |                                                                            
+  OptInSetup.jsx           |   69.01 |    73.91 |   52.63 |   68.57 | 99,167,192-199,212,241-259,285-304                                         
+  PreferencesDashboard.jsx |   42.85 |    56.52 |   28.57 |   46.15 | 91-95,106-129,134-160,207-232                                              
+  UserManagement.jsx       |    39.5 |    11.66 |   18.75 |    39.5 | 114,121-123,128-150,154,158-159,166-203,208-227,232-250,255,263,301-369    
+  VerbalOptIn.jsx          |   87.27 |    93.33 |   90.47 |   89.52 | 155-164,169-170,219-224                                                    
+ src/utils                 |   97.29 |    88.46 |     100 |   96.96 |                                                                            
+  auth.js                  |     100 |       90 |     100 |     100 | 32                                                                         
+  phoneUtils.js            |   94.44 |     87.5 |     100 |   93.75 | 43                                                                         
+---------------------------|---------|----------|---------|---------|----------------------------------------------------------------------------
+Test Suites: 1 failed, 16 passed, 17 total
+Tests:       1 failed, 122 passed, 123 total
+Snapshots:   0 total
+Time:        8.276 s
+Ran all test suites.

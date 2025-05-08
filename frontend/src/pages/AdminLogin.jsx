@@ -1,8 +1,39 @@
+/**
+ * AdminLogin.jsx
+ *
+ * Authentication page for admin and support users.
+ *
+ * This component provides the login interface for authenticated users (admin and
+ * support roles). It handles credential validation, error handling, and redirects
+ * authenticated users to the dashboard upon successful login.
+ *
+ * As noted in the memories, the system supports two roles for authenticated users:
+ * - Admin: Can create campaigns, products, and manage authenticated users
+ * - Support: Can view all pages but cannot create campaigns/products or manage users
+ *
+ * This login page is the entry point for these authenticated users to access
+ * their role-specific functionality.
+ *
+ * Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+ * This file is part of the OptIn Manager project and is licensed under the MIT License.
+ * See the root LICENSE file for details.
+ */
+
 import { useState } from 'react';
 import { Box, Button, TextField, Typography, Paper, Stack, CircularProgress, Alert, Link } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { login } from '../api';
 
+/**
+ * Admin login page component.
+ * 
+ * This component renders a login form for authenticated users (admin and support
+ * roles) to access the application. It handles form submission, authentication via
+ * the API, and stores the JWT token upon successful login. The component also
+ * provides error handling and feedback during the authentication process.
+ * 
+ * @returns {JSX.Element} The rendered login page
+ */
 export default function AdminLogin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -10,6 +41,17 @@ export default function AdminLogin() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  /**
+   * Handles form submission and authentication.
+   * 
+   * This function processes the login form submission, validates credentials
+   * through the API, and handles the authentication flow. Upon successful
+   * authentication, it stores the JWT token in local storage and redirects
+   * the user to the dashboard. It also handles error cases and provides
+   * appropriate feedback.
+   * 
+   * @param {React.FormEvent} e - The form submission event
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);

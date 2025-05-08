@@ -1,14 +1,59 @@
+/**
+ * OptInSetup.jsx
+ *
+ * Opt-in program management interface.
+ *
+ * This component provides an interface for administrators to create, view, and manage
+ * opt-in programs (formerly called campaigns/products). It supports creating new
+ * opt-in programs, filtering existing ones, and editing program details.
+ *
+ * As noted in the memories, this page is accessible to both Admin and Support roles,
+ * but only Admin users can create or modify opt-in programs. Support users have
+ * view-only access. This role-based access control is critical for maintaining
+ * proper separation of duties in the system.
+ *
+ * Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+ * This file is part of the OptIn Manager project and is licensed under the MIT License.
+ * See the root LICENSE file for details.
+ */
+
 import { Box, Typography, Paper, Button, TextField, Stack, MenuItem, Alert, CircularProgress } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { createOptIn, fetchOptIns, updateOptIn } from '../api';
 import { isAdmin, isSupport, isAuthenticated } from '../utils/auth';
 
+/**
+ * Available opt-in program types.
+ * 
+ * These types categorize opt-in programs based on their purpose and usage:
+ * - Promotional: Marketing and promotional communications
+ * - Transactional: Essential transaction-related communications
+ * - Alert: Time-sensitive notifications and alerts
+ * 
+ * This categorization helps ensure proper compliance with regulations that
+ * treat different types of communications differently.
+ */
 const OPTIN_TYPES = [
   { label: 'Promotional', value: 'promotional' },
   { label: 'Transactional', value: 'transactional' },
   { label: 'Alert', value: 'alert' }
 ];
 
+/**
+ * Opt-in program management component.
+ * 
+ * This component provides a comprehensive interface for managing opt-in programs,
+ * which define the types of communications that users can consent to receive.
+ * It implements role-based access control to ensure that only authorized users
+ * can create or modify opt-in programs.
+ * 
+ * The component includes features for creating new opt-in programs, viewing and
+ * filtering existing programs, and editing program details. These capabilities
+ * are essential for organizations to maintain compliance with privacy regulations
+ * by clearly defining and managing their communication programs.
+ * 
+ * @returns {JSX.Element} The rendered opt-in setup interface
+ */
 export default function OptInSetup() {
   const token = localStorage.getItem('access_token');
   const admin = isAdmin(token);
@@ -16,22 +61,34 @@ export default function OptInSetup() {
   const authenticated = isAuthenticated(token);
   if (!authenticated) return null;
 
+  // Form state for creating new opt-in programs
   const [name, setName] = useState('');
   const [type, setType] = useState(OPTIN_TYPES[0].value);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  
+  // State for existing opt-in programs
   const [optIns, setOptIns] = useState([]);
   const [fetchingOptIns, setFetchingOptIns] = useState(false);
   const [fetchError, setFetchError] = useState('');
-  // Filtering state
+  
+  // Filtering state for the opt-in programs list
   const [filterName, setFilterName] = useState('');
   const [filterType, setFilterType] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
-  // Inline edit state
+  
+  // Inline edit state for modifying existing opt-in programs
   const [editingId, setEditingId] = useState(null);
   const [editingName, setEditingName] = useState('');
 
+  /**
+   * Fetches the list of opt-in programs from the API.
+   * 
+   * This function retrieves all opt-in programs from the backend and updates
+   * the component state with the results. It handles loading states and error
+   * conditions, providing appropriate feedback to the user.
+   */
   const loadOptIns = async () => {
     setFetchingOptIns(true);
     setFetchError('');
@@ -45,6 +102,13 @@ export default function OptInSetup() {
     }
   };
 
+  /**
+   * Loads opt-in programs when the component mounts.
+   * 
+   * This effect ensures that the list of opt-in programs is loaded
+   * when the component is first rendered, providing users with the
+   * most current data without requiring manual refresh.
+   */
   useEffect(() => {
     loadOptIns();
   }, []);

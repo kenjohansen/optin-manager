@@ -1,3 +1,13 @@
+"""
+app/main.py
+
+Main FastAPI application entry point for the OptIn Manager backend.
+
+Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+This file is part of the OptIn Manager project and is licensed under the MIT License.
+See the root LICENSE file for details.
+"""
+
 from fastapi import FastAPI
 from .core.config import settings
 from fastapi import FastAPI
@@ -25,11 +35,15 @@ app = FastAPI(
     description="API for managing opt-in preferences and communications",
     version="1.0.0",
     # Override the default FastAPI docs templates to use our custom favicon
+    # This customization is important for branding consistency and to provide
+    # a professional appearance for the API documentation
     swagger_ui_parameters={
-        "persistAuthorization": True,
+        "persistAuthorization": True,  # Maintain auth token between page refreshes
         "favicon": "/static/favicon.ico",  # Direct parameter for Swagger UI
     },
     # These are used by FastAPI but sometimes don't work with all versions
+    # We include multiple favicon settings to ensure compatibility across
+    # different FastAPI versions and documentation UI implementations
     swagger_favicon_url="/static/favicon.ico",
     swagger_ui_favicon_url="/static/favicon.ico",
     redoc_favicon_url="/static/favicon.ico",
@@ -37,16 +51,24 @@ app = FastAPI(
     redoc_url=None  # Disable default redoc to use our custom route
 )
 
-# Enable CORS for frontend
 # --- CORS Middleware ---
-# For development, allow all origins to avoid CORS issues with changing frontend ports.
-# IMPORTANT: In production, restrict 'allow_origins' to trusted frontend URLs only for security.
+"""
+Enable Cross-Origin Resource Sharing (CORS) for the frontend.
+
+CORS is necessary to allow the frontend application to communicate with the API
+when they are hosted on different domains or ports. This is particularly important
+during development when the frontend and backend are typically running on different
+ports on localhost.
+
+For development, we allow all origins to avoid CORS issues with changing frontend ports.
+IMPORTANT: In production, restrict 'allow_origins' to trusted frontend URLs only for security.
+"""
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Change to specific origins in production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=True,  # Allow cookies and authentication headers
+    allow_methods=["*"],    # Allow all HTTP methods
+    allow_headers=["*"],    # Allow all headers
 )
 
 # --- Request/Response Logging Middleware ---
@@ -57,6 +79,18 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
+    """
+    Middleware for logging request and response details.
+    
+    This middleware provides detailed logging of all HTTP requests and responses,
+    which is essential for debugging API issues, monitoring performance, and
+    understanding how the API is being used. Each request is assigned a unique
+    ID based on the timestamp to correlate request and response logs.
+    
+    The logs include request method, path, query parameters, headers, response
+    status code, and processing time, providing a comprehensive view of the
+    request lifecycle for troubleshooting.
+    """
     async def dispatch(self, request, call_next):
         # Log request details
         request_id = str(time.time())
@@ -94,6 +128,20 @@ from sqlalchemy import inspect
 from app.core.database import engine, Base
 
 def ensure_tables_and_admin():
+    """
+    Ensure all required database tables exist and create a default admin user if needed.
+    
+    This function performs two critical startup tasks:
+    1. Checks if required database tables exist and creates them if missing
+    2. Creates a default admin user if no users exist in the system
+    
+    The default admin user is essential for first-time setup, allowing immediate
+    access to the admin interface without requiring complex user creation steps.
+    This simplifies deployment and initial configuration of the system.
+    
+    SECURITY NOTE: The default admin password should be changed immediately after
+    first login in a production environment.
+    """
     inspector = inspect(engine)
     # List of required tables (add more as your models grow)
     required_tables = ["auth_users"]
@@ -108,7 +156,7 @@ def ensure_tables_and_admin():
         user_count = db.query(AuthUser).count()
         if user_count == 0:
             admin_user = AuthUser(
-                id=uuid.uuid4(),
+                id=str(uuid.uuid4()),  # Convert UUID to string for SQLite compatibility
                 username="admin",
                 password_hash=pwd_context.hash("TestAdmin123"),
                 role="admin",

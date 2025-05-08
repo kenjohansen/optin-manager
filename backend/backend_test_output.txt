@@ -1,18 +1,51 @@
 ============================= test session starts ==============================
-platform linux -- Python 3.10.12, pytest-8.3.5, pluggy-1.5.0
+platform linux -- Python 3.10.12, pytest-8.3.5, pluggy-1.5.0 -- /home/johnj/CascadeProjects/optin-manager/.venv/bin/python
+cachedir: .pytest_cache
 rootdir: /home/johnj/CascadeProjects/optin-manager/backend
 plugins: anyio-4.9.0
-collected 38 items
+collecting ... collected 42 items
 
-tests/test_api_auth_user.py ....                                         [ 10%]
-tests/test_api_campaign.py ....                                          [ 21%]
-tests/test_api_consent.py ....                                           [ 31%]
-tests/test_api_contact.py ....                                           [ 42%]
-tests/test_api_customization.py ....                                     [ 52%]
-tests/test_api_message.py ..                                             [ 57%]
-tests/test_api_message_crud.py ....                                      [ 68%]
-tests/test_api_message_template.py ....                                  [ 78%]
-tests/test_api_user.py ....                                              [ 89%]
-tests/test_api_verification_code.py ....                                 [100%]
+tests/test_api_auth_user.py::test_create_auth_user PASSED                [  2%]
+tests/test_api_auth_user.py::test_get_auth_user PASSED                   [  4%]
+tests/test_api_auth_user.py::test_update_auth_user PASSED                [  7%]
+tests/test_api_auth_user.py::test_delete_auth_user PASSED                [  9%]
+tests/test_api_consent.py::test_create_consent PASSED                    [ 11%]
+tests/test_api_consent.py::test_read_consent PASSED                      [ 14%]
+tests/test_api_consent.py::test_update_consent PASSED                    [ 16%]
+tests/test_api_consent.py::test_delete_consent PASSED                    [ 19%]
+tests/test_api_contact.py::test_create_contact PASSED                    [ 21%]
+tests/test_api_contact.py::test_read_contact PASSED                      [ 23%]
+tests/test_api_contact.py::test_update_contact PASSED                    [ 26%]
+tests/test_api_contact.py::test_delete_contact PASSED                    [ 28%]
+tests/test_api_customization.py::test_get_customization_empty PASSED     [ 30%]
+tests/test_api_customization.py::test_update_colors PASSED               [ 33%]
+tests/test_api_customization.py::test_upload_logo PASSED                 [ 35%]
+tests/test_api_customization.py::test_get_customization_with_logo_and_colors PASSED [ 38%]
+tests/test_api_message.py::test_send_message_opted_in PASSED             [ 40%]
+tests/test_api_message.py::test_send_message_not_opted_in PASSED         [ 42%]
+tests/test_api_message_crud.py::test_create_message PASSED               [ 45%]
+tests/test_api_message_crud.py::test_read_message PASSED                 [ 47%]
+tests/test_api_message_crud.py::test_update_message PASSED               [ 50%]
+tests/test_api_message_crud.py::test_delete_message PASSED               [ 52%]
+tests/test_api_message_template.py::test_create_message_template PASSED  [ 54%]
+tests/test_api_message_template.py::test_read_message_template PASSED    [ 57%]
+tests/test_api_message_template.py::test_update_message_template PASSED  [ 59%]
+tests/test_api_message_template.py::test_delete_message_template PASSED  [ 61%]
+tests/test_api_optin.py::test_create_and_get_optin PASSED                [ 64%]
+tests/test_api_optin.py::test_update_optin PASSED                        [ 66%]
+tests/test_api_optin.py::test_optin_status_management PASSED             [ 69%]
+tests/test_api_preferences.py::test_send_verification_code PASSED        [ 71%]
+tests/test_api_preferences.py::test_verify_code PASSED                   [ 73%]
+tests/test_api_preferences.py::test_get_preferences_with_token PASSED    [ 76%]
+tests/test_api_preferences.py::test_get_preferences_with_contact_param PASSED [ 78%]
+tests/test_api_preferences.py::test_update_preferences PASSED            [ 80%]
+tests/test_api_user.py::test_create_contact PASSED                       [ 83%]
+tests/test_api_user.py::test_read_contact PASSED                         [ 85%]
+tests/test_api_user.py::test_update_contact PASSED                       [ 88%]
+tests/test_api_user.py::test_delete_contact PASSED                       [ 90%]
+tests/test_api_verification_code.py::test_create_verification_code PASSED [ 92%]
+tests/test_api_verification_code.py::test_read_verification_code PASSED  [ 95%]
+tests/test_api_verification_code.py::test_update_verification_code PASSED [ 97%]
+tests/test_api_verification_code.py::test_delete_verification_code PASSED [100%]
 
-============================== 38 passed in 2.35s ==============================
+============================== 42 passed in 5.36s ==============================

@@ -1,3 +1,26 @@
+/**
+ * AppHeader.jsx
+ *
+ * Application header component with navigation and user controls.
+ *
+ * This component implements the main navigation header for the OptIn Manager
+ * application, including the responsive menu system, user authentication controls,
+ * and theme switching functionality. It dynamically adjusts its display based on
+ * the user's authentication status and role.
+ *
+ * As noted in the memories, the system supports two roles for authenticated users:
+ * - Admin: Can access all pages including user management
+ * - Support: Can view all pages but cannot manage users
+ * 
+ * Non-authenticated users can only see the Opt-Out page, the Login menu,
+ * and the light/dark mode icon. This component enforces these visibility rules
+ * for the navigation links.
+ *
+ * Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+ * This file is part of the OptIn Manager project and is licensed under the MIT License.
+ * See the root LICENSE file for details.
+ */
+
 import { AppBar, Toolbar, Typography, IconButton, Box, Button, useTheme, useMediaQuery, Drawer, List, ListItem, ListItemButton, ListItemText, Divider, Chip, Avatar, Menu, MenuItem, ListItemIcon } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
@@ -10,19 +33,52 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isAdmin, isAuthenticated as checkAuthentication, parseJwt } from '../utils/auth';
 
+/**
+ * Application header component with navigation and user controls.
+ * 
+ * This component serves as the main navigation interface for the application,
+ * adapting its display based on screen size (desktop/mobile), user authentication
+ * status, and user role. It implements the role-based access control requirements
+ * by filtering navigation options based on the user's permissions.
+ * 
+ * Key features:
+ * - Responsive design with collapsible menu for mobile devices
+ * - Dynamic navigation links based on user authentication and role
+ * - Theme switching between light, dark, and system modes
+ * - User profile menu with authentication actions
+ * - Organization branding through customizable logo
+ * 
+ * @param {Object} props - Component props
+ * @param {string} props.mode - Current theme mode ('light', 'dark', or 'system')
+ * @param {Function} props.setMode - Function to update the theme mode
+ * @param {string} props.logoUrl - URL to the organization's logo image
+ * @param {Array} props.navLinks - Navigation link configuration objects
+ * @returns {JSX.Element} The rendered header component
+ */
 export default function AppHeader({ mode, setMode, logoUrl, navLinks = [] }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   
+  /**
+   * Handles opening the user menu dropdown
+   * @param {React.MouseEvent} event - The click event
+   */
   const handleUserMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   
+  /**
+   * Handles closing the user menu dropdown
+   */
   const handleUserMenuClose = () => {
     setAnchorEl(null);
   };
   const theme = useTheme();
   const navigate = useNavigate();
+  
+  /**
+   * Cycles through theme modes: light → dark → system
+   */
   const handleThemeToggle = () => {
     setMode(prev =>
       prev === 'light' ? 'dark' : prev === 'dark' ? 'system' : 'light'

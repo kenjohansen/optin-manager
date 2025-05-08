@@ -1,3 +1,17 @@
+"""
+api/provider_secrets.py
+
+API endpoints for managing communication provider credentials.
+
+This module provides endpoints for securely storing, retrieving, and testing
+credentials for communication providers (email and SMS services). It uses the
+ProviderSecretsVault to encrypt sensitive API keys and tokens at rest.
+
+Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+This file is part of the OptIn Manager project and is licensed under the MIT License.
+See the root LICENSE file for details.
+"""
+
 from fastapi import APIRouter, Depends, HTTPException, Body
 from app.core.deps import require_admin_user
 from app.core.provider_vault import ProviderSecretsVault
@@ -6,16 +20,43 @@ import warnings
 
 router = APIRouter(prefix="/provider-secrets", tags=["provider-secrets"])
 
+# Initialize the provider secrets vault
 vault = ProviderSecretsVault()
+
 def set_secret(key: str, value: str):
+    """
+    Store a provider credential in the vault.
+    
+    Args:
+        key (str): The identifier for the secret
+        value (str): The secret value to store
+    """
     vault.set_secret(key, value)
 
 
 def get_secret(key: str):
+    """
+    Retrieve a provider credential from the vault.
+    
+    Args:
+        key (str): The identifier for the secret
+        
+    Returns:
+        str or None: The secret value if found, None otherwise
+    """
     return vault.get_secret(key)
 
 
 def is_secret_configured(key: str):
+    """
+    Check if a provider credential exists in the vault.
+    
+    Args:
+        key (str): The identifier for the secret
+        
+    Returns:
+        bool: True if the secret exists, False otherwise
+    """
     return bool(vault.get_secret(key))
 
 
@@ -26,7 +67,34 @@ def set_provider_secret(
     secret_key: str = Body(...),
     region: str = Body(None),
     from_address: str = Body(None),
-): 
+):
+    """
+    Store credentials for a communication provider.
+    
+    This endpoint allows administrators to securely store API keys and other
+    credentials needed for sending messages through email or SMS providers.
+    The credentials are encrypted using the ProviderSecretsVault before storage.
+    
+    As noted in the memories, this supports the customization settings for
+    communication providers that are essential for the system's messaging
+    capabilities.
+    
+    Args:
+        provider_type (str): Type of provider ('email' or 'sms')
+        access_key (str): Provider API key or access key
+        secret_key (str): Provider API secret or token
+        region (str, optional): Provider region (e.g., AWS region)
+        from_address (str, optional): Default sender address
+        
+    Returns:
+        dict: Confirmation of successful storage
+        
+    Raises:
+        HTTPException: 400 if provider_type is invalid
+        
+    Security:
+        Requires admin role authentication
+    """
     if provider_type not in ("email", "sms"):
         raise HTTPException(status_code=400, detail="Invalid provider_type")
     set_secret(f"{provider_type.upper()}_ACCESS_KEY", access_key)

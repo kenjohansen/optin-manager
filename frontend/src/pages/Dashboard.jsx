@@ -1,3 +1,23 @@
+/**
+ * Dashboard.jsx
+ *
+ * Admin dashboard for OptIn Manager system metrics and statistics.
+ *
+ * This component provides a comprehensive dashboard for administrators to view
+ * key metrics and statistics about the OptIn Manager system. It displays data
+ * visualizations for opt-in/opt-out rates, message delivery statistics, user
+ * engagement metrics, and system performance indicators.
+ *
+ * As noted in the memories, this dashboard is accessible to both Admin and Support
+ * roles, with Admin having full access to all system features and Support having
+ * view-only access to most features. The dashboard is a critical tool for monitoring
+ * compliance with privacy regulations and understanding user engagement patterns.
+ *
+ * Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+ * This file is part of the OptIn Manager project and is licensed under the MIT License.
+ * See the root LICENSE file for details.
+ */
+
 import { Box, Typography, Paper, Grid, CircularProgress, Alert, Card, CardContent, CardHeader, Divider, Tab, Tabs, MenuItem, Select, FormControl, InputLabel, Tooltip, IconButton } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { fetchDashboardStats } from '../api';
@@ -12,7 +32,14 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import PeopleIcon from '@mui/icons-material/People';
 import SettingsIcon from '@mui/icons-material/Settings';
 
-// Color constants
+/**
+ * Color constants for consistent visualization styling.
+ * 
+ * These color values are used throughout the dashboard for various chart elements,
+ * status indicators, and UI components. Using a consistent color scheme helps
+ * users quickly understand the meaning of different data points and status
+ * indicators across the dashboard.
+ */
 const COLORS = {
   primary: '#1976d2',
   secondary: '#dc004e',
@@ -29,7 +56,22 @@ const COLORS = {
   pending: '#ff9800'
 };
 
-// Stat Card Component
+/**
+ * Statistical card component for displaying key metrics.
+ * 
+ * This component renders a card that displays a key metric with optional
+ * trend indicators, icons, and subtitles. It's used throughout the dashboard
+ * to highlight important statistics in a consistent and visually appealing way.
+ * 
+ * @param {Object} props - Component props
+ * @param {string} props.title - Card title
+ * @param {string|number} props.value - Main value to display
+ * @param {string} [props.subtitle] - Optional explanatory text
+ * @param {JSX.Element} [props.icon] - Optional icon element
+ * @param {number} [props.trend] - Optional trend value (positive/negative)
+ * @param {string} [props.color] - Optional color override
+ * @returns {JSX.Element} The rendered stat card
+ */
 const StatCard = ({ title, value, subtitle, icon, trend, color }) => {
   return (
     <Card sx={{ minWidth: 240, height: '100%' }}>

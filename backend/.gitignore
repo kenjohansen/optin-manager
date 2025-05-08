@@ -17,3 +17,11 @@ ENV/
 .vscode/
 .idea/
 *.swp
+
+# SQLite databases
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.db.backup
+optin_manager.db*

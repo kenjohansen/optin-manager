@@ -1,3 +1,24 @@
+/**
+ * UserManagement.jsx
+ *
+ * Administrative interface for managing authenticated users.
+ *
+ * This component provides a comprehensive interface for administrators to create,
+ * edit, and manage authenticated users in the system. It supports role-based access
+ * control, allowing administrators to assign either Admin or Support roles to users.
+ *
+ * As noted in the memories, the system supports two roles for authenticated users:
+ * - Admin: Can create campaigns, products, and manage authenticated users
+ * - Support: Can view all pages but cannot create campaigns/products or manage users
+ *
+ * This component is only accessible to users with the Admin role, ensuring proper
+ * separation of duties and security controls in the system.
+ *
+ * Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+ * This file is part of the OptIn Manager project and is licensed under the MIT License.
+ * See the root LICENSE file for details.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { 
   Box, 
@@ -31,13 +52,31 @@ import axios from 'axios';
 import { isAdmin } from '../utils/auth';
 import { API_BASE } from '../api';
 
+/**
+ * User management component for administrator access.
+ * 
+ * This component provides a comprehensive interface for managing authenticated users
+ * in the OptIn Manager system. It allows administrators to create new users, edit
+ * existing user details, reset passwords, and manage user roles and permissions.
+ * 
+ * The component implements proper access controls to ensure that only users with
+ * the Admin role can access and use these management features. This is critical for
+ * maintaining security and proper separation of duties within the system.
+ * 
+ * @returns {JSX.Element} The rendered user management interface
+ */
 const UserManagement = () => {
+  // State for user list and loading status
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // State for user creation/editing dialog
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogMode, setDialogMode] = useState('create'); // 'create' or 'edit'
   const [currentUser, setCurrentUser] = useState(null);
+  
+  // Form data for user creation/editing
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -46,6 +85,8 @@ const UserManagement = () => {
     role: 'support', // Default role is support
     is_active: true
   });
+  
+  // Notification state
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',

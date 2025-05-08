@@ -1,3 +1,23 @@
+/**
+ * App.jsx
+ *
+ * Main application component for the OptIn Manager frontend.
+ *
+ * This component serves as the entry point for the OptIn Manager application,
+ * handling routing, theme management, and authentication state. It implements
+ * role-based access control as specified in the requirements, where:
+ * - Admin users can access all pages including user management
+ * - Support users can view all pages but cannot manage users
+ * - Non-authenticated users can only access the Opt-Out page and login
+ *
+ * The component fetches and applies customization settings (branding, colors)
+ * from the backend to ensure consistent visual identity.
+ *
+ * Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+ * This file is part of the OptIn Manager project and is licensed under the MIT License.
+ * See the root LICENSE file for details.
+ */
+
 import { useMemo, useState } from 'react';
 import { ThemeProvider, CssBaseline, Box } from '@mui/material';
 import { getTheme } from './theme';
@@ -16,6 +36,14 @@ import ForgotPassword from './pages/ForgotPassword';
 import ChangePassword from './pages/ChangePassword';
 import ProtectedRoute from './components/ProtectedRoute';
 
+/**
+ * Navigation links configuration for the application header.
+ * 
+ * This array defines the navigation structure of the application, with special
+ * properties to control access based on user roles. The 'adminOnly' flag ensures
+ * that certain pages (like user management) are only accessible to administrators,
+ * implementing the role-based access control requirements.
+ */
 const navLinks = [
   { label: 'Dashboard', path: '/dashboard' },
   { label: 'Customization', path: '/customization' },
@@ -30,6 +58,21 @@ const navLinks = [
 import { useEffect } from 'react';
 import { fetchCustomization } from './api';
 
+/**
+ * Main application component that handles routing, theme, and authentication state.
+ * 
+ * This component:
+ * 1. Manages authentication state and user roles
+ * 2. Fetches and applies customization settings from the backend
+ * 3. Implements protected routes based on authentication status and user role
+ * 4. Provides theme customization based on user preferences and brand settings
+ * 
+ * The component structure ensures that non-authenticated users can only access
+ * the Opt-Out page and login page, while authenticated users can access different
+ * pages based on their role (admin or support).
+ * 
+ * @returns {JSX.Element} The rendered application with routing and theming
+ */
 function App() {
   // Theme state: system, light, dark
   const [mode, setMode] = useState('system');

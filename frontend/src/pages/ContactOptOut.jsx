@@ -1,3 +1,25 @@
+/**
+ * ContactOptOut.jsx
+ *
+ * Contact opt-out and preferences management page.
+ *
+ * This component implements the core Opt-Out workflow that allows users to manage
+ * their communication preferences. It supports a multi-step process including:
+ * 1. Contact identification (email/phone)
+ * 2. Verification code delivery
+ * 3. Code verification
+ * 4. Preferences management
+ *
+ * As noted in the memories, this is a key part of Phase 1 implementation that
+ * supports the Opt-Out workflow, including sending verification codes, verifying
+ * the code, and allowing users to manage their preferences. This component ensures
+ * proper user privacy and compliance with regulations like GDPR and CCPA.
+ *
+ * Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+ * This file is part of the OptIn Manager project and is licensed under the MIT License.
+ * See the root LICENSE file for details.
+ */
+
 import { useState, useEffect } from 'react';
 import { Box, Button, Typography, Paper, TextField, Stack, Alert, CircularProgress } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
@@ -5,16 +27,54 @@ import { optOutContact, sendVerificationCode, verifyCode, fetchContactPreference
 import PreferencesDashboard from './PreferencesDashboard';
 import { formatPhoneToE164, isValidPhoneNumber } from '../utils/phoneUtils';
 
-function maskEmail(email) {
+/**
+ * Masks an email address for privacy.
+ * 
+ * This utility function obscures most of the username portion of an email
+ * address while preserving the domain, helping to protect user privacy
+ * while still providing enough information for identification.
+ * 
+ * @param {string} email - The email address to mask
+ * @returns {string} The masked email address
+ */
+export function maskEmail(email) {
   if (!email) return '';
   const [user, domain] = email.split('@');
   return user[0] + '***@' + domain;
 }
-function maskPhone(phone) {
+
+/**
+ * Masks a phone number for privacy.
+ * 
+ * This utility function obscures most digits of a phone number while
+ * preserving the last two digits, helping to protect user privacy
+ * while still providing enough information for identification.
+ * 
+ * @param {string} phone - The phone number to mask
+ * @returns {string} The masked phone number
+ */
+export function maskPhone(phone) {
   if (!phone) return '';
   return phone.replace(/\d(?=\d{2})/g, '*');
 }
 
+/**
+ * Contact opt-out and preferences management component.
+ * 
+ * This component implements the multi-step workflow for users to manage their
+ * communication preferences. It handles contact identification, verification
+ * code delivery and validation, and preferences management. The component
+ * supports two modes: 'preferences' for standard preference management and
+ * 'verbal' for verbal opt-in scenarios.
+ * 
+ * This is a critical component for compliance with privacy regulations like
+ * GDPR and CCPA, as it gives users control over their communication preferences
+ * and ensures proper verification of identity before allowing changes.
+ * 
+ * @param {Object} props - Component props
+ * @param {string} [props.mode='preferences'] - Operating mode ('preferences' or 'verbal')
+ * @returns {JSX.Element} The rendered opt-out workflow
+ */
 export default function ContactOptOut({ mode = 'preferences' }) {
   // mode can be 'preferences' or 'verbal'
   const [searchParams] = useSearchParams();
@@ -31,7 +91,18 @@ export default function ContactOptOut({ mode = 'preferences' }) {
   const [preferences, setPreferences] = useState(null);
   const [token, setToken] = useState('');
 
-  // On mount, check for token, email/phone, and code in URL
+  /**
+   * Initializes the component based on URL parameters and local storage.
+   * 
+   * This effect runs on component mount and handles several initialization tasks:
+   * 1. Checks for existing preferences token in local storage
+   * 2. Processes URL parameters for contact information and verification codes
+   * 3. Sets the appropriate workflow step based on the operating mode
+   * 4. Fetches preferences data if a valid token exists
+   * 
+   * This initialization process ensures a smooth user experience while maintaining
+   * security by requiring proper verification before accessing preferences.
+   */
   useEffect(() => {
     // First, check if we have a preferences token
     const preferencesToken = localStorage.getItem('preferences_token');

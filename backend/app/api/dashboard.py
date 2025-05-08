@@ -1,3 +1,18 @@
+"""
+api/dashboard.py
+
+API endpoints for dashboard statistics and metrics.
+
+This module provides endpoints for retrieving aggregated statistics and metrics
+for the dashboard, including user counts, opt-in program statistics, message
+delivery metrics, and consent status distributions. These metrics are essential
+for monitoring system usage and compliance reporting.
+
+Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+This file is part of the OptIn Manager project and is licensed under the MIT License.
+See the root LICENSE file for details.
+"""
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
@@ -18,6 +33,32 @@ def get_dashboard_stats(
     days: Optional[int] = Query(30, description="Number of days to look back for time-based metrics"),
     db: Session = Depends(get_db)
 ):
+    """
+    Retrieve aggregated dashboard statistics and metrics.
+    
+    This endpoint provides a comprehensive set of metrics for the dashboard, including:
+    - User counts (admin and support users)
+    - Opt-in program statistics (total, active, by status)
+    - Message delivery metrics (sent, delivered, failed)
+    - Contact and consent statistics (total contacts, consent distribution)
+    - Time-based metrics (messages and consents over time)
+    
+    The metrics are calculated based on the specified time period (default 30 days)
+    and are essential for monitoring system usage, tracking communication effectiveness,
+    and generating compliance reports for regulatory requirements.
+    
+    As noted in the memories, the system supports role-based access, with both Admin
+    and Support users able to view these dashboard metrics, while non-authenticated
+    users cannot access this endpoint.
+    
+    Args:
+        days (int, optional): Number of days to look back for time-based metrics.
+                             Defaults to 30 days.
+        db (Session): SQLAlchemy database session.
+        
+    Returns:
+        dict: Dictionary containing all dashboard metrics and statistics.
+    """
     # Calculate time periods
     now = datetime.utcnow()
     period_start = now - timedelta(days=days)

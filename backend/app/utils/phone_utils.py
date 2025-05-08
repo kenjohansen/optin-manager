@@ -1,5 +1,11 @@
 """
-Phone number validation and formatting utilities.
+app/utils/phone_utils.py
+
+Phone number validation and formatting utilities for the OptIn Manager backend.
+
+Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+This file is part of the OptIn Manager project and is licensed under the MIT License.
+See the root LICENSE file for details.
 """
 import re
 import logging
@@ -10,11 +16,18 @@ def normalize_phone_number(phone_number):
     """
     Normalize a phone number to E.164 format.
     
+    E.164 is the international standard format for phone numbers, which is
+    required by most SMS providers and ensures consistent storage and processing
+    of phone numbers across the system. Normalization is essential for proper
+    contact identification, preventing duplicates with different formats, and
+    ensuring deliverability of SMS messages.
+    
     Args:
         phone_number (str): The phone number to normalize
         
     Returns:
-        str: The normalized phone number in E.164 format
+        str: The normalized phone number in E.164 format (+[country code][number])
+              or None if the input is empty
     """
     if not phone_number:
         return None
@@ -38,13 +51,19 @@ def normalize_phone_number(phone_number):
 
 def is_valid_phone_number(phone_number):
     """
-    Check if a phone number is valid.
+    Check if a phone number is valid according to E.164 format requirements.
+    
+    Validation is critical for preventing errors in SMS delivery and ensuring
+    that users provide legitimate contact information. This function uses the
+    E.164 standard which requires a plus sign followed by 8-15 digits, covering
+    all valid international phone numbers. Validation happens before attempting
+    to send verification codes to avoid wasting resources on invalid numbers.
     
     Args:
         phone_number (str): The phone number to check
         
     Returns:
-        bool: True if the phone number is valid
+        bool: True if the phone number is valid according to E.164 format
     """
     if not phone_number:
         return False
@@ -57,13 +76,20 @@ def is_valid_phone_number(phone_number):
 
 def mask_phone_number(phone_number):
     """
-    Mask a phone number for privacy.
+    Mask a phone number for privacy while maintaining recognizability.
+    
+    Phone numbers are considered personally identifiable information (PII) and
+    should not be displayed in full in user interfaces or logs. This masking
+    approach preserves the country code and last 4 digits, which allows users
+    to recognize their own number while protecting privacy. This is essential
+    for compliance with privacy regulations like GDPR and CCPA.
     
     Args:
         phone_number (str): The phone number to mask
         
     Returns:
-        str: The masked phone number
+        str: The masked phone number (e.g., +1*****1234)
+              or empty string if the input is empty
     """
     if not phone_number:
         return ""

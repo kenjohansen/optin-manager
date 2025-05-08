@@ -1,8 +1,24 @@
 """
-api/preferences.py
+api/fixed_preferences.py
 
 Preferences (opt-out/in) API endpoints for the OptIn Manager backend.
 Implements Phase 1: send/verify code, fetch/update preferences for a contact.
+
+This module provides the fixed implementation of the Opt-Out workflow, which is
+the primary focus of Phase 1 as noted in the memories. It implements the complete
+flow for users to manage their communication preferences:
+1. Send a verification code to the user's email or phone
+2. Verify the code to authenticate the user
+3. Fetch the user's current preferences
+4. Update the user's preferences
+
+This fixed version ensures compatibility with SQLite for development and testing
+as specified in the memories, and addresses the database configuration issues
+that were previously causing deployment failures.
+
+Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+This file is part of the OptIn Manager project and is licensed under the MIT License.
+See the root LICENSE file for details.
 """
 from fastapi import APIRouter, Depends, HTTPException, Body, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials

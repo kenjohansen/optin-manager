@@ -1,5 +1,15 @@
 """
+api/auth.py
+
 API endpoints for authentication and code verification.
+
+This module provides the API endpoints for user authentication, including login,
+password management, and verification code validation. It supports both authenticated
+user login (admin/support roles) and contact verification through one-time codes.
+
+Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+This file is part of the OptIn Manager project and is licensed under the MIT License.
+See the root LICENSE file for details.
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Body
 from fastapi.security import OAuth2PasswordRequestForm

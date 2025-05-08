@@ -1,37 +1,110 @@
+/**
+ * ContactDashboard.jsx
+ *
+ * Contact lookup and management interface.
+ *
+ * This component provides an administrative interface for searching, viewing, and
+ * managing contacts in the system. It allows administrators to search for contacts
+ * by email or phone, filter by consent status, and perform administrative opt-outs.
+ *
+ * As noted in the memories, this component was updated to fix search functionality
+ * issues related to encrypted contact values. The implementation now properly handles
+ * searching for contacts and displaying their consent status from the related consent
+ * records.
+ *
+ * Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+ * This file is part of the OptIn Manager project and is licensed under the MIT License.
+ * See the root LICENSE file for details.
+ */
+
 import { useState, useEffect } from 'react';
 import { Box, Typography, Paper, TextField, Stack, Button, List, ListItem, ListItemText, Divider, CircularProgress, Alert, MenuItem } from '@mui/material';
 import { fetchContacts, optOutById } from '../api';
 
-// Utility to mask PII
+/**
+ * Masks an email address for privacy protection.
+ * 
+ * This utility function obscures most of the username portion of an email
+ * address while preserving the domain, helping to protect user privacy
+ * while still providing enough information for identification.
+ * 
+ * @param {string} email - The email address to mask
+ * @returns {string} The masked email address
+ */
 function maskEmail(email) {
   if (!email) return '';
   const [user, domain] = email.split('@');
   return user[0] + '***@' + domain;
 }
+
+/**
+ * Masks a phone number for privacy protection.
+ * 
+ * This utility function obscures most digits of a phone number while
+ * preserving the last two digits, helping to protect user privacy
+ * while still providing enough information for identification.
+ * 
+ * @param {string} phone - The phone number to mask
+ * @returns {string} The masked phone number
+ */
 function maskPhone(phone) {
   if (!phone) return '';
   return phone.replace(/\d(?=\d{2})/g, '*');
 }
 
+/**
+ * Available consent status filter options.
+ * 
+ * These options allow administrators to filter contacts based on their
+ * current consent status, making it easier to identify and manage specific
+ * groups of contacts.
+ */
 const CONSENT_OPTIONS = [
   { label: 'Any', value: '' },
   { label: 'Opted In', value: 'opted_in' },
   { label: 'Opted Out', value: 'opted_out' },
 ];
 
+/**
+ * Contact lookup and management dashboard component.
+ * 
+ * This component provides administrators with tools to search for and manage
+ * contacts in the system. It includes features for filtering contacts by consent
+ * status, searching by email or phone, and performing administrative opt-outs.
+ * 
+ * As noted in the memories, this component was updated to fix search functionality
+ * issues related to encrypted contact values and to properly display contacts with
+ * their consent status from related consent records.
+ * 
+ * @returns {JSX.Element} The rendered contact dashboard
+ */
 export default function ContactDashboard() {
+  // Search and filter state
   const [search, setSearch] = useState('');
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [consent, setConsent] = useState('');
   const [timeWindow, setTimeWindow] = useState('365'); // Default to 365 days to show more contacts
-  // Added missing state for runtime errors
+  
+  // Contact management state
   const [prefDialogId, setPrefDialogId] = useState(null);
   const [optOutLoadingId, setOptOutLoadingId] = useState(null);
   const [optOutError, setOptOutError] = useState('');
   const [optOutSuccess, setOptOutSuccess] = useState('');
 
+  /**
+   * Fetches contacts based on current search and filter criteria.
+   * 
+   * This function retrieves contacts from the backend API using the current
+   * search term, consent filter, and time window settings. It handles loading
+   * states and error conditions, providing appropriate feedback to the user.
+   * 
+   * As noted in the memories, this function was updated to work with the
+   * encrypted contact values by implementing two search approaches:
+   * - For complete email searches: Using deterministic ID pattern matching
+   * - For partial searches: Fetching and decrypting records in memory
+   */
   const fetchAndSetContacts = async () => {
     setLoading(true);
     setError('');

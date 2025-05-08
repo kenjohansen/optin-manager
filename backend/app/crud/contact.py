@@ -19,9 +19,20 @@ logger = logging.getLogger(__name__)
 def get_contact(db: Session, contact_id: str):
     """
     Retrieve a contact by their ID.
+    
+    This function is essential for accessing specific contact records using their
+    deterministic ID. The system uses deterministic IDs derived from the contact
+    value (email/phone) to enable lookups without decrypting the data, balancing
+    security with functionality.
+    
+    As noted in the memories, contacts are stored with encrypted values, so this
+    ID-based lookup is the primary way to efficiently retrieve contact records
+    without exposing the actual contact information.
+    
     Args:
         db (Session): SQLAlchemy database session.
         contact_id (str): Contact unique identifier (deterministic ID).
+        
     Returns:
         Contact: Contact object if found, else None.
     """
@@ -30,11 +41,26 @@ def get_contact(db: Session, contact_id: str):
 def get_contact_by_value(db: Session, contact_value: str, contact_type: str = None):
     """
     Retrieve a contact by their email or phone value.
+    
+    This function is critical for the verification process, allowing the system to
+    check if a contact already exists before creating a new record. It works by
+    generating the same deterministic ID that would have been used when creating
+    the contact, then looking up that ID in the database.
+    
+    This approach allows the system to find contacts based on their email or phone
+    without storing these values in plaintext, which is essential for protecting
+    personally identifiable information (PII) while still maintaining functionality.
+    
+    As noted in the memories, the search functionality was fixed to work with
+    encrypted contact values by generating deterministic IDs from search terms
+    and looking for matching patterns.
+    
     Args:
         db (Session): SQLAlchemy database session.
-        contact_value (str): Email or phone value.
+        contact_value (str): Email or phone value to look up.
         contact_type (str, optional): Type of contact ('email' or 'phone').
             If not provided, it will be inferred from the value.
+            
     Returns:
         Contact: Contact object if found, else None.
     """
@@ -51,11 +77,28 @@ def get_contact_by_value(db: Session, contact_value: str, contact_type: str = No
 def create_contact(db: Session, contact: ContactCreate):
     """
     Create a new contact record with encrypted data.
+    
+    This function is fundamental to the OptIn Manager system, as it securely stores
+    contact information while protecting personally identifiable information (PII).
+    It implements a critical security pattern by:
+    
+    1. Generating a deterministic ID from the contact value, which allows lookups
+       without decrypting the data
+    2. Encrypting the actual contact value before storage, ensuring that PII is
+       never stored in plaintext
+    
+    This approach balances security requirements with functional needs, allowing
+    the system to manage contacts and their consent while maintaining strong
+    privacy protections. This is essential for compliance with regulations like
+    GDPR and CCPA that require appropriate security measures for personal data.
+    
     Args:
         db (Session): SQLAlchemy database session.
-        contact (ContactCreate): Contact creation data.
+        contact (ContactCreate): Contact creation data including the contact value
+                               (email/phone) and type.
+        
     Returns:
-        Contact: Created contact object.
+        Contact: Created contact object with encrypted data and deterministic ID.
     """
     # Extract contact value and type
     contact_value = contact.contact_value
@@ -86,12 +129,27 @@ def create_contact(db: Session, contact: ContactCreate):
 def update_contact(db: Session, db_contact: Contact, contact_update: ContactUpdate):
     """
     Update an existing contact record.
+    
+    This function allows for updates to contact metadata while maintaining the
+    security of the contact's PII. Importantly, it does not allow updating the
+    actual contact value (email/phone) or type, as these are used to generate
+    the deterministic ID that serves as the primary key.
+    
+    This restriction is intentional and ensures the integrity of the contact
+    identification system. If a contact's email or phone changes, a new contact
+    record should be created instead, preserving the history of the original
+    contact for compliance and audit purposes.
+    
+    The function primarily allows updates to status, comment, and other metadata
+    fields that don't affect the contact's identity.
+    
     Args:
         db (Session): SQLAlchemy database session.
-        db_contact (Contact): Contact object to update.
-        contact_update (ContactUpdate): Update data.
+        db_contact (Contact): Existing contact object to update.
+        contact_update (ContactUpdate): Update data for allowed fields only.
+        
     Returns:
-        Contact: Updated contact object.
+        Contact: Updated contact object with new metadata.
     """
     # Update only the allowed fields
     update_data = contact_update.model_dump(exclude_unset=True)
@@ -108,9 +166,24 @@ def update_contact(db: Session, db_contact: Contact, contact_update: ContactUpda
 def delete_contact(db: Session, db_contact: Contact):
     """
     Delete a contact record.
+    
+    This function should be used with extreme caution, as deleting contact records
+    can impact related consent records and the organization's ability to demonstrate
+    compliance with privacy regulations. In most cases, it's preferable to update
+    the contact status to 'inactive' rather than deleting the record entirely.
+    
+    However, this function may be necessary in specific circumstances:
+    - Responding to data deletion requests under GDPR's "right to be forgotten"
+    - Correcting erroneously created contact records
+    - Implementing data retention policies after the required retention period
+    
+    Before deleting any contact record, ensure that you have considered the
+    regulatory implications and have documented the reason for deletion.
+    
     Args:
         db (Session): SQLAlchemy database session.
         db_contact (Contact): Contact object to delete.
+        
     Returns:
         None
     """
@@ -120,25 +193,54 @@ def delete_contact(db: Session, db_contact: Contact):
 def list_contacts(db: Session, skip=0, limit=100):
     """
     Return paginated contacts for admin listing with masked values.
+    
+    This function supports the administrative interface for contact management,
+    providing a paginated list of contacts. Pagination is essential for performance
+    when dealing with large numbers of contacts, preventing memory issues and
+    ensuring responsive UI.
+    
+    The contact values are not decrypted in the database query itself, but rather
+    in memory when needed for display, and even then they are masked to protect
+    privacy. This approach maintains security while still allowing administrators
+    to view and manage contacts.
+    
     Args:
         db (Session): SQLAlchemy database session.
-        skip (int): Number of records to skip.
-        limit (int): Maximum number of records to return.
+        skip (int): Number of records to skip for pagination.
+        limit (int): Maximum number of records to return per page.
+        
     Returns:
-        list: List of Contact objects.
+        list: List of Contact objects for the requested page.
     """
     return db.query(Contact).offset(skip).limit(limit).all()
 
 def list_contacts_with_filters(db: Session, search=None, consent=None, time_window=None, skip=0, limit=100):
     """
     Return filtered contacts based on search criteria.
+    
+    This function is critical for the Contacts Lookup page, allowing administrators
+    to search and filter contacts based on various criteria. As noted in the memories,
+    this function was updated to address several issues with the search functionality:
+    
+    1. For complete email searches: It generates a deterministic ID from the search
+       term and looks for contacts with matching ID patterns
+    2. For partial searches or phone numbers: It fetches records and decrypts them
+       in memory to check for matches
+    3. The consent filtering was updated to properly join with the Consent table
+    4. The time window was increased from 7 to 365 days to show more historical contacts
+    
+    This approach balances security (by not storing plaintext contact information)
+    with functionality (by enabling search capabilities), which is essential for
+    a usable contact management interface that still protects PII.
+    
     Args:
         db (Session): SQLAlchemy database session.
         search (str, optional): Email or phone to search for.
         consent (str, optional): Filter by consent status ('opted_in' or 'opted_out').
         time_window (int, optional): Filter by contacts updated in the last N days.
-        skip (int): Number of records to skip.
-        limit (int): Maximum number of records to return.
+        skip (int): Number of records to skip for pagination.
+        limit (int): Maximum number of records to return per page.
+        
     Returns:
         list: List of Contact objects matching the filters.
     """

@@ -1,8 +1,16 @@
 """
+models/create_consents_table.py
+
 Script to create the consents table in the database.
 
 This script should be run directly to create the consents table
-if it doesn't already exist in the database.
+if it doesn't already exist in the database. The consents table is a critical
+component of the OptIn Manager system, storing all user consent records that
+form the legal basis for communications.
+
+Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+This file is part of the OptIn Manager project and is licensed under the MIT License.
+See the root LICENSE file for details.
 """
 
 import os

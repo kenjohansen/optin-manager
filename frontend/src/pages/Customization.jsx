@@ -1,3 +1,23 @@
+/**
+ * Customization.jsx
+ *
+ * System customization and provider configuration interface.
+ *
+ * This component provides an administrative interface for customizing the application's
+ * branding and configuring communication providers. It allows administrators to set
+ * company information, upload logos, choose theme colors, and configure email and SMS
+ * provider credentials.
+ *
+ * As noted in the memories, this component is accessible to users with Admin role and
+ * provides essential configuration options for the system's appearance and communication
+ * capabilities. The provider configuration is particularly important for the Opt-Out
+ * workflow, as it enables the system to send verification codes and other communications.
+ *
+ * Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+ * This file is part of the OptIn Manager project and is licensed under the MIT License.
+ * See the root LICENSE file for details.
+ */
+
 import { useState, useEffect } from 'react';
 import { Box, Paper, CircularProgress, Alert } from '@mui/material';
 import BrandingSection from '../components/BrandingSection';
@@ -5,7 +25,28 @@ import ProviderSection from '../components/ProviderSection';
 import { fetchCustomization, saveCustomization, API_BASE } from '../api';
 import { setProviderSecret, getSecretsStatus, testProviderConnection, deleteProviderSecret } from '../api/providerSecrets';
 
+/**
+ * System customization and provider configuration component.
+ * 
+ * This component provides a comprehensive interface for administrators to customize
+ * the application's appearance and configure communication providers. It handles
+ * branding elements like company name, logo, colors, and privacy policy URL, as well
+ * as the configuration of email and SMS provider credentials.
+ * 
+ * The component communicates with the backend to fetch existing customization settings,
+ * save updated settings, and test provider connections. It also updates the application's
+ * global theme based on the selected colors.
+ * 
+ * @param {Object} props - Component props
+ * @param {Function} props.setLogoUrl - Function to update the logo URL in the parent component
+ * @param {Function} props.setPrimary - Function to update the primary color in the parent component
+ * @param {Function} props.setSecondary - Function to update the secondary color in the parent component
+ * @param {Function} props.setCompanyName - Function to update the company name in the parent component
+ * @param {Function} props.setPrivacyPolicy - Function to update the privacy policy URL in the parent component
+ * @returns {JSX.Element} The rendered customization interface
+ */
 export default function Customization({ setLogoUrl, setPrimary, setSecondary, setCompanyName, setPrivacyPolicy }) {
+  // Branding state
   const [logo, setLogo] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [primary, setPrimaryLocal] = useState('#1976d2');
@@ -15,22 +56,31 @@ export default function Customization({ setLogoUrl, setPrimary, setSecondary, se
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  // Company/Policy/Provider
+  // Company information and provider selection state
   const [companyName, setCompanyNameLocal] = useState('');
   const [privacyPolicy, setPrivacyPolicyLocal] = useState('');
   const [emailProvider, setEmailProvider] = useState('aws_ses');
   const [smsProvider, setSmsProvider] = useState('aws_sns');
 
-  // Provider credentials and status
-  const [emailCreds, setEmailCreds] = useState({ accessKey: '', secretKey: '', region: '' });
+  // Provider credentials and connection status state
+  const [emailCreds, setEmailCreds] = useState({ accessKey: '', secretKey: '', region: '', fromAddress: '' });
   const [smsCreds, setSmsCreds] = useState({ accessKey: '', secretKey: '', region: '' });
-  // Remove secretsStatus, rely on customization API's status fields
   const [testResult, setTestResult] = useState({ email: '', sms: '' });
   const [credSaving, setCredSaving] = useState({ email: false, sms: false });
   const [credError, setCredError] = useState({ email: '', sms: '' });
   const [customization, setCustomization] = useState({});
   const [credsSaved, setCredsSaved] = useState({ email: false, sms: false });
 
+  /**
+   * Fetches current customization settings from the backend.
+   * 
+   * This function retrieves the current branding and provider configuration
+   * settings from the backend API. It updates the component state with the
+   * retrieved values and handles authentication checks and error conditions.
+   * 
+   * This is essential for ensuring that administrators can view and modify
+   * the current system settings rather than starting from default values.
+   */
   const refreshCustomization = () => {
     setLoading(true);
     setError('');

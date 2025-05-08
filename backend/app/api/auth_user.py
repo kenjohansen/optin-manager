@@ -2,6 +2,19 @@
 api/auth_user.py
 
 API endpoints for authentication user (admin/staff/service accounts) management.
+
+This module provides the API endpoints for managing authenticated users with
+role-based access control. It supports creating, reading, updating, and deleting
+users with admin or support roles, as well as accessing related data like contacts
+and message history.
+
+As noted in the memories, the system supports two roles for authenticated users:
+- Admin: Can create campaigns, products, and manage authenticated users
+- Support: Can view all pages but cannot create campaigns/products or manage users
+
+Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+This file is part of the OptIn Manager project and is licensed under the MIT License.
+See the root LICENSE file for details.
 """
 
 from fastapi import APIRouter, Depends, HTTPException

@@ -1,3 +1,18 @@
+"""
+alembic/env.py
+
+Alembic migration environment configuration for OptIn Manager database.
+
+This module configures the Alembic migration environment for the OptIn Manager
+database. It handles both online and offline migration modes, supports multiple
+database backends (SQLite for development, PostgreSQL for production), and ensures
+all models are properly tracked for schema migrations.
+
+Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+This file is part of the OptIn Manager project and is licensed under the MIT License.
+See the root LICENSE file for details.
+"""
+
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -15,12 +30,26 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Import all models and set target_metadata for autogenerate support
+# This ensures Alembic can detect model changes and generate appropriate migrations
+# All models must be imported here to be included in migrations
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'app')))
 from app.core.database import Base
-import app.models.auth_user, app.models.optin, app.models.customization, app.models.message, app.models.message_template, app.models.contact, app.models.verification_code, app.models.consent
 
+# Import all models explicitly to ensure they're registered with SQLAlchemy
+# As noted in the memories, the models have been renamed and restructured
+# (e.g., user.py → contact.py) to better reflect their purpose
+import app.models.auth_user     # Authenticated users with roles (Admin/Support)
+import app.models.optin         # Opt-in programs (formerly Campaign/Product)
+import app.models.customization # UI branding and communication provider settings
+import app.models.message       # Message history with audit trail for compliance
+import app.models.message_template # Templates for consistent communications
+import app.models.contact       # Non-authorized users who verify with a code
+import app.models.verification_code # Security codes for contact verification
+import app.models.consent       # Consent records for regulatory compliance
+
+# Set the target metadata for Alembic to use in migration generation
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
@@ -39,9 +68,18 @@ def run_migrations_offline() -> None:
 
     Calls to context.execute() here emit the given string to the
     script output.
-
+    
+    This mode is particularly useful for generating migration scripts
+    that can be reviewed before execution or run in environments where
+    direct database access is restricted.
+    
+    As noted in the memories, the system supports SQLite for development
+    and testing, with configurations managed via environment variables.
+    This function handles the appropriate configuration for different
+    database backends.
     """
     # Get the database URL from environment or use the default
+    # This ensures compatibility with the database configuration in core/database.py
     import os
     url = os.getenv("DATABASE_URL", "sqlite:///./optin_manager.db")
     
@@ -49,9 +87,12 @@ def run_migrations_offline() -> None:
     config.set_main_option("sqlalchemy.url", url)
     
     # Detect database type and configure accordingly
+    # Different databases require different migration strategies
     schema = None
     is_sqlite = url.startswith("sqlite")
     
+    # PostgreSQL supports schemas for better organization
+    # SQLite does not support schemas, so we only configure this for PostgreSQL
     if url.startswith("postgresql"):
         schema = "optin_manager"
         
@@ -76,7 +117,15 @@ def run_migrations_online() -> None:
 
     In this scenario we need to create an Engine
     and associate a connection with the context.
-
+    
+    This is the standard mode for applying migrations directly to a
+    database. It handles connection pooling and transaction management
+    to ensure migrations are applied atomically.
+    
+    As noted in the memories, the system supports SQLite for development
+    and testing. This function detects the database type and applies
+    appropriate configuration options, such as using batch operations
+    for SQLite which has limited ALTER TABLE support.
     """
     # Get the database URL from environment or use the default
     import os

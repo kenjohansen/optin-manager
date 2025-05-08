@@ -1,3 +1,21 @@
+"""
+api/customization.py
+
+API endpoints for UI customization and branding settings.
+
+This module provides endpoints for managing the application's branding and UI
+customization, including logo uploads, color scheme settings, and communication
+provider configurations. These settings allow organizations to personalize the
+OptIn Manager interface to match their brand identity.
+
+As noted in the memories, this supports UI branding elements and communication
+provider settings that are essential for consistent user experience.
+
+Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+This file is part of the OptIn Manager project and is licensed under the MIT License.
+See the root LICENSE file for details.
+"""
+
 import os
 import logging
 import shutil
@@ -40,6 +58,37 @@ async def save_customization(
     sms_provider: str = Form(None),
     db: Session = Depends(get_db)
 ):
+    """
+    Save or update customization settings.
+    
+    This endpoint allows administrators to configure the branding and communication
+    settings for the OptIn Manager application. It handles both the visual elements
+    (company name, colors, logo) and the communication provider settings.
+    
+    The customization settings are essential for maintaining a consistent brand
+    identity across all user-facing interfaces and for ensuring that communications
+    are sent through the properly configured channels.
+    
+    The endpoint supports file uploads for the organization logo and stores it in
+    a dedicated uploads directory with appropriate permissions. It also verifies
+    file types to ensure only valid image formats are accepted.
+    
+    Args:
+        logo (UploadFile, optional): Organization logo image file
+        primary (str, optional): Primary brand color in hex format
+        secondary (str, optional): Secondary brand color in hex format
+        company_name (str, optional): Organization name for branding
+        privacy_policy_url (str, optional): URL to the organization's privacy policy
+        email_provider (str, optional): Email service provider name
+        sms_provider (str, optional): SMS service provider name
+        db (Session): SQLAlchemy database session
+        
+    Returns:
+        CustomizationOut: The updated customization settings
+        
+    Requires:
+        Admin role: Only administrators can modify customization settings
+    """
     logger.info(f"save_customization called with logo: {logo is not None}")
     logger.info(f"Current working directory: {os.getcwd()}")
     
@@ -121,8 +170,27 @@ async def save_customization(
         sms_connection_status=getattr(customization, 'sms_connection_status', None)
     )
 
-@router.get("/", response_model=CustomizationOut)
+@router.get("", response_model=CustomizationOut)
 def get_customization(request: Request, db: Session = Depends(get_db)):
+    """
+    Retrieve current customization settings.
+    
+    This endpoint provides the current branding and communication settings for
+    the application. It's used by the frontend to apply the correct visual styling
+    and to display organization-specific information.
+    
+    Unlike other endpoints, this one does not require authentication since the
+    branding needs to be visible to all users, including those who are not logged in.
+    This allows the login page and public-facing components to display the correct
+    branding.
+    
+    Args:
+        request (Request): FastAPI request object
+        db (Session): SQLAlchemy database session
+        
+    Returns:
+        CustomizationOut: The current customization settings
+    """
     customization = db.query(Customization).first()
     if not customization:
         return CustomizationOut(

@@ -21,11 +21,17 @@ router = APIRouter(prefix="/consents", tags=["consents"])
 def create_consent(consent: ConsentCreate, db: Session = Depends(get_db)):
     """
     Create a new consent record.
+    
+    This endpoint enables the creation of explicit consent records tied to specific opt-in programs.
+    Maintaining separate consent records is essential for regulatory compliance (GDPR, CCPA, etc.)
+    and provides an audit trail of when and how users provided their consent.
+    
     Args:
-        consent (ConsentCreate): Consent creation data.
+        consent (ConsentCreate): Consent creation data including contact ID and opt-in ID.
         db (Session): SQLAlchemy database session.
+        
     Returns:
-        ConsentOut: Created consent object.
+        ConsentOut: Created consent object with generated ID and timestamps.
     """
     db_consent = crud_consent.create_consent(db, consent)
     return db_consent
@@ -34,11 +40,19 @@ def create_consent(consent: ConsentCreate, db: Session = Depends(get_db)):
 def read_consent(consent_id: str, db: Session = Depends(get_db)):
     """
     Retrieve a consent record by its ID.
+    
+    This endpoint allows retrieving detailed information about a specific consent record,
+    which is necessary for auditing purposes and to verify the consent status of a particular
+    contact for a specific opt-in program. This supports compliance requirements to demonstrate
+    proof of consent when requested.
+    
     Args:
         consent_id (str): Consent unique identifier.
         db (Session): SQLAlchemy database session.
+        
     Returns:
-        ConsentOut: Consent object if found.
+        ConsentOut: Consent object if found, containing all consent details including timestamps.
+        
     Raises:
         HTTPException: 404 if consent not found.
     """
@@ -51,12 +65,21 @@ def read_consent(consent_id: str, db: Session = Depends(get_db)):
 def update_consent(consent_id: str, consent_update: ConsentUpdate, db: Session = Depends(get_db)):
     """
     Update a consent record by its ID.
+    
+    This endpoint allows modifying an existing consent record, which is necessary when
+    users change their consent preferences. Updating rather than creating new records
+    maintains the historical relationship between the contact and opt-in program while
+    recording the change in consent status. This supports the user's right to withdraw
+    or modify consent as required by privacy regulations.
+    
     Args:
-        consent_id (uuid.UUID): Consent unique identifier.
-        consent_update (ConsentUpdate): Update data.
+        consent_id (str): Consent unique identifier.
+        consent_update (ConsentUpdate): Update data including new consent status.
         db (Session): SQLAlchemy database session.
+        
     Returns:
-        ConsentOut: Updated consent object.
+        ConsentOut: Updated consent object with refreshed timestamps.
+        
     Raises:
         HTTPException: 404 if consent not found.
     """
@@ -69,11 +92,19 @@ def update_consent(consent_id: str, consent_update: ConsentUpdate, db: Session =
 def delete_consent(consent_id: str, db: Session = Depends(get_db)):
     """
     Delete a consent record by its ID.
+    
+    This endpoint provides the ability to completely remove a consent record from the system.
+    While updating consent status is generally preferred for audit purposes, deletion may be
+    necessary in specific scenarios such as honoring a user's "right to be forgotten" request
+    under GDPR or similar privacy regulations, or when correcting erroneously created records.
+    
     Args:
         consent_id (str): Consent unique identifier.
         db (Session): SQLAlchemy database session.
+        
     Returns:
         dict: {"ok": True} on successful deletion.
+        
     Raises:
         HTTPException: 404 if consent not found.
     """

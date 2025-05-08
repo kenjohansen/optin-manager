@@ -1,7 +1,45 @@
+/**
+ * PreferencesDashboard.jsx
+ *
+ * User preferences management dashboard.
+ *
+ * This component provides an interface for users to view and manage their communication
+ * preferences across different opt-in programs. It allows users to toggle their consent
+ * for each program, provide comments about their preferences, and save their choices.
+ *
+ * As noted in the memories, this is a key component of the Opt-Out workflow in Phase 1,
+ * allowing users to manage their preferences after verifying their identity. This
+ * component ensures compliance with privacy regulations like GDPR and CCPA by giving
+ * users control over their communication preferences.
+ *
+ * Copyright (c) 2025 Ken Johansen, OptIn Manager Contributors
+ * This file is part of the OptIn Manager project and is licensed under the MIT License.
+ * See the root LICENSE file for details.
+ */
+
 import { useState } from 'react';
 import { Typography, Stack, Switch, Button, Alert, CircularProgress, Paper, FormControlLabel, TextField, Box, Divider } from '@mui/material';
 import { updateContactPreferences } from '../api';
 
+/**
+ * User preferences management dashboard component.
+ * 
+ * This component displays a user's current communication preferences and allows
+ * them to update their opt-in status for each available program. It handles the
+ * presentation of preferences, user interactions, and submission of preference
+ * updates to the backend.
+ * 
+ * The component is designed to be user-friendly while ensuring proper tracking
+ * of consent for compliance purposes. It includes features like commenting on
+ * preference changes and global opt-out options for comprehensive consent management.
+ * 
+ * @param {Object} props - Component props
+ * @param {string} props.masked - Masked version of the user's contact information
+ * @param {string} props.token - Authentication token for API requests
+ * @param {Object} props.preferences - User's current preference settings
+ * @param {Function} props.setPreferences - Function to update preferences in parent component
+ * @returns {JSX.Element} The rendered preferences dashboard
+ */
 export default function PreferencesDashboard({ masked, token, preferences, setPreferences }) {
   console.log('PreferencesDashboard received:', { masked, token, preferences });
   
@@ -16,7 +54,7 @@ export default function PreferencesDashboard({ masked, token, preferences, setPr
   // Extract last comment from preferences
   const lastComment = preferences?.last_comment || '';
   
-  // Log the programs received from the backend
+  // Log the programs received from the backend for debugging purposes
   if (hasPrograms) {
     console.log('Programs from backend:', preferences.programs);
     preferences.programs.forEach(program => {
@@ -24,18 +62,31 @@ export default function PreferencesDashboard({ masked, token, preferences, setPr
     });
   }
   
-  // Local preferences for opt-ins - default to empty array if no programs
+  // State for managing local preferences before submission
   const [localPrefs, setLocalPrefs] = useState(
     hasPrograms ? preferences.programs.map(p => ({ ...p })) : []
   );
+  
+  // State for individual preference updates
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [comment, setComment] = useState(lastComment || '');
+  
+  // State for global preference updates (opt-out all)
   const [globalLoading, setGlobalLoading] = useState(false);
   const [globalSuccess, setGlobalSuccess] = useState('');
   const [globalError, setGlobalError] = useState('');
 
+  /**
+   * Toggles the opt-in status for a specific program.
+   * 
+   * This function updates the local state when a user toggles their consent
+   * for a specific communication program. It also clears any previous success
+   * or error messages to provide a clean state for the next save operation.
+   * 
+   * @param {number} idx - Index of the program in the localPrefs array
+   */
   const handleToggle = idx => {
     setLocalPrefs(prefs =>
       prefs.map((p, i) => i === idx ? { ...p, opted_in: !p.opted_in } : p)
@@ -44,6 +95,13 @@ export default function PreferencesDashboard({ masked, token, preferences, setPr
     setError('');
   };
 
+  /**
+   * Saves the user's updated preferences to the backend.
+   * 
+   * This function submits the user's preference changes to the API, including
+   * any comment they've provided about their changes. It handles loading states
+   * and error conditions, providing appropriate feedback to the user.
+   */
   const handleSave = async () => {
     setLoading(true);
     setError('');
