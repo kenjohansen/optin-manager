@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>19/19</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">90% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>9/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/17</span>
+                <span class='fraction'>17/17</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -108,86 +108,86 @@
 <a name='L43'></a><a href='#L43'>43</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">74x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">54x</span>
+<span class="cline-any cline-yes">54x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// Utility functions for role-based auth and visibility
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >parseJwt(</span>token) {
-<span class="cstat-no" title="statement not covered" >  if (!token) <span class="cstat-no" title="statement not covered" >return null;</span></span>
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    const base64Url = <span class="cstat-no" title="statement not covered" >token.split('.')[1];</span>
-    const base64 = <span class="cstat-no" title="statement not covered" >base64Url.replace(/-/g, '+').replace(/_/g, '/');</span>
-<span class="cstat-no" title="statement not covered" >    return JSON.parse(atob(base64));</span>
+export function parseJwt(token) {
+  if (!token) return null;
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(base64));
   } catch {
-<span class="cstat-no" title="statement not covered" >    return null;</span>
+    return null;
   }
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >getRoleFromToken(</span>token) {
-  const payload = <span class="cstat-no" title="statement not covered" >parseJwt(token);</span>
-<span class="cstat-no" title="statement not covered" >  return payload?.scope || null;</span>
+export function getRoleFromToken(token) {
+  const payload = parseJwt(token);
+  return payload?.scope || null;
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >isAdmin(</span>token) {
-<span class="cstat-no" title="statement not covered" >  return getRoleFromToken(token) === 'admin';</span>
+export function isAdmin(token) {
+  return getRoleFromToken(token) === 'admin';
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >isSupport(</span>token) {
-<span class="cstat-no" title="statement not covered" >  return getRoleFromToken(token) === 'support';</span>
+export function isSupport(token) {
+  return getRoleFromToken(token) === 'support';
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >isAuthenticated(</span>token) {
-  const payload = <span class="cstat-no" title="statement not covered" >parseJwt(token);</span>
-<span class="cstat-no" title="statement not covered" >  if (!payload) <span class="cstat-no" title="statement not covered" >return false;</span></span>
+export function isAuthenticated(token) {
+  const payload = parseJwt(token);
+  if (!payload) return false;
   
   // Check if token has expiration claim
-<span class="cstat-no" title="statement not covered" >  if (payload.exp) {</span>
+  <span class="missing-if-branch" title="else path not taken" >E</span>if (payload.exp) {
     // exp is in seconds, Date.now() is in milliseconds
-    const currentTime = <span class="cstat-no" title="statement not covered" >Math.floor(Date.now() / 1000);</span>
-<span class="cstat-no" title="statement not covered" >    if (currentTime &gt;= payload.exp) {</span>
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (currentTime &gt;= payload.exp) {
       // Token has expired
-<span class="cstat-no" title="statement not covered" >      return false;</span>
+      return false;
     }
   }
   
-<span class="cstat-no" title="statement not covered" >  return !!payload.scope; </span>// Check if the token has a valid role
+  return !!payload.scope; // Check if the token has a valid role
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -196,7 +196,7 @@ export function <span class="fstat-no" title="function not covered" >isAuthentic
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-08T17:24:39.251Z
+                at 2025-05-10T12:12:47.571Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

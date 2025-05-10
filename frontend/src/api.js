@@ -313,30 +313,26 @@ export const fetchContactPreferences = async ({ token, contact }) => {
   console.log('Fetching preferences with:', token ? 'token' : 'contact', contact || '');
   
   try {
-    // If we have a token, use it in the Authorization header
+    // Prepare params object
+    const params = {};
+    
+    // If we have a token, add it to the params
     if (token) {
-      const res = await axios.get(`${API_BASE}/preferences/user-preferences`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      console.log('Preferences response (token):', res.data);
-      return res.data;
+      params.token = token;
     }
-    
-    // Otherwise, use the contact parameter in the query string
+    // Otherwise, use the contact parameter
     else if (contact) {
-      const res = await axios.get(`${API_BASE}/preferences/user-preferences`, {
-        params: { contact }
-      });
-      console.log('Preferences response (contact):', res.data);
-      return res.data;
+      params.contact = contact;
     }
-    
     // If neither token nor contact is provided, throw an error
     else {
       throw new Error('Either token or contact must be provided');
     }
+    
+    // Make the request with the appropriate params
+    const res = await axios.get(`${API_BASE}/preferences/user-preferences`, { params });
+    console.log('Preferences response:', res.data);
+    return res.data;
   } catch (error) {
     console.error('Error fetching preferences:', error.response?.data || error.message);
     throw error;
@@ -361,36 +357,21 @@ export const fetchContactPreferences = async ({ token, contact }) => {
  * @returns {Promise<Object>} Updated preferences data
  */
 export const updateContactPreferences = async ({ token, contact, preferences = {}, comment, global_opt_out }) => {
-  // Prepare the payload with preferences and optional fields
+  // Prepare the payload with all required fields
   const payload = {
-    ...preferences
+    token,
+    preferences
   };
+  
+  // Add contact to payload if provided and no token
+  if (contact && !token) payload.contact = contact;
+  
+  // Add optional fields if provided
   if (comment !== undefined) payload.comment = comment;
   if (global_opt_out !== undefined) payload.global_opt_out = global_opt_out;
   
-  // Configuration for the request
-  const config = {};
-  
-  // If we have a token, use it in the Authorization header
-  if (token) {
-    config.headers = {
-      Authorization: `Bearer ${token}`
-    };
-  }
-  
-  // If we have a contact but no token, add it as a query parameter
-  const params = {};
-  if (contact && !token) {
-    params.contact = contact;
-  }
-  
-  // Add params to config if needed
-  if (Object.keys(params).length > 0) {
-    config.params = params;
-  }
-  
-  // Send request with the appropriate authentication
-  const res = await axios.patch(`${API_BASE}/preferences/user-preferences`, payload, config);
+  // Send request with the properly structured payload
+  const res = await axios.patch(`${API_BASE}/preferences/user-preferences`, payload);
   return res.data;
 };
 

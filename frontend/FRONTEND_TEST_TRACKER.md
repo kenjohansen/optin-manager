@@ -8,19 +8,21 @@ This document tracks the status of frontend tests for the OptIn Manager applicat
 |----------|-------------|-----------|---------|---------|-------------|
 | Core Components | 3 | 3 | 3 | 0 | 0 |
 | Pages | 10 | 10 | 10 | 0 | 0 |
-| API Utilities | 3 | 3 | 3 | 0 | 0 |
-| **Total** | **16** | **16** | **16** | **0** | **0** |
+| API Utilities | 8 | 8 | 8 | 0 | 0 |
+| **Total** | **21** | **21** | **21** | **0** | **0** |
 
 ## Code Coverage Goals
 
 | Component | Current Coverage | Target Coverage | Priority |
 |-----------|-----------------|-----------------|----------|
-| AppHeader.jsx | 68.08% | 80% | Medium |
+| App.jsx | 63.33% | 80% | High |
+| AppHeader.jsx | 70.21% | 80% | Medium |
 | ContactOptOut.jsx | 52.31% | 80% | High |
-| Customization.jsx | 39.06% | 80% | Medium |
-| UserManagement.jsx | 39.5% | 80% | Medium |
-| PreferencesDashboard.jsx | 46.15% | 80% | Medium |
-| OptInSetup.jsx | 68.57% | 80% | Low |
+| Customization.jsx | 60.15% | 80% | Medium |
+| UserManagement.jsx | 68.57% | 80% | Medium |
+| PreferencesDashboard.jsx | 76.54% | 80% | Low |
+| OptInSetup.jsx | 68.57% | 80% | Medium |
+| api.js | 82.92% | 80% | ✓ Completed |
 | ChangePassword.jsx | 80% | 80% | ✓ Completed |
 | VerbalOptIn.jsx | 89.52% | 80% | ✓ Completed |
 | ForgotPassword.jsx | 100% | 80% | ✓ Completed |
@@ -28,14 +30,17 @@ This document tracks the status of frontend tests for the OptIn Manager applicat
 | ContactDashboard.jsx | 94% | 80% | ✓ Completed |
 | Dashboard.jsx | 94.59% | 80% | ✓ Completed |
 | ProtectedRoute.jsx | 100% | 80% | ✓ Completed |
-| Overall | 57.9% | 80% | - |
+| theme.js | 100% | 80% | ✓ Completed |
+| auth.js | 100% | 80% | ✓ Completed |
+| phoneUtils.js | 93.75% | 80% | ✓ Completed |
+| Overall | 77.12% | 80% | - |
 
 ## Tests to Update
 
 | Test File | Status | Description | Last Updated |
 |-----------|--------|-------------|--------------|
 | App.test.jsx | Completed | Expanded to test theme switching, routing, and protected routes | 2025-05-07 |
-| Customization.test.jsx | Completed | Added comprehensive tests for branding settings, provider configuration, and authentication handling | 2025-05-08 |
+| Customization.test.jsx | Completed | Added comprehensive tests for branding settings, provider configuration, authentication handling, error handling, and form validation | 2025-05-08 |
 | UserManagement.test.jsx | In Progress | Improving coverage for user management functionality | 2025-05-08 |
 
 ## New Tests to Add
@@ -70,6 +75,7 @@ This document tracks the status of frontend tests for the OptIn Manager applicat
 | api.test.js | Completed | Test API functions, error handling, authentication | 2025-05-08 |
 | auth.test.js | Completed | Test authentication utility functions | 2025-05-07 |
 | phoneUtils.test.js | Completed | Test phone number formatting and validation | 2025-05-07 |
+| providerSecrets.test.js | Completed | Test provider credential management API | 2025-05-08 |
 
 ## Additional Tests Needed for 80% Coverage
 
@@ -96,9 +102,15 @@ This document tracks the status of frontend tests for the OptIn Manager applicat
 - Test error handling in each step
 - Test form validation
 
-### Customization.jsx (Current: 28.12%)
+### Customization.jsx (Current: 60.15%)
 
-- Test logo upload functionality
+- ✅ Test logo upload functionality
+- ✅ Test branding settings (company name, privacy policy, colors)
+- ✅ Test provider configuration (email, SMS)
+- ✅ Test authentication handling
+- ✅ Test error handling
+- ✅ Test form validation
+- Additional tests needed for remaining ~20% coverage:
 - Test provider credentials management
 - Test connection testing functionality
 - Test settings persistence
@@ -174,4 +186,6 @@ For each component, we should test:
 | 2025-05-07 | AppHeader.test.jsx | Updated | Improved tests to increase code coverage from 0% to 68.08% |
 | 2025-05-07 | VerbalOptIn.test.jsx | Updated | Enhanced tests to increase code coverage from 23.8% to 89.52% |
 | 2025-05-07 | ChangePassword.test.jsx | Updated | Enhanced tests to increase code coverage from 22% to 80% |
-| 2025-05-07 | ContactOptOut.test.jsx | Updated | Created basic tests for the ContactOptOut component
+| 2025-05-07 | ContactOptOut.test.jsx | Updated | Created basic tests for the ContactOptOut component |
+| 2025-05-10 | api.test.js | Fixed | Fixed failing tests for fetchContactPreferences and updateContactPreferences |
+| 2025-05-10 | FRONTEND_TEST_TRACKER.md | Updated | Updated coverage statistics and set new target of 80% for all components
