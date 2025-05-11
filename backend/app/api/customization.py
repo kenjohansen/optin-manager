@@ -171,6 +171,7 @@ async def save_customization(
     )
 
 @router.get("", response_model=CustomizationOut)
+@router.get("/", response_model=CustomizationOut)
 def get_customization(request: Request, db: Session = Depends(get_db)):
     """
     Retrieve current customization settings.

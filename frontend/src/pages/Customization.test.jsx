@@ -1,147 +1,64 @@
 /**
  * Customization.test.jsx
  * 
- * Unit tests for the Customization component.
+ * Simplified unit tests for the Customization component.
  * 
- * This test suite verifies the functionality of the Customization component,
- * including authentication, branding settings, provider configuration,
- * API interactions, error handling, and UI state management.
+ * This test suite verifies the functionality of the Customization component's
+ * updated architecture, where each section (Branding, EmailProvider, SmsProvider)
+ * handles its own state and API calls independently.
  * 
- * The tests cover various scenarios including:
- * - Authentication handling
- * - Loading and displaying customization settings
- * - Updating branding elements (logo, colors, company info)
- * - Configuring provider credentials
- * - Testing provider connections
- * - Handling API errors
- * - Deleting provider credentials
- * - Form validation and submission
+ * The tests focus on:
+ * - Proper rendering of all component sections
+ * - Data fetching and state management
+ * - Branding section functionality
+ * - Notification handling
  */
 
+import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import '@testing-library/jest-dom';
 import Customization from './Customization';
 import * as api from '../api';
-import * as providerSecrets from '../api/providerSecrets';
 
 // Mock the API functions
 jest.mock('../api', () => ({
   fetchCustomization: jest.fn(),
-  saveCustomization: jest.fn(),
-  API_BASE: 'http://127.0.0.1:8000/api/v1'
+  saveCustomization: jest.fn()
 }));
 
-// Mock the providerSecrets API
-jest.mock('../api/providerSecrets', () => ({
-  setProviderSecret: jest.fn(),
-  getSecretsStatus: jest.fn(),
-  testProviderConnection: jest.fn(),
-  deleteProviderSecret: jest.fn()
-}));
+// Mock the child components
+jest.mock('../components/BrandingSection', () => {
+  return function MockBrandingSection(props) {
+    return (
+      <div data-testid="branding-section">
+        <span>Company: {props.companyName}</span>
+        <span>Privacy: {props.privacyPolicy}</span>
+        <span>Primary: {props.primary}</span>
+        <span>Secondary: {props.secondary}</span>
+        <button 
+          data-testid="save-branding-button"
+          onClick={props.handleSave}
+          disabled={props.saving}
+        >
+          {props.saving ? 'Saving...' : 'Save'}
+        </button>
+        {props.logoPreview && <img src={props.logoPreview} alt="Logo Preview" data-testid="logo-preview" />}
+      </div>
+    );
+  };
+});
 
-// Mock the BrandingSection and ProviderSection components
-jest.mock('../components/BrandingSection', () => ({
-  __esModule: true,
-  default: ({ logoPreview, handleLogoChange, companyName, setCompanyName, privacyPolicy, setPrivacyPolicy, 
-             primary, setPrimary, secondary, setSecondary, saving, handleSave }) => (
-    <div data-testid="branding-section">
-      <input 
-        type="file" 
-        data-testid="logo-input" 
-        onChange={handleLogoChange} 
-      />
-      <input 
-        type="text" 
-        data-testid="company-name-input" 
-        value={companyName} 
-        onChange={(e) => setCompanyName(e.target.value)} 
-      />
-      <input 
-        type="text" 
-        data-testid="privacy-policy-input" 
-        value={privacyPolicy} 
-        onChange={(e) => setPrivacyPolicy(e.target.value)} 
-      />
-      <input 
-        type="text" 
-        data-testid="primary-color-input" 
-        value={primary} 
-        onChange={(e) => setPrimary(e.target.value)} 
-      />
-      <input 
-        type="text" 
-        data-testid="secondary-color-input" 
-        value={secondary} 
-        onChange={(e) => setSecondary(e.target.value)} 
-      />
-      <button 
-        data-testid="save-branding-button" 
-        onClick={handleSave}
-      >
-        Save
-      </button>
-    </div>
-  )
-}));
+jest.mock('../components/EmailProviderConfig', () => {
+  return function MockEmailProviderConfig() {
+    return <div data-testid="email-provider-section">Email Provider Config</div>;
+  };
+});
 
-jest.mock('../components/ProviderSection', () => ({
-  __esModule: true,
-  default: ({ type, provider, setProvider, creds, setCreds, credsSaved, onSave, onTest, onDelete, credSaving, credError, testResult }) => (
-    <div data-testid={`${type}-provider-section`}>
-      <select 
-        data-testid={`${type}-provider-select`} 
-        value={provider} 
-        onChange={(e) => setProvider(e.target.value)}
-      >
-        <option value="aws_ses">AWS SES</option>
-        <option value="aws_sns">AWS SNS</option>
-      </select>
-      <input 
-        type="text" 
-        data-testid={`${type}-access-key-input`} 
-        value={creds.accessKey || ''} 
-        onChange={(e) => setCreds({...creds, accessKey: e.target.value})} 
-      />
-      <input 
-        type="text" 
-        data-testid={`${type}-secret-key-input`} 
-        value={creds.secretKey || ''} 
-        onChange={(e) => setCreds({...creds, secretKey: e.target.value})} 
-      />
-      {type === 'email' && (
-        <input 
-          type="text" 
-          data-testid="email-from-address-input" 
-          value={creds.fromAddress || ''} 
-          onChange={(e) => setCreds({...creds, fromAddress: e.target.value})} 
-        />
-      )}
-      <button 
-        data-testid={`save-${type}-button`} 
-        onClick={() => onSave(type)} 
-        disabled={credSaving}
-      >
-        {credSaving ? 'Saving...' : 'Save'}
-      </button>
-      <button 
-        data-testid={`test-${type}-button`} 
-        onClick={() => onTest(type)}
-      >
-        Test
-      </button>
-      <button 
-        data-testid={`delete-${type}-button`} 
-        onClick={() => onDelete(type)}
-      >
-        Delete
-      </button>
-      {credError && <div data-testid={`${type}-error`}>{credError}</div>}
-      {testResult && <div data-testid={`${type}-test-result`}>{testResult}</div>}
-      {credsSaved && <div data-testid={`${type}-saved`}>Credentials saved</div>}
-    </div>
-  )
-}));
+jest.mock('../components/SmsProviderConfig', () => {
+  return function MockSmsProviderConfig() {
+    return <div data-testid="sms-provider-section">SMS Provider Config</div>;
+  };
+});
 
 // Mock URL.createObjectURL
 URL.createObjectURL = jest.fn(() => 'blob:mock-url');
@@ -150,1391 +67,138 @@ URL.createObjectURL = jest.fn(() => 'blob:mock-url');
 const localStorageMock = {
   getItem: jest.fn(),
   setItem: jest.fn(),
-  clear: jest.fn()
+  clear: jest.fn(),
+  removeItem: jest.fn(),
 };
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
 describe('Customization Component', () => {
-  // Mock props
-  const mockProps = {
-    setLogoUrl: jest.fn(),
-    setPrimary: jest.fn(),
-    setSecondary: jest.fn(),
-    setCompanyName: jest.fn(),
-    setPrivacyPolicy: jest.fn()
-  };
-
   beforeEach(() => {
-    // Reset all mocks before each test
+    // Reset mocks
     jest.clearAllMocks();
     
-    // Default mock implementations
+    // Default mock API response
     api.fetchCustomization.mockResolvedValue({
       company_name: 'Test Company',
+      privacy_policy_url: 'https://test.com/privacy',
       primary_color: '#1976d2',
-      secondary_color: '#9c27b0',
-      privacy_policy_url: 'https://example.com/privacy',
-      email_provider: 'aws_ses',
-      sms_provider: 'aws_sns',
-      email_connection_status: 'connected',
-      sms_connection_status: 'not_configured'
+      secondary_color: '#dc004e',
+      logo_url: 'https://test.com/logo.png'
     });
     
-    // Mock successful authentication by default
-    localStorageMock.getItem.mockImplementation((key) => {
-      if (key === 'access_token') return 'mock-token';
-      return null;
+    api.saveCustomization.mockResolvedValue({
+      success: true,
+      company_name: 'Updated Company',
+      privacy_policy_url: 'https://updated.com/privacy',
+      primary_color: '#2196f3',
+      secondary_color: '#f50057',
+      logo_url: 'https://updated.com/logo.png'
     });
-    
-    // Mock console methods to reduce test noise
-    jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
-  test('handles authentication errors', async () => {
-    // Mock localStorage to return no token
-    localStorageMock.getItem.mockReturnValue(null);
-    
+  test('renders all sections correctly', async () => {
     await act(async () => {
-      render(
-        <MemoryRouter>
-          <Customization {...mockProps} />
-        </MemoryRouter>
-      );
+      render(<Customization />);
     });
 
-    // Error message should be displayed
-    expect(screen.getByText(/Authentication required/i)).toBeInTheDocument();
+    // Check page title
+    expect(screen.getByText('Optin Customization')).toBeInTheDocument();
     
-    // API should not be called without token
-    expect(api.fetchCustomization).not.toHaveBeenCalled();
-  });
-
-  test('renders branding and provider sections', async () => {
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Check that branding section is rendered
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-    
-    // Check that provider sections are rendered
+    // Check if all sections are rendered
+    expect(screen.getByTestId('branding-section')).toBeInTheDocument();
     expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
     expect(screen.getByTestId('sms-provider-section')).toBeInTheDocument();
   });
-  
-  test('displays color inputs with default values', async () => {
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
 
-    // Wait for component to render
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-    
-    // Check default color values
-    expect(screen.getByTestId('primary-color-input')).toHaveValue('#1976d2');
-    expect(screen.getByTestId('secondary-color-input')).toHaveValue('#9c27b0');
-  });
-
-  test('renders authentication error when not logged in', () => {
-    // Mock localStorage to return no token for this specific test
-    localStorageMock.getItem.mockImplementation((key) => {
-      if (key === 'access_token') return null;
-      return null;
-    });
-    
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Authentication error should be displayed
-    expect(screen.getByText(/Authentication required/i)).toBeInTheDocument();
-  });
-
-  test('handles logo upload', async () => {
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-    
-    // Create a mock file
-    const file = new File(['dummy content'], 'logo.png', { type: 'image/png' });
-    
-    // Trigger file input change
-    const fileInput = screen.getByTestId('logo-input');
+  test('fetches and displays customization data', async () => {
     await act(async () => {
-      fireEvent.change(fileInput, { target: { files: [file] } });
+      render(<Customization />);
     });
     
-    // Check that URL.createObjectURL was called
-    expect(URL.createObjectURL).toHaveBeenCalledWith(file);
+    // Check if API was called
+    expect(api.fetchCustomization).toHaveBeenCalledTimes(1);
     
-    // Check that setLogoUrl was called with the preview URL
-    expect(mockProps.setLogoUrl).toHaveBeenCalledWith('blob:mock-url');
+    // Check if data was passed to BrandingSection
+    expect(screen.getByText('Company: Test Company')).toBeInTheDocument();
+    expect(screen.getByText('Privacy: https://test.com/privacy')).toBeInTheDocument();
+    expect(screen.getByText('Primary: #1976d2')).toBeInTheDocument();
+    expect(screen.getByText('Secondary: #dc004e')).toBeInTheDocument();
   });
-
-  test('updates company name input', async () => {
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-    
-    // Update company name
-    const companyNameInput = screen.getByTestId('company-name-input');
+  
+  test('handles saving branding data', async () => {
     await act(async () => {
-      fireEvent.change(companyNameInput, { target: { value: 'New Company Name' } });
+      render(<Customization />);
     });
     
-    // Verify input value was updated
-    expect(companyNameInput).toHaveValue('New Company Name');
-  });
-  
-  test('handles provider selection change', async () => {
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
-    });
-
-    // Change provider selection
-    const providerSelect = screen.getByTestId('email-provider-select');
+    // Click save button
+    const saveButton = screen.getByTestId('save-branding-button');
     await act(async () => {
-      fireEvent.change(providerSelect, { target: { value: 'aws_sns' } });
-    });
-
-    // Verify select value was updated
-    expect(providerSelect).toHaveValue('aws_sns');
-  });
-
-  // Note: This test is commented out because the region input might not be present in the current component implementation
-  // test('handles region input change for email provider', async () => {
-  //   render(
-  //     <MemoryRouter>
-  //       <Customization {...mockProps} />
-  //     </MemoryRouter>
-  //   );
-
-  //   // Wait for component to load
-  //   await waitFor(() => {
-  //     expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
-  //   });
-
-  //   // Update region input - this element might not exist in the current implementation
-  //   const regionInput = screen.getByTestId('email-region-input');
-  //   await act(async () => {
-  //     fireEvent.change(regionInput, { target: { value: 'us-west-2' } });
-  //   });
-
-  //   // Verify the input value was updated
-  //   expect(regionInput).toHaveValue('us-west-2');
-  // });
-  
-  test('handles provider test connection with no message in response', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
-    
-    // Mock successful test but with no message in response
-    providerSecrets.testProviderConnection.mockResolvedValue({});
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
-    });
-
-    // Click test button
-    const testButton = screen.getByTestId('test-email-button');
-    await act(async () => {
-      fireEvent.click(testButton);
-    });
-
-    // Check that the default success message is displayed
-    await waitFor(() => {
-      expect(screen.getByTestId('email-test-result')).toHaveTextContent('Success!');
-    });
-  });
-  
-  test('handles provider test connection error without response data', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
-    
-    // Mock test error without response.data
-    providerSecrets.testProviderConnection.mockRejectedValue(new Error('Network error'));
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
-    });
-
-    // Click test button
-    const testButton = screen.getByTestId('test-email-button');
-    await act(async () => {
-      fireEvent.click(testButton);
-    });
-
-    // Check that the error message is displayed
-    await waitFor(() => {
-      expect(screen.getByTestId('email-test-result')).toHaveTextContent('Network error');
-    });
-  });
-  
-  test('handles error without response object during save', async () => {
-    // This test verifies that the component handles errors without response objects
-    // Instead of trying to trigger the actual save flow which is complex in the test environment,
-    // we'll directly test the error handling in the handleSaveCustomization function
-    
-    // Create a mock implementation of saveCustomization that rejects with a network error
-    api.saveCustomization.mockRejectedValueOnce(new Error('Network error'));
-    
-    // Render the component
-    const { container } = render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
+      fireEvent.click(saveButton);
     });
     
-    // Verify that an alert is already in the document (from the auth check)
-    expect(screen.queryByRole('alert')).toBeInTheDocument();
-    
-    // This test is now focused on verifying that the component renders properly
-    // and doesn't crash when there's an error without a response object
-    expect(container).toBeInTheDocument();
-  });
-  
-  test('updates primary color input', async () => {
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-    
-    // Update primary color
-    const primaryColorInput = screen.getByTestId('primary-color-input');
-    await act(async () => {
-      fireEvent.change(primaryColorInput, { target: { value: '#ff0000' } });
-    });
-    
-    // Verify input value was updated
-    expect(primaryColorInput).toHaveValue('#ff0000');
-  });
-  
-  test('handles missing parent component update functions', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
-    
-    // Create props without the update functions
-    const limitedProps = {};
-    
-    // Mock successful save
-    api.saveCustomization.mockResolvedValue({
+    // Verify API call
+    expect(api.saveCustomization).toHaveBeenCalledTimes(1);
+    expect(api.saveCustomization).toHaveBeenCalledWith(expect.objectContaining({
       company_name: 'Test Company',
-      primary_color: '#1976d2',
-      secondary_color: '#9c27b0',
-      privacy_policy_url: 'https://example.com/privacy',
-      logo_url: '/media/logos/logo.png'
-    });
-
-    render(
-      <MemoryRouter>
-        <Customization {...limitedProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-
-    // Update form fields
-    const companyNameInput = screen.getByTestId('company-name-input');
-    const primaryColorInput = screen.getByTestId('primary-color-input');
-
+      privacy_policy_url: 'https://test.com/privacy',
+      primary: '#1976d2',
+      secondary: '#dc004e'
+    }));
+    
+    // Verify data is fetched again after save
+    expect(api.fetchCustomization).toHaveBeenCalledTimes(2);
+  });
+  
+  test('handles API fetch error gracefully', async () => {
+    // Mock error response
+    api.fetchCustomization.mockRejectedValueOnce(new Error('Failed to fetch data'));
+    
     await act(async () => {
-      fireEvent.change(companyNameInput, { target: { value: 'New Company' } });
-      fireEvent.change(primaryColorInput, { target: { value: '#ff0000' } });
+      render(<Customization />);
     });
-
-    // Submit the form
-    const saveButton = screen.getByTestId('save-branding-button');
-    await act(async () => {
-      fireEvent.click(saveButton);
-    });
-
-    // The component should not crash even without the update functions
+    
+    // Should still render components
     expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-  });
-
-  test('updates email credential inputs', async () => {
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
+    expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
+    expect(screen.getByTestId('sms-provider-section')).toBeInTheDocument();
     
-    // Wait for component to load
+    // Alert should eventually be shown
     await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
+      expect(screen.getByText('Failed to load customization data')).toBeInTheDocument();
     });
-    
-    // Update email credentials
-    const accessKeyInput = screen.getByTestId('email-access-key-input');
-    const secretKeyInput = screen.getByTestId('email-secret-key-input');
-    const fromAddressInput = screen.getByTestId('email-from-address-input');
-    
-    await act(async () => {
-      fireEvent.change(accessKeyInput, { target: { value: 'test-access-key' } });
-      fireEvent.change(secretKeyInput, { target: { value: 'test-secret-key' } });
-      fireEvent.change(fromAddressInput, { target: { value: 'test@example.com' } });
-    });
-    
-    // Verify input values were updated
-    expect(accessKeyInput).toHaveValue('test-access-key');
-    expect(secretKeyInput).toHaveValue('test-secret-key');
-    expect(fromAddressInput).toHaveValue('test@example.com');
   });
   
-  test('updates SMS credential inputs', async () => {
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('sms-provider-section')).toBeInTheDocument();
-    });
-    
-    // Update SMS credentials
-    const accessKeyInput = screen.getByTestId('sms-access-key-input');
-    const secretKeyInput = screen.getByTestId('sms-secret-key-input');
+  test('handles API save error gracefully', async () => {
+    // Setup API to return error on save
+    api.saveCustomization.mockRejectedValueOnce(new Error('Failed to save branding'));
     
     await act(async () => {
-      fireEvent.change(accessKeyInput, { target: { value: 'sms-access-key' } });
-      fireEvent.change(secretKeyInput, { target: { value: 'sms-secret-key' } });
+      render(<Customization />);
     });
     
-    // Verify input values were updated
-    expect(accessKeyInput).toHaveValue('sms-access-key');
-    expect(secretKeyInput).toHaveValue('sms-secret-key');
-  });
-
-  test('tests provider connection', async () => {
-    // Mock successful connection test
-    providerSecrets.testProviderConnection.mockResolvedValue({ message: 'Connection successful' });
-    
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
-    });
-    
-    // Click test button
-    const testButton = screen.getByTestId('test-email-button');
-    await act(async () => {
-      fireEvent.click(testButton);
-    });
-    
-    // Check that testProviderConnection was called with correct data
-    expect(providerSecrets.testProviderConnection).toHaveBeenCalledWith({
-      providerType: 'email'
-    });
-    
-    // Check that test result is displayed
-    await waitFor(() => {
-      expect(screen.getByTestId('email-test-result')).toHaveTextContent('Connection successful');
-    });
-  });
-
-  test('renders provider delete buttons', async () => {
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
-    });
-    
-    // Verify delete buttons are present
-    expect(screen.getByTestId('delete-email-button')).toBeInTheDocument();
-    expect(screen.getByTestId('delete-sms-button')).toBeInTheDocument();
-  });
-
-  test('handles save customization success', async () => {
-    // This test verifies that the component handles successful saves
-    // Instead of trying to trigger the actual save flow which is complex in the test environment,
-    // we'll test the component's ability to render success messages
-    
-    // Mock successful save
-    api.saveCustomization.mockResolvedValueOnce({
-      company_name: 'Updated Company',
-      primary_color: '#ff0000',
-      secondary_color: '#00ff00',
-      privacy_policy_url: 'https://example.com/updated-privacy',
-      logo_url: '/media/logos/updated-logo.png'
-    });
-
-    // Mock localStorage.getItem to return a token
-    const getItemSpy = jest.spyOn(Storage.prototype, 'getItem');
-    getItemSpy.mockReturnValue('fake-token');
-
-    const { container } = render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-
-    // Verify the component renders properly
-    expect(container).toBeInTheDocument();
-    
-    // Clean up
-    getItemSpy.mockRestore();
-  });
-
-  test('handles save customization error', async () => {
-    // Mock save error
-    api.saveCustomization.mockRejectedValue({
-      response: {
-        status: 400,
-        data: { detail: 'Invalid file format' }
-      }
-    });
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-
-    // Submit the form
+    // Click save button
     const saveButton = screen.getByTestId('save-branding-button');
     await act(async () => {
       fireEvent.click(saveButton);
     });
-
-    // Check that an error message is displayed (more reliable than checking for specific text)
-    await waitFor(() => {
-      const alerts = screen.getAllByRole('alert');
-      expect(alerts.length).toBeGreaterThan(0);
-    });
-  });
-
-  test('handles save customization authentication error', async () => {
-    // Mock authentication error
-    api.saveCustomization.mockRejectedValue({
-      response: {
-        status: 401,
-        data: { detail: 'Not authenticated' }
-      }
-    });
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-
-    // Submit the form
-    const saveButton = screen.getByTestId('save-branding-button');
-    await act(async () => {
-      fireEvent.click(saveButton);
-    });
-
-    // Check that an error message is displayed (more reliable than checking for specific text)
-    await waitFor(() => {
-      const alerts = screen.getAllByRole('alert');
-      expect(alerts.length).toBeGreaterThan(0);
-    });
-  });
-
-  test('handles save customization with no token', async () => {
-    // Mock localStorage to return no token for this specific test
-    localStorageMock.getItem.mockImplementation((key) => {
-      if (key === 'access_token') return null;
-      return null;
-    });
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for error message to appear
-    await waitFor(() => {
-      expect(screen.getByText(/Authentication required/i)).toBeInTheDocument();
-    });
-
-    // Try to submit the form
-    const saveButton = screen.getByTestId('save-branding-button');
-    await act(async () => {
-      fireEvent.click(saveButton);
-    });
-
-    // Check that error message about authentication is displayed
-    await waitFor(() => {
-      expect(screen.getByText('Authentication required. Please log in to save customization settings.')).toBeInTheDocument();
-    });
-
-    // Verify saveCustomization was not called
-    expect(api.saveCustomization).not.toHaveBeenCalled();
-  });
-
-  test('handles email provider credential save', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
     
-    // Mock successful credential save
-    providerSecrets.setProviderSecret.mockResolvedValue({ success: true });
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
+    // Alert should eventually be shown
     await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
+      expect(screen.getByText('Failed to save branding settings')).toBeInTheDocument();
     });
-
-    // Update email credentials
-    const accessKeyInput = screen.getByTestId('email-access-key-input');
-    const secretKeyInput = screen.getByTestId('email-secret-key-input');
-    const fromAddressInput = screen.getByTestId('email-from-address-input');
-
-    await act(async () => {
-      fireEvent.change(accessKeyInput, { target: { value: 'test-access-key' } });
-      fireEvent.change(secretKeyInput, { target: { value: 'test-secret-key' } });
-      fireEvent.change(fromAddressInput, { target: { value: 'test@example.com' } });
-    });
-
-    // Save the credentials
-    const saveButton = screen.getByTestId('save-email-button');
-    await act(async () => {
-      fireEvent.click(saveButton);
-    });
-
-    // Check that setProviderSecret was called
-    expect(providerSecrets.setProviderSecret).toHaveBeenCalled();
-    
-    // Check that it was called with the correct provider type and credentials
-    const callArgs = providerSecrets.setProviderSecret.mock.calls[0][0];
-    expect(callArgs.providerType).toBe('email');
-    expect(callArgs.accessKey).toBe('test-access-key');
-    expect(callArgs.secretKey).toBe('test-secret-key');
-    expect(callArgs.fromAddress).toBe('test@example.com');
-    
-    // We don't need to verify fetchCustomization call count as it's not reliable in tests
   });
   
-  test('handles email provider credential save with empty fromAddress', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
-    
-    // Mock successful credential save
-    providerSecrets.setProviderSecret.mockResolvedValue({ success: true });
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
-    });
-
-    // Update email credentials but leave fromAddress empty
-    const accessKeyInput = screen.getByTestId('email-access-key-input');
-    const secretKeyInput = screen.getByTestId('email-secret-key-input');
-
-    await act(async () => {
-      fireEvent.change(accessKeyInput, { target: { value: 'test-access-key' } });
-      fireEvent.change(secretKeyInput, { target: { value: 'test-secret-key' } });
-    });
-
-    // Save the credentials
-    const saveButton = screen.getByTestId('save-email-button');
-    await act(async () => {
-      fireEvent.click(saveButton);
-    });
-
-    // Check that setProviderSecret was called
-    expect(providerSecrets.setProviderSecret).toHaveBeenCalled();
-    
-    // Check that it was called with the correct provider type and credentials
-    const callArgs = providerSecrets.setProviderSecret.mock.calls[0][0];
-    expect(callArgs.providerType).toBe('email');
-    expect(callArgs.accessKey).toBe('test-access-key');
-    expect(callArgs.secretKey).toBe('test-secret-key');
-    expect(callArgs.fromAddress).toBe(''); // Empty fromAddress
-  });
-
-  test('handles email provider credential save error', async () => {
-    // Mock credential save error
-    providerSecrets.setProviderSecret.mockRejectedValue(new Error('Failed to save credentials'));
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
-    });
-
-    // Save the credentials
-    const saveButton = screen.getByTestId('save-email-button');
-    await act(async () => {
-      fireEvent.click(saveButton);
-    });
-
-    // Check that error message is displayed
-    await waitFor(() => {
-      expect(screen.getByTestId('email-error')).toHaveTextContent('Failed to save credentials.');
-    });
-  });
-
-  test('handles SMS provider credential save', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
-    
-    // Mock successful credential save
-    providerSecrets.setProviderSecret.mockResolvedValue({ success: true });
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('sms-provider-section')).toBeInTheDocument();
-    });
-
-    // Update SMS credentials
-    const accessKeyInput = screen.getByTestId('sms-access-key-input');
-    const secretKeyInput = screen.getByTestId('sms-secret-key-input');
-
-    await act(async () => {
-      fireEvent.change(accessKeyInput, { target: { value: 'sms-access-key' } });
-      fireEvent.change(secretKeyInput, { target: { value: 'sms-secret-key' } });
-    });
-
-    // Test SMS provider credentials save
-    const smsSaveButton = screen.getByTestId('save-sms-button');
-    await act(async () => {
-      fireEvent.click(smsSaveButton);
-    });
-
-    // Check that setProviderSecret was called
-    expect(providerSecrets.setProviderSecret).toHaveBeenCalled();
-    
-    // Check that it was called with the correct provider type and credentials
-    const callArgs = providerSecrets.setProviderSecret.mock.calls[0][0];
-    expect(callArgs.providerType).toBe('sms');
-    expect(callArgs.accessKey).toBe('sms-access-key');
-    expect(callArgs.secretKey).toBe('sms-secret-key');
-    
-    // We don't need to verify fetchCustomization call count as it's not reliable in tests
-  });
-
-  test('handles 401 authentication error during customization save', async () => {
-    // This test verifies that the component handles 401 authentication errors
-    // Instead of trying to trigger the actual save flow which is complex in the test environment,
-    // we'll directly test the error handling for 401 errors
-    
-    // Create a mock implementation of saveCustomization that rejects with a 401 error
-    api.saveCustomization.mockRejectedValueOnce({
-      response: {
-        status: 401,
-        data: { detail: 'Not authenticated' }
-      }
-    });
-    
-    // Render the component
-    const { container } = render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-    
-    // Verify that an alert is already in the document (from the auth check)
-    expect(screen.queryByRole('alert')).toBeInTheDocument();
-    
-    // This test is now focused on verifying that the component renders properly
-    // and doesn't crash when there's an authentication error
-    expect(container).toBeInTheDocument();
-  });  
-
-  test('handles provider connection test failure', async () => {
-    // Mock connection test failure
-    providerSecrets.testProviderConnection.mockRejectedValue({
-      response: {
-        data: { detail: 'Connection failed: Invalid credentials' }
-      }
-    });
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
-    });
-
-    // Click test button
-    const testButton = screen.getByTestId('test-email-button');
-    await act(async () => {
-      fireEvent.click(testButton);
-    });
-
-    // Check that error message is displayed
-    await waitFor(() => {
-      expect(screen.getByTestId('email-test-result')).toHaveTextContent('Connection failed: Invalid credentials');
-    });
-  });
-
-  test('handles provider credential deletion', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
-    
-    // Mock successful credential deletion
-    providerSecrets.deleteProviderSecret.mockResolvedValue({ success: true });
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
-    });
-
-    // Click delete button
-    const deleteButton = screen.getByTestId('delete-email-button');
-    await act(async () => {
-      fireEvent.click(deleteButton);
-    });
-
-    // Check that deleteProviderSecret was called with correct data
-    expect(providerSecrets.deleteProviderSecret).toHaveBeenCalledWith({
-      providerType: 'email'
-    });
-    
-    // We don't need to verify fetchCustomization call count as it's not reliable in tests
-  });
-
-  test('handles provider credential deletion error', async () => {
-    // Mock credential deletion error
-    providerSecrets.deleteProviderSecret.mockRejectedValue(new Error('Failed to delete credentials'));
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
-    });
-
-    // Click delete button
-    const deleteButton = screen.getByTestId('delete-email-button');
-    await act(async () => {
-      fireEvent.click(deleteButton);
-    });
-
-    // Check that error message is displayed
-    await waitFor(() => {
-      expect(screen.getByText('Failed to delete credentials.')).toBeInTheDocument();
-    });
-  });
-
-  test('handles SMS provider credential deletion', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
-    
-    // Mock successful credential deletion
-    providerSecrets.deleteProviderSecret.mockResolvedValue({ success: true });
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('sms-provider-section')).toBeInTheDocument();
-    });
-
-    // Test SMS provider deletion
-    const smsDeleteButton = screen.getByTestId('delete-sms-button');
-    await act(async () => {
-      fireEvent.click(smsDeleteButton);
-    });
-    
-    // Verify email test result
-    await waitFor(() => {
-      expect(providerSecrets.deleteProviderSecret).toHaveBeenCalledWith({
-        providerType: 'sms'
-      });
-    });
-  });
-
-  test('handles email provider credential deletion', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
-    
-    // Mock successful credential deletion
-    providerSecrets.deleteProviderSecret.mockResolvedValue({ success: true });
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
-    });
-
-    // Test email provider deletion
-    const emailDeleteButton = screen.getByTestId('delete-email-button');
-    await act(async () => {
-      fireEvent.click(emailDeleteButton);
-    });
-    
-    // Verify email test result
-    await waitFor(() => {
-      expect(providerSecrets.deleteProviderSecret).toHaveBeenCalledWith({
-        providerType: 'email'
-      });
-    });
-  });
-
-  test('handles customization fetch error', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
-    
-    // Mock fetch error
-    api.fetchCustomization.mockImplementation(() => {
-      throw new Error('Failed to load customization');
-    });
-
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <Customization {...mockProps} />
-        </MemoryRouter>
-      );
-    });
-
-    // Check for error text - this is more reliable than looking for the specific error message
-    expect(screen.getByRole('alert')).toBeInTheDocument();
-  });
-
   test('handles empty customization data', async () => {
-    // Mock empty response
-    api.fetchCustomization.mockResolvedValue({});
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-
-    // Check that default values are used
-    expect(screen.getByTestId('primary-color-input')).toHaveValue('#1976d2');
-    expect(screen.getByTestId('secondary-color-input')).toHaveValue('#9c27b0');
-    expect(screen.getByTestId('company-name-input')).toHaveValue('');
-    expect(screen.getByTestId('privacy-policy-input')).toHaveValue('');
-  });
-  
-  test('handles null customization data', async () => {
-    // Mock null response (this is different from empty object)
-    api.fetchCustomization.mockResolvedValue(null);
-
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-
-    // Check that default values are used
-    expect(screen.getByTestId('primary-color-input')).toHaveValue('#1976d2');
-    expect(screen.getByTestId('secondary-color-input')).toHaveValue('#9c27b0');
-  });
-
-  test('handles relative logo URL correctly', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
+    // Set API to return empty object
+    api.fetchCustomization.mockResolvedValueOnce({});
     
-    // Mock response with relative logo URL
-    api.fetchCustomization.mockResolvedValue({
-      company_name: 'Test Company',
-      primary_color: '#1976d2',
-      secondary_color: '#9c27b0',
-      logo_url: '/media/logos/company-logo.png',
-      email_provider: 'aws_ses',
-      sms_provider: 'aws_sns'
-    });
-
     await act(async () => {
-      render(
-        <MemoryRouter>
-          <Customization {...mockProps} />
-        </MemoryRouter>
-      );
-    });
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-
-    // Manually call the refreshCustomization function with the expected URL
-    // This is a workaround for the timing issues in the test
-    await act(async () => {
-      mockProps.setLogoUrl('http://127.0.0.1:8000/media/logos/company-logo.png?t=123456');
-    });
-
-    // Check that setLogoUrl was called
-    expect(mockProps.setLogoUrl).toHaveBeenCalled();
-  });
-  
-  test('handles absolute logo URL correctly', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
-    
-    // Mock response with absolute logo URL (already contains protocol)
-    api.fetchCustomization.mockResolvedValue({
-      company_name: 'Test Company',
-      primary_color: '#1976d2',
-      secondary_color: '#9c27b0',
-      logo_url: 'https://example.com/media/logos/company-logo.png',
-      email_provider: 'aws_ses',
-      sms_provider: 'aws_sns'
-    });
-
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <Customization {...mockProps} />
-        </MemoryRouter>
-      );
-    });
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-
-    // Manually call the refreshCustomization function with the expected URL
-    // This is a workaround for the timing issues in the test
-    await act(async () => {
-      mockProps.setLogoUrl('https://example.com/media/logos/company-logo.png?t=123456');
-    });
-
-    // Check that setLogoUrl was called
-    expect(mockProps.setLogoUrl).toHaveBeenCalled();
-  });
-  
-  test('renders with authentication', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
-    
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Check that the component renders with authentication
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-  });
-
-  test('handles logo URL with cache busting', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
-    
-    // Mock response with logo URL
-    api.fetchCustomization.mockResolvedValue({
-      company_name: 'Test Company',
-      primary_color: '#1976d2',
-      secondary_color: '#9c27b0',
-      logo_url: 'http://example.com/logo.png',
-      email_provider: 'aws_ses',
-      sms_provider: 'aws_sns'
-    });
-
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <Customization {...mockProps} />
-        </MemoryRouter>
-      );
-    });
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-
-    // Manually call the refreshCustomization function with the expected URL
-    // This is a workaround for the timing issues in the test
-    await act(async () => {
-      mockProps.setLogoUrl('http://example.com/logo.png?t=123456');
-    });
-
-    // Check that setLogoUrl was called
-    expect(mockProps.setLogoUrl).toHaveBeenCalled();
-  });
-
-  test('handles empty logo URL in customization data', async () => {
-    // Reset mocks
-    jest.clearAllMocks();
-    
-    // Mock response with no logo URL
-    api.fetchCustomization.mockResolvedValue({
-      company_name: 'Test Company',
-      primary_color: '#1976d2',
-      secondary_color: '#9c27b0',
-      logo_url: null, // No logo URL
-      email_provider: 'aws_ses',
-      sms_provider: 'aws_sns'
-    });
-
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <Customization {...mockProps} />
-        </MemoryRouter>
-      );
-    });
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-
-    // Manually call the refreshCustomization function with null
-    // This is a workaround for the timing issues in the test
-    await act(async () => {
-      mockProps.setLogoUrl(null);
-    });
-
-    // Check that setLogoUrl was called with null
-    expect(mockProps.setLogoUrl).toHaveBeenCalledWith(null);
-  });
-
-  test('handles region input change for email provider', async () => {
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
-    });
-
-    // In our mock, we don't have labels but we have testids for the inputs
-    const accessKeyInput = screen.getByTestId('email-access-key-input');
-    const secretKeyInput = screen.getByTestId('email-secret-key-input');
-    
-    // Update the credentials
-    await act(async () => {
-      fireEvent.change(accessKeyInput, { target: { value: 'new-access-key' } });
-      fireEvent.change(secretKeyInput, { target: { value: 'new-secret-key' } });
-    });
-
-    // Verify input values were updated
-    expect(accessKeyInput).toHaveValue('new-access-key');
-    expect(secretKeyInput).toHaveValue('new-secret-key');
-  });
-
-  test('handles 401 authentication error during save', async () => {
-    // Mock 401 authentication error
-    api.saveCustomization.mockRejectedValue({
-      response: { status: 401, data: { detail: 'Authentication failed' } }
-    });
-    
-    // Mock successful authentication for initial load
-    localStorageMock.getItem.mockImplementation((key) => {
-      if (key === 'access_token') return 'mock-token';
-      return null;
-    });
-    
-    // Mock successful initial customization fetch
-    api.fetchCustomization.mockResolvedValue({
-      company_name: 'Test Company',
-      primary_color: '#1976d2',
-      secondary_color: '#9c27b0'
-    });
-    
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-    
-    // Trigger save
-    const saveButton = screen.getByTestId('save-branding-button');
-    await act(async () => {
-      fireEvent.click(saveButton);
-    });
-    
-    // Verify component doesn't crash
-    expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-  });
-  
-  test('handles missing data in customization response', async () => {
-    // Mock empty response
-    api.fetchCustomization.mockResolvedValue({});
-    
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Verify component handles empty data gracefully
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
+      render(<Customization />);
     });
     
     // Default values should be used
-    const primaryColorInput = screen.getByTestId('primary-color-input');
-    expect(primaryColorInput).toHaveValue('#1976d2');
-  });
-  
-  test('handles completely empty customization response', async () => {
-    // Mock null response
-    api.fetchCustomization.mockResolvedValue(null);
-    
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Verify component handles null data gracefully
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-    
-    // Default values should be used
-    const primaryColorInput = screen.getByTestId('primary-color-input');
-    expect(primaryColorInput).toHaveValue('#1976d2');
-  });
-  
-  test('handles missing parent component update functions', async () => {
-    // Create props without the parent component update functions
-    const minimalProps = {};
-    
-    // Mock successful authentication
-    localStorageMock.getItem.mockImplementation((key) => {
-      if (key === 'access_token') return 'mock-token';
-      return null;
-    });
-    
-    // Mock successful customization fetch
-    api.fetchCustomization.mockResolvedValue({
-      company_name: 'Test Company',
-      primary_color: '#1976d2',
-      secondary_color: '#9c27b0'
-    });
-    
-    render(
-      <MemoryRouter>
-        <Customization {...minimalProps} />
-      </MemoryRouter>
-    );
-    
-    // Verify component renders without errors
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-    
-    // Update primary color
-    const primaryColorInput = screen.getByTestId('primary-color-input');
-    await act(async () => {
-      fireEvent.change(primaryColorInput, { target: { value: '#ff0000' } });
-    });
-    
-    // Verify component doesn't crash
-    expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-  });
-  
-  test('handles logo file selection cancellation', async () => {
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-    });
-    
-    // Simulate file input change with no file selected (user canceled)
-    const logoInput = screen.getByTestId('logo-input');
-    await act(async () => {
-      fireEvent.change(logoInput, { target: { files: [] } });
-    });
-    
-    // Component should not crash
-    expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-  });
-  
-  test('handles network error during customization fetch', async () => {
-    // Mock network error
-    api.fetchCustomization.mockRejectedValue(new Error('Network error'));
-    
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Verify component renders without crashing
-    expect(screen.getByTestId('branding-section')).toBeInTheDocument();
-  });
-  
-  test('handles provider credential tests', async () => {
-    // Mock successful connection tests
-    providerSecrets.testProviderConnection.mockResolvedValue({ message: 'Connection successful' });
-    
-    render(
-      <MemoryRouter>
-        <Customization {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    // Wait for component to load
-    await waitFor(() => {
-      expect(screen.getByTestId('email-provider-section')).toBeInTheDocument();
-    });
-    
-    // Test email provider
-    const emailTestButton = screen.getByTestId('test-email-button');
-    await act(async () => {
-      fireEvent.click(emailTestButton);
-    });
-    
-    // Verify email test result
-    await waitFor(() => {
-      expect(providerSecrets.testProviderConnection).toHaveBeenCalled();
-    });
+    const brandingSection = screen.getByTestId('branding-section');
+    expect(brandingSection).toHaveTextContent('Primary: #1976d2'); // Default primary color
+    expect(brandingSection).toHaveTextContent('Secondary: #dc004e'); // Default secondary color
   });
 });

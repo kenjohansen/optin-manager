@@ -90,3 +90,9 @@ class AuthUser(Base):
     Timestamp when the user account was created. This is important for
     audit trails and security monitoring.
     """
+    
+    last_login = Column(DateTime(timezone=True), nullable=True)
+    """
+    Timestamp when the user last logged in. This is used to track user activity
+    and identify active users for dashboard metrics and security monitoring.
+    """

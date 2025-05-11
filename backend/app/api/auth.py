@@ -51,9 +51,15 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
             raise HTTPException(status_code=400, detail="Incorrect username or password")
     # DB-backed authentication
     from app.crud.auth_user import get_auth_user_by_username
+    from datetime import datetime
     user = get_auth_user_by_username(db, form_data.username)
     if not user or not user.is_active or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
+    
+    # Update last_login timestamp
+    user.last_login = datetime.utcnow()
+    db.commit()
+    
     access_token = create_access_token(data={"sub": user.username, "scope": user.role})
     return Token(access_token=access_token, token_type="bearer", expires_in=3600)
 

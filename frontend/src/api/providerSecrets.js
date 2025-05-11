@@ -29,7 +29,9 @@ export const getSecretsStatus = async () => {
 
 export const testProviderConnection = async ({ providerType }) => {
   const token = localStorage.getItem('access_token');
-  const res = await axios.post(`${API_BASE}/test`, { provider_type: providerType }, {
+  const payload = { provider_type: providerType };
+  
+  const res = await axios.post(`${API_BASE}/test`, payload, {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
