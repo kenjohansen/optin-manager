@@ -34,15 +34,13 @@ router = APIRouter(prefix="/customization", tags=["customization"])
 logger = logging.getLogger(__name__)
 
 # Define upload directory using absolute paths to ensure consistency
-# Set BASE_DIR to the project root (the directory containing 'backend')
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-STATIC_DIR = os.path.join(BASE_DIR, "static")
+# Set STATIC_DIR to the backend's static directory (matches FastAPI config) in an absolute, robust way
+STATIC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "static"))
 UPLOAD_DIR = os.path.join(STATIC_DIR, "uploads")
 
 # Ensure the upload directory exists
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-logger.info(f"BASE_DIR: {BASE_DIR}")
 logger.info(f"STATIC_DIR: {STATIC_DIR}")
 logger.info(f"UPLOAD_DIR: {UPLOAD_DIR}")
 
@@ -113,19 +111,20 @@ async def save_customization(
             filepath = os.path.join(UPLOAD_DIR, filename)
             
             logger.info(f"Saving logo to: {filepath}")
-            
-            # DIRECT APPROACH: Use a simple file write operation
-            contents = logo.file.read()
-            with open(filepath, "wb") as f:
-                f.write(contents)
-            
-            logger.info(f"Logo saved successfully to {filepath}")
+            try:
+                contents = logo.file.read()
+                logger.info(f"Read {len(contents)} bytes from uploaded file")
+                with open(filepath, "wb") as f:
+                    f.write(contents)
+                logger.info(f"Successfully wrote logo to {filepath}")
+            except Exception as file_write_err:
+                logger.error(f"Error writing logo file: {file_write_err}")
+                raise HTTPException(status_code=500, detail=f"Error writing logo file: {file_write_err}")
             
             # Verify the file was saved
             if os.path.exists(filepath):
                 file_size = os.path.getsize(filepath)
                 logger.info(f"Verified file exists with size: {file_size} bytes")
-                
                 # Force permissions to ensure it's readable
                 os.chmod(filepath, 0o644)
                 logger.info(f"Set permissions on {filepath} to 644")

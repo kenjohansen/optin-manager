@@ -25,9 +25,13 @@ import uuid
 
 from fastapi.middleware.cors import CORSMiddleware
 
-# Define the static directory and favicon paths
-STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+# Define the static directory and favicon paths using absolute path logic (matches customization.py)
+STATIC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "static"))
 FAVICON_PATH = os.path.join(STATIC_DIR, "favicon.ico")
+
+# --- Ensure uploads directory exists on startup ---
+UPLOADS_DIR = os.path.join(STATIC_DIR, "uploads")
+os.makedirs(UPLOADS_DIR, exist_ok=True)
 
 # Create the FastAPI app with custom docs configuration
 app = FastAPI(
