@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -183,13 +183,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -199,8 +199,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -253,16 +253,16 @@ import { Box, Typography, Stack, TextField, Button } from '@mui/material';
  * @param {Function} props.handleSave - Form submission handler
  * @returns {JSX.Element} The rendered branding form
  */
-export default function <span class="fstat-no" title="function not covered" >BrandingSection(</span>{
+export default function BrandingSection({
   logoPreview, handleLogoChange, companyName, setCompanyName, privacyPolicy, setPrivacyPolicy, primary, setPrimary, secondary, setSecondary, saving, handleSave
 }) {
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;Box mb={4}&gt;
       &lt;Typography variant="h6" mb={2}&gt;Branding&lt;/Typography&gt;
       &lt;form onSubmit={handleSave}&gt;
         &lt;Stack spacing={2} alignItems="center"&gt;
-          &lt;TextField label="Company Name" value={companyName} onChange={<span class="fstat-no" title="function not covered" >e </span>=&gt; <span class="cstat-no" title="statement not covered" >setCompanyName(e.target.value)}</span> fullWidth /&gt;
-          &lt;TextField label="Privacy Policy URL" value={privacyPolicy} onChange={<span class="fstat-no" title="function not covered" >e </span>=&gt; <span class="cstat-no" title="statement not covered" >setPrivacyPolicy(e.target.value)}</span> fullWidth /&gt;
+          &lt;TextField label="Company Name" value={companyName} onChange={e =&gt; setCompanyName(e.target.value)} fullWidth /&gt;
+          &lt;TextField label="Privacy Policy URL" value={privacyPolicy} onChange={e =&gt; setPrivacyPolicy(e.target.value)} fullWidth /&gt;
           {logoPreview &amp;&amp; (
             &lt;Box mt={2} display="flex" justifyContent="center"&gt;
               &lt;img src={logoPreview} alt="Logo Preview" style={{ maxWidth: 120, maxHeight: 80, width: '100%', objectFit: 'contain' }} /&gt;
@@ -272,8 +272,8 @@ export default function <span class="fstat-no" title="function not covered" >Bra
             Upload Logo
             &lt;input type="file" accept="image/*" hidden onChange={handleLogoChange} /&gt;
           &lt;/Button&gt;
-          &lt;TextField label="Primary Color" type="color" value={primary} onChange={<span class="fstat-no" title="function not covered" >e </span>=&gt; <span class="cstat-no" title="statement not covered" >setPrimary(e.target.value)}</span> InputLabelProps={{ shrink: true }} fullWidth /&gt;
-          &lt;TextField label="Secondary Color" type="color" value={secondary} onChange={<span class="fstat-no" title="function not covered" >e </span>=&gt; <span class="cstat-no" title="statement not covered" >setSecondary(e.target.value)}</span> InputLabelProps={{ shrink: true }} fullWidth /&gt;
+          &lt;TextField label="Primary Color" type="color" value={primary} onChange={e =&gt; setPrimary(e.target.value)} InputLabelProps={{ shrink: true }} fullWidth /&gt;
+          &lt;TextField label="Secondary Color" type="color" value={secondary} onChange={e =&gt; setSecondary(e.target.value)} InputLabelProps={{ shrink: true }} fullWidth /&gt;
           &lt;Button type="submit" variant="contained" color="primary" disabled={saving} fullWidth sx={{ mt: 1 }}&gt;
             {saving ? 'Saving...' : 'Save'}
           &lt;/Button&gt;
@@ -289,7 +289,7 @@ export default function <span class="fstat-no" title="function not covered" >Bra
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-12T15:34:15.182Z
+                at 2025-05-12T17:03:09.753Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

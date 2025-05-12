@@ -34,7 +34,8 @@ router = APIRouter(prefix="/customization", tags=["customization"])
 logger = logging.getLogger(__name__)
 
 # Define upload directory using absolute paths to ensure consistency
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Set BASE_DIR to the project root (the directory containing 'backend')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 UPLOAD_DIR = os.path.join(STATIC_DIR, "uploads")
 
