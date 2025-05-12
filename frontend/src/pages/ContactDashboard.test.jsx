@@ -21,7 +21,6 @@ import * as api from '../api';
 // Mock the API module
 jest.mock('../api', () => ({
   fetchContacts: jest.fn(),
-  optOutById: jest.fn(),
   API_BASE: 'http://127.0.0.1:8000/api/v1'
 }));
 
@@ -247,10 +246,9 @@ describe('ContactDashboard Component', () => {
     });
   });
 
-  test('handles opt-out functionality', async () => {
+  test('renders View Preferences button for contacts', async () => {
     // Mock successful API response
     api.fetchContacts.mockResolvedValue({ contacts: mockContacts });
-    api.optOutById.mockResolvedValue({ success: true });
 
     render(
       <MemoryRouter>
@@ -263,23 +261,20 @@ describe('ContactDashboard Component', () => {
       expect(screen.getByText('Contact Results')).toBeInTheDocument();
     });
 
-    // Find the opt-out button for the first contact (which is opted in)
-    const optOutButtons = screen.getAllByText('Opt-Out');
-    fireEvent.click(optOutButtons[0]);
-
-    // Verify that optOutById was called with the correct ID
-    expect(api.optOutById).toHaveBeenCalledWith('1');
-
-    // Wait for the success message
-    await waitFor(() => {
-      expect(screen.getByText('Contact opted out successfully.')).toBeInTheDocument();
-    });
+    // Verify the View Preferences button is rendered for each contact
+    const viewPreferencesButtons = screen.getAllByText('View Preferences');
+    expect(viewPreferencesButtons.length).toBe(mockContacts.length);
+    
+    // Note: We can't directly test navigation since we're using MemoryRouter,
+    // but we can verify the button exists which would trigger navigation in the actual app
   });
 
-  test('handles opt-out error', async () => {
-    // Mock successful API response for contacts but failed opt-out
+  // Note: The opt-out functionality test was removed since the feature was removed
+  // Administrators should not be able to opt-out users directly
+  
+  test('submits search with entered values', async () => {
+    // Mock successful API response
     api.fetchContacts.mockResolvedValue({ contacts: mockContacts });
-    api.optOutById.mockRejectedValue(new Error('Failed to opt out'));
 
     render(
       <MemoryRouter>
@@ -287,22 +282,30 @@ describe('ContactDashboard Component', () => {
       </MemoryRouter>
     );
 
-    // Wait for the contacts to load
+    // Wait for the initial load
     await waitFor(() => {
       expect(screen.getByText('Contact Results')).toBeInTheDocument();
     });
 
-    // Find the opt-out button for the first contact
-    const optOutButtons = screen.getAllByText('Opt-Out');
-    fireEvent.click(optOutButtons[0]);
-
-    // Verify that optOutById was called with the correct ID
-    expect(api.optOutById).toHaveBeenCalledWith('1');
-
-    // Wait for the error message
-    await waitFor(() => {
-      expect(screen.getByText('Failed to opt out contact.')).toBeInTheDocument();
-    });
+    // Clear mock call history
+    api.fetchContacts.mockClear();
+    
+    // Enter search term
+    const searchInput = screen.getByLabelText('Search by Email or Phone');
+    fireEvent.change(searchInput, { target: { value: 'test@example.com' } });
+    
+    // For Material-UI components like Select, we can't directly change the value
+    // Instead, we'll just verify the search button works with default values
+    
+    // Submit the search form
+    const searchButton = screen.getByText('Search');
+    fireEvent.click(searchButton);
+    
+    // Verify that fetchContacts was called (with any parameters)
+    expect(api.fetchContacts).toHaveBeenCalled();
+    
+    // Verify search term was included
+    expect(api.fetchContacts.mock.calls[0][0].search).toBe('test@example.com');
   });
 
   test('displays empty state when no contacts are found', async () => {

@@ -18,8 +18,9 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Paper, TextField, Stack, Button, List, ListItem, ListItemText, Divider, CircularProgress, Alert, MenuItem } from '@mui/material';
-import { fetchContacts, optOutById } from '../api';
+import { fetchContacts } from '../api';
 
 /**
  * Masks an email address for privacy protection.
@@ -88,10 +89,7 @@ export default function ContactDashboard() {
   const [timeWindow, setTimeWindow] = useState('365'); // Default to 365 days to show more contacts
   
   // Contact management state
-  const [prefDialogId, setPrefDialogId] = useState(null);
-  const [optOutLoadingId, setOptOutLoadingId] = useState(null);
-  const [optOutError, setOptOutError] = useState('');
-  const [optOutSuccess, setOptOutSuccess] = useState('');
+  const navigate = useNavigate();
 
   /**
    * Fetches contacts based on current search and filter criteria.
@@ -182,8 +180,7 @@ export default function ContactDashboard() {
             <Button type="submit" variant="contained">Search</Button>
           </Stack>
         </form>
-        {optOutError && <Alert severity="error">{optOutError}</Alert>}
-        {optOutSuccess && <Alert severity="success">{optOutSuccess}</Alert>}
+
         {loading ? (
           <CircularProgress />
         ) : error ? (
@@ -222,29 +219,7 @@ export default function ContactDashboard() {
                             </>
                           }
                         />
-                        <Button variant="outlined" color="primary" size="small" sx={{ mr: 1 }} onClick={() => setPrefDialogId(c.id)}>Preferences</Button>
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          size="small"
-                          disabled={optOutLoadingId === c.id || c.consent === 'Opted Out'}
-                          onClick={async () => {
-                            setOptOutLoadingId(c.id);
-                            setOptOutError('');
-                            setOptOutSuccess('');
-                            try {
-                              await optOutById(c.id);
-                              setContacts(contacts => contacts.map(contact => contact.id === c.id ? { ...contact, consent: 'Opted Out' } : contact));
-                              setOptOutSuccess('Contact opted out successfully.');
-                            } catch {
-                              setOptOutError('Failed to opt out contact.');
-                            } finally {
-                              setOptOutLoadingId(null);
-                            }
-                          }}
-                        >
-                          {optOutLoadingId === c.id ? <CircularProgress size={18} /> : 'Opt-Out'}
-                        </Button>
+                        <Button variant="outlined" color="primary" size="small" onClick={() => navigate(`/verbal-optin?contact=${c.email || c.phone}`)}>View Preferences</Button>
                       </ListItem>
                       <Divider />
                     </div>

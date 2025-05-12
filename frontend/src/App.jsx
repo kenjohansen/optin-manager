@@ -19,7 +19,7 @@
  */
 
 import { useMemo, useState } from 'react';
-import { ThemeProvider, CssBaseline, Box } from '@mui/material';
+import { Box, Container, ThemeProvider, CssBaseline, alpha } from '@mui/material';
 import { getTheme } from './theme';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
@@ -166,7 +166,7 @@ function App() {
         <Box component="footer" sx={{
           p: 2,
           textAlign: 'center',
-          bgcolor: 'background.paper',
+          bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.5),
           borderTop: 1,
           borderColor: 'divider',
           width: '100vw',

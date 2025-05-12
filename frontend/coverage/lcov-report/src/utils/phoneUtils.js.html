@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.44% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>17/18</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">87.5% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>14/16</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">93.75% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>15/16</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -133,32 +133,32 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -173,11 +173,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Phone number formatting and validation utilities
@@ -190,33 +190,33 @@
  * @param {string} phoneNumber - The input phone number
  * @returns {string} - The formatted E.164 phone number
  */
-export function formatPhoneToE164(phoneNumber) {
-  if (!phoneNumber) return '';
+export function <span class="fstat-no" title="function not covered" >formatPhoneToE164(</span>phoneNumber) {
+<span class="cstat-no" title="statement not covered" >  if (!phoneNumber) <span class="cstat-no" title="statement not covered" >return '';</span></span>
   
   // Remove all non-digit characters
-  let digitsOnly = phoneNumber.replace(/\D/g, '');
+  let digitsOnly = <span class="cstat-no" title="statement not covered" >phoneNumber.replace(/\D/g, '');</span>
   
   // Check if the number already has a country code (starts with + or has 11+ digits)
-  const hasCountryCode = phoneNumber.startsWith('+') || digitsOnly.length &gt;= 11;
+  const hasCountryCode = <span class="cstat-no" title="statement not covered" >phoneNumber.startsWith('+') || digitsOnly.length &gt;= 11;</span>
   
   // If no country code, add +1 (US) by default
-  if (!hasCountryCode) {
+<span class="cstat-no" title="statement not covered" >  if (!hasCountryCode) {</span>
     // For US numbers, if it's 10 digits, add +1
-    if (digitsOnly.length === 10) {
-      return `+1${digitsOnly}`;
+<span class="cstat-no" title="statement not covered" >    if (digitsOnly.length === 10) {</span>
+<span class="cstat-no" title="statement not covered" >      return `+1${digitsOnly}`;</span>
     }
     // For shorter numbers, assume it's a partial US number
-    else <span class="missing-if-branch" title="else path not taken" >E</span>if (digitsOnly.length &lt; 10) {
-      return `+1${digitsOnly}`;
+    else <span class="cstat-no" title="statement not covered" >if (digitsOnly.length &lt; 10) {</span>
+<span class="cstat-no" title="statement not covered" >      return `+1${digitsOnly}`;</span>
     }
   } else {
     // If it already has a plus sign, keep the original format but clean it
-    if (phoneNumber.startsWith('+')) {
-      return `+${digitsOnly}`;
+<span class="cstat-no" title="statement not covered" >    if (phoneNumber.startsWith('+')) {</span>
+<span class="cstat-no" title="statement not covered" >      return `+${digitsOnly}`;</span>
     }
     // If it has 11+ digits but no plus sign, assume first digit is country code
-    else <span class="missing-if-branch" title="else path not taken" >E</span>if (digitsOnly.length &gt;= 11) {
-      return `+${digitsOnly}`;
+    else <span class="cstat-no" title="statement not covered" >if (digitsOnly.length &gt;= 11) {</span>
+<span class="cstat-no" title="statement not covered" >      return `+${digitsOnly}`;</span>
     }
   }
   
@@ -230,12 +230,12 @@ export function formatPhoneToE164(phoneNumber) {
  * @param {string} phoneNumber - The input phone number
  * @returns {boolean} - True if it's a valid phone number
  */
-export function isValidPhoneNumber(phoneNumber) {
-  if (!phoneNumber) return false;
+export function <span class="fstat-no" title="function not covered" >isValidPhoneNumber(</span>phoneNumber) {
+<span class="cstat-no" title="statement not covered" >  if (!phoneNumber) <span class="cstat-no" title="statement not covered" >return false;</span></span>
   
   // Basic validation - at least 8 digits after removing non-digits
-  const digitsOnly = phoneNumber.replace(/\D/g, '');
-  return digitsOnly.length &gt;= 8;
+  const digitsOnly = <span class="cstat-no" title="statement not covered" >phoneNumber.replace(/\D/g, '');</span>
+<span class="cstat-no" title="statement not covered" >  return digitsOnly.length &gt;= 8;</span>
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -244,7 +244,7 @@ export function isValidPhoneNumber(phoneNumber) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-11T17:08:14.173Z
+                at 2025-05-12T15:34:15.182Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

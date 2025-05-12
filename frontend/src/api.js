@@ -208,7 +208,7 @@ export const fetchContacts = async ({ search, consent, timeWindow }) => {
 };
 
 export const optOutById = async (id) => {
-  const res = await axios.post(`${API_BASE}/contacts/${id}/optout`);
+  const res = await axios.post(`${API_BASE}/contacts/${id}/optout/`);
   return res.data;
 };
 
@@ -356,19 +356,27 @@ export const fetchContactPreferences = async ({ token, contact }) => {
  * @param {boolean} params.global_opt_out - Whether to opt out of all communications
  * @returns {Promise<Object>} Updated preferences data
  */
-export const updateContactPreferences = async ({ token, contact, preferences = {}, comment, global_opt_out }) => {
+export const updateContactPreferences = async ({ token, contact, preferences = {}, programs, comment, global_opt_out }) => {
   // Prepare the payload with all required fields
   const payload = {
-    token,
-    preferences
+    token
   };
   
   // Add contact to payload if provided and no token
   if (contact && !token) payload.contact = contact;
   
+  // Handle programs array if provided (from VerbalOptIn)
+  if (programs) {
+    payload.programs = programs;
+  } else if (preferences) {
+    payload.preferences = preferences;
+  }
+  
   // Add optional fields if provided
   if (comment !== undefined) payload.comment = comment;
   if (global_opt_out !== undefined) payload.global_opt_out = global_opt_out;
+  
+  console.log('Sending preferences update with payload:', payload);
   
   // Send request with the properly structured payload
   const res = await axios.patch(`${API_BASE}/preferences/user-preferences`, payload);

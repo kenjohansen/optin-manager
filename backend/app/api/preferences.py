@@ -620,6 +620,18 @@ def update_preferences(
         contact_id = generate_deterministic_id(contact_value)
         logger.info(f"Generated deterministic ID: {contact_id} for contact: {contact_value}")
     
+    # If we still don't have contact info, try to get from payload (for dashboard use case)
+    if not contact_id:
+        contact_value = payload.get("contact")
+        if contact_value:
+            # Determine contact type based on format
+            if "@" in contact_value:
+                contact_type = "email"
+            else:
+                contact_type = "phone"
+            from app.core.encryption import generate_deterministic_id
+            contact_id = generate_deterministic_id(contact_value)
+            logger.info(f"(Dashboard) Using contact from payload: {contact_value}, ID: {contact_id}")
     # If we still don't have contact info, return an error
     if not contact_id:
         raise HTTPException(status_code=400, detail="Valid contact information is required")

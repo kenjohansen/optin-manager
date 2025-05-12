@@ -371,4 +371,23 @@ describe('VerbalOptIn Component', () => {
       expect(screen.getByText(/Failed to update preferences/i)).toBeInTheDocument();
     });
   });
+
+  test('handles search params fallback for testing', () => {
+    // This is a simple test to verify the fallback mechanism works
+    // when the component is rendered outside a Router context
+    render(<VerbalOptIn />);
+    
+    // If the fallback is working, the component should render without errors
+    // Look for a label which includes the text but might have additional elements
+    const labels = screen.getAllByText((content, element) => {
+      return element.tagName.toLowerCase() === 'label' && 
+             content.includes('Customer Email or Phone');
+    });
+    expect(labels.length).toBeGreaterThan(0);
+    
+    // Our implementation should log a message about using fallback
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('fallback search params')
+    );
+  });
 });
