@@ -27,12 +27,10 @@ def override_admin_user():
 def cleanup_uploads():
     # Clean up uploads before and after tests
     upload_dir = "static/uploads"
-    if os.path.exists(upload_dir):
-        shutil.rmtree(upload_dir)
+    # WARNING: Do not delete the real uploads directory. Only ensure it exists for tests.
     os.makedirs(upload_dir, exist_ok=True)
     yield
-    if os.path.exists(upload_dir):
-        shutil.rmtree(upload_dir)
+    # Do not remove the uploads directory after tests. Leave it intact.
 
 def test_save_customization_complete(db_session: Session):
     """Test saving all customization settings together."""

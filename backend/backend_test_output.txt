@@ -29,4 +29,4 @@ tests/test_crud_customization.py ......                                  [ 92%]
 tests/test_main.py ......                                                [ 97%]
 tests/test_utils_phone.py ...                                            [100%]
 
-======================== 112 passed, 6 skipped in 8.28s ========================
+======================== 112 passed, 6 skipped in 8.12s ========================

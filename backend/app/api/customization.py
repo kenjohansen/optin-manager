@@ -33,13 +33,13 @@ router = APIRouter(prefix="/customization", tags=["customization"])
 # Set up logging
 logger = logging.getLogger(__name__)
 
-# Define upload directory using absolute paths to ensure consistency
-# Set STATIC_DIR to the backend's static directory (matches FastAPI config) in an absolute, robust way
+# Define upload directory using backend/static (MATCH FastAPI static mount)
 STATIC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "static"))
 UPLOAD_DIR = os.path.join(STATIC_DIR, "uploads")
 
 # Ensure the upload directory exists
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 logger.info(f"STATIC_DIR: {STATIC_DIR}")
 logger.info(f"UPLOAD_DIR: {UPLOAD_DIR}")
@@ -109,16 +109,17 @@ async def save_customization(
             
             filename = f"logo{ext}"
             filepath = os.path.join(UPLOAD_DIR, filename)
-            
-            logger.info(f"Saving logo to: {filepath}")
+            logger.info(f"[UPLOAD DEBUG] Attempting to save logo to: {filepath}")
+            logger.info(f"[UPLOAD DEBUG] UPLOAD_DIR: {UPLOAD_DIR}")
+            logger.info(f"[UPLOAD DEBUG] STATIC_DIR: {STATIC_DIR}")
             try:
                 contents = logo.file.read()
-                logger.info(f"Read {len(contents)} bytes from uploaded file")
+                logger.info(f"[UPLOAD DEBUG] Read {len(contents)} bytes from uploaded file")
                 with open(filepath, "wb") as f:
                     f.write(contents)
-                logger.info(f"Successfully wrote logo to {filepath}")
+                logger.info(f"[UPLOAD DEBUG] Successfully wrote logo to {filepath}")
             except Exception as file_write_err:
-                logger.error(f"Error writing logo file: {file_write_err}")
+                logger.error(f"[UPLOAD DEBUG] Error writing logo file: {file_write_err}")
                 raise HTTPException(status_code=500, detail=f"Error writing logo file: {file_write_err}")
             
             # Verify the file was saved
