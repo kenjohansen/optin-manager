@@ -84,9 +84,19 @@ describe('AppHeader Component', () => {
   });
 
   test('renders with logo when provided', () => {
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     
@@ -97,9 +107,19 @@ describe('AppHeader Component', () => {
   });
 
   test('renders app title', () => {
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     
@@ -108,9 +128,19 @@ describe('AppHeader Component', () => {
   });
 
   test('shows theme toggle button', () => {
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     
@@ -130,9 +160,19 @@ describe('AppHeader Component', () => {
     authUtils.isAuthenticated.mockReturnValue(false);
     localStorageMock.getItem.mockReturnValue(null);
     
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     
@@ -149,9 +189,19 @@ describe('AppHeader Component', () => {
       return null;
     });
     
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     
@@ -175,9 +225,19 @@ describe('AppHeader Component', () => {
       return null;
     });
     
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     
@@ -224,15 +284,25 @@ describe('AppHeader Component', () => {
     authUtils.isAuthenticated.mockReturnValue(false);
     localStorageMock.getItem.mockReturnValue(null);
     
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     
-    // Login and Opt-Out should be visible for unauthenticated users
+    // Login and Preferences should be visible for unauthenticated users
     expect(screen.getByText('Login')).toBeInTheDocument();
-    expect(screen.getByText('Opt-Out')).toBeInTheDocument();
+    expect(screen.getByText('Preferences')).toBeInTheDocument();
     
     // Dashboard should not be visible for unauthenticated users
     expect(screen.queryByText('Dashboard')).not.toBeInTheDocument();
@@ -246,9 +316,19 @@ describe('AppHeader Component', () => {
       return null;
     });
 
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     
@@ -268,9 +348,19 @@ describe('AppHeader Component', () => {
       return null;
     });
 
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     
@@ -281,9 +371,19 @@ describe('AppHeader Component', () => {
   // Additional test for handleLogout is not needed as it's already covered in 'handles logout when user is authenticated'
 
   test('handles theme toggle', () => {
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     
@@ -302,9 +402,19 @@ describe('AppHeader Component', () => {
     const useMediaQueryMock = require('@mui/material').useMediaQuery;
     useMediaQueryMock.mockReturnValue(true); // true = small screen
     
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     
@@ -332,9 +442,19 @@ describe('AppHeader Component', () => {
       return null;
     });
     
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     
@@ -352,9 +472,19 @@ describe('AppHeader Component', () => {
       return null;
     });
     
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     
@@ -424,9 +554,19 @@ describe('AppHeader Component', () => {
     const useMediaQueryMock = require('@mui/material').useMediaQuery;
     useMediaQueryMock.mockReturnValue(true); // true = small screen
     
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     
@@ -454,9 +594,19 @@ describe('AppHeader Component', () => {
   test('handles theme switching through all modes', () => {
     // Simplify this test to avoid complex interactions
     // We'll just verify the component renders with the theme button
+    // Use navLinks with Preferences for this test only
+    const navLinksWithPreferences = [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Customization', path: '/customization' },
+      { label: 'Opt-Ins', path: '/optins' },
+      { label: 'Contacts', path: '/contacts' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'Login', path: '/login' },
+      { label: 'Users', path: '/users', adminOnly: true }
+    ];
     render(
       <MemoryRouter>
-        <AppHeader {...mockProps} />
+        <AppHeader {...mockProps} navLinks={navLinksWithPreferences} />
       </MemoryRouter>
     );
     

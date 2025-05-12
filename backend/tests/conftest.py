@@ -4,6 +4,12 @@ conftest.py
 Pytest fixtures for OptIn Manager backend tests.
 """
 import pytest
+import os
+
+@pytest.fixture(scope="session", autouse=True)
+def ensure_uploads_dir():
+    os.makedirs("static/uploads", exist_ok=True)
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool

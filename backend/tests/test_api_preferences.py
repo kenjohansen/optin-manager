@@ -212,21 +212,28 @@ def test_update_preferences():
     get_response = client.get("/api/v1/preferences/user-preferences", headers=token_headers)
     assert get_response.status_code == 200, f"Failed to get preferences: {get_response.text}"
     
-    # Create an update payload
-    # We'll assume there are some optins available from the get_response
-    # For testing purposes, we'll create a simple update payload
+    # Create an update payload with the new PATCH structure
     update_payload = {
-        "preferences": [
+        "programs": [
             {
-                "optin_id": "test-optin-id",  # This would normally be a real optin_id
-                "channel": "sms",
-                "status": "active"
+                "id": "test-optin-id",  # This would normally be a real optin_id
+                "opted_in": True
             }
         ]
     }
-    
-    # Update the preferences
-    update_response = client.post("/api/v1/preferences/user-preferences/update", json=update_payload, headers=token_headers)
+
+    # Update the preferences using PATCH
+    update_response = client.patch("/api/v1/preferences/user-preferences", json=update_payload, headers=token_headers)
+    assert update_response.status_code in (200, 204), f"Failed to patch preferences: {update_response.text}"
+
+    # Test global opt-out
+    global_opt_out_payload = {
+        "programs": [],
+        "global_opt_out": True,
+        "comment": "Test global opt out"
+    }
+    global_opt_out_response = client.patch("/api/v1/preferences/user-preferences", json=global_opt_out_payload, headers=token_headers)
+    assert global_opt_out_response.status_code in (200, 204), f"Failed to patch global opt-out: {global_opt_out_response.text}"
     
     # This might fail if there are no real optins available, but we're testing the API structure
     # In a real test, we would first create optins and then use their IDs

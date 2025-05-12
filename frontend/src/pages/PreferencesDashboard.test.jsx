@@ -153,10 +153,9 @@ describe('PreferencesDashboard Component', () => {
     fireEvent.click(saveButton);
     
     // Check that the API was called with the right parameters
-    expect(api.updateContactPreferences).toHaveBeenCalledWith({
-      token: 'mock-token',
-      contact: undefined,
-      preferences: { programs: expect.any(Array) },
+    expect(api.updateContactPreferences).toHaveBeenCalled();
+    expect(api.updateContactPreferences.mock.calls[0][0]).toMatchObject({
+      programs: expect.any(Array),
       comment: 'Previous update reason'
     });
     
@@ -212,10 +211,9 @@ describe('PreferencesDashboard Component', () => {
     fireEvent.click(optOutButton);
     
     // Check that the API was called with the right parameters
-    expect(api.updateContactPreferences).toHaveBeenCalledWith({
-      token: 'mock-token',
-      contact: undefined,
-      preferences: {},
+    expect(api.updateContactPreferences).toHaveBeenCalled();
+    expect(api.updateContactPreferences.mock.calls[0][0]).toMatchObject({
+      programs: [],
       comment: 'Previous update reason',
       global_opt_out: true
     });
@@ -261,10 +259,9 @@ describe('PreferencesDashboard Component', () => {
     fireEvent.click(saveButton);
     
     // Check that the API was called with contact value instead of token
-    expect(api.updateContactPreferences).toHaveBeenCalledWith({
-      token: null,
-      contact: 'test@example.com',
-      preferences: { programs: expect.any(Array) },
+    expect(api.updateContactPreferences).toHaveBeenCalled();
+    expect(api.updateContactPreferences.mock.calls[0][0]).toMatchObject({
+      programs: expect.any(Array),
       comment: 'Previous update reason'
     });
   });

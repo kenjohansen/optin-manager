@@ -111,7 +111,7 @@ export default function PreferencesDashboard({ masked, token, preferences, setPr
       await updateContactPreferences({ 
         token, 
         contact: !token ? contactValue : undefined,
-        preferences: { programs: localPrefs }, 
+        programs: localPrefs,
         comment 
       });
       
@@ -139,7 +139,7 @@ export default function PreferencesDashboard({ masked, token, preferences, setPr
       await updateContactPreferences({ 
         token, 
         contact: !token ? contactValue : undefined,
-        preferences: {}, 
+        programs: [],
         comment, 
         global_opt_out: true 
       });

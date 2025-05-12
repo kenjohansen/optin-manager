@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">82.51% </span>
+                <span class="strong">82.31% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>118/143</span>
+                <span class='fraction'>121/147</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">72.63% </span>
+                <span class="strong">71.57% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>69/95</span>
+                <span class='fraction'>68/95</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">82.81% </span>
+                <span class="strong">81.95% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>106/128</span>
+                <span class='fraction'>109/133</span>
             </div>
         
             
@@ -521,7 +521,8 @@
 <a name='L456'></a><a href='#L456'>456</a>
 <a name='L457'></a><a href='#L457'>457</a>
 <a name='L458'></a><a href='#L458'>458</a>
-<a name='L459'></a><a href='#L459'>459</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L459'></a><a href='#L459'>459</a>
+<a name='L460'></a><a href='#L460'>460</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -841,9 +842,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -882,11 +882,13 @@
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
@@ -1297,12 +1299,11 @@ export const fetchContactPreferences = async ({ token, contact }) =&gt; {
     // Prepare params object
     const params = {};
     
-    // If we have a token, add it to the params
+    // If we have a token, do NOT add it to params; we'll use it as an Authorization header instead
+    let headers = {};
     if (token) {
-      params.token = token;
-    }
-    // Otherwise, use the contact parameter
-    else if (contact) {
+      headers = { Authorization: `Bearer ${token}` };
+    } else if (contact) {
       params.contact = contact;
     }
     // If neither token nor contact is provided, throw an error
@@ -1310,8 +1311,8 @@ export const fetchContactPreferences = async ({ token, contact }) =&gt; {
 <span class="cstat-no" title="statement not covered" >      throw new Error('Either token or contact must be provided');</span>
     }
     
-    // Make the request with the appropriate params
-    const res = await axios.get(`${API_BASE}/preferences/user-preferences`, { params });
+    // Make the request with the appropriate params and headers
+    const res = await axios.get(`${API_BASE}/preferences/user-preferences`, { params, headers });
     console.log('Preferences response:', res.data);
     return res.data;
   } catch (error) {
@@ -1339,12 +1340,14 @@ export const fetchContactPreferences = async ({ token, contact }) =&gt; {
  */
 export const updateContactPreferences = async ({ token, contact, preferences = {}, programs, comment, global_opt_out }) =&gt; {
   // Prepare the payload with all required fields
-  const payload = {
-    token
-  };
-  
-  // Add contact to payload if provided and no token
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (contact &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >!token)</span> <span class="cstat-no" title="statement not covered" >payload.contact = contact;</span>
+  const payload = {};
+  let headers = {};
+  // If token is provided, use it as an Authorization header
+  if (token) {
+    headers = { Authorization: `Bearer ${token}` };
+  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="else path not taken" >E</span>if (contact) {</span>
+<span class="cstat-no" title="statement not covered" >    payload.contact = contact;</span>
+  }
   
   // Handle programs array if provided (from VerbalOptIn)
   <span class="missing-if-branch" title="if path not taken" >I</span>if (programs) {
@@ -1359,8 +1362,8 @@ export const updateContactPreferences = async ({ token, contact, preferences = {
   
   console.log('Sending preferences update with payload:', payload);
   
-  // Send request with the properly structured payload
-  const res = await axios.patch(`${API_BASE}/preferences/user-preferences`, payload);
+  // Send request with the properly structured payload and headers
+  const res = await axios.patch(`${API_BASE}/preferences/user-preferences`, payload, { headers });
   return res.data;
 };
 &nbsp;
@@ -1444,7 +1447,7 @@ export const updateOptIn = <span class="fstat-no" title="function not covered" >
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-12T17:03:09.753Z
+                at 2025-05-12T19:49:24.446Z
             </div>
         <script src="../prettify.js"></script>
         <script>

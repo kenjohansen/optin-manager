@@ -1,3 +1,21 @@
+# OptIn Manager Frontend
+
+## Getting Started
+
+### Install dependencies
+```bash
+npm install
+```
+
+### Run frontend unit tests
+```bash
+npm test
+# or for coverage
+npm run test -- --coverage
+```
+
+---
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

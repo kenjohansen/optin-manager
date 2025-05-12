@@ -328,7 +328,9 @@ export default function ContactOptOut({ mode = 'preferences' }) {
         setStep(3);
       } catch (error) {
         console.error('Error fetching preferences:', error);
-        setCodeError('Verification successful, but failed to load preferences.');
+        // Show full API error if available, otherwise generic message
+        const apiError = error.response?.data?.detail || error.message || 'Verification successful, but failed to load preferences.';
+        setCodeError(`Verification successful, but failed to load preferences: ${apiError}`);
       }
     } catch (error) {
       console.error('Verification error:', error);

@@ -316,12 +316,11 @@ export const fetchContactPreferences = async ({ token, contact }) => {
     // Prepare params object
     const params = {};
     
-    // If we have a token, add it to the params
+    // If we have a token, do NOT add it to params; we'll use it as an Authorization header instead
+    let headers = {};
     if (token) {
-      params.token = token;
-    }
-    // Otherwise, use the contact parameter
-    else if (contact) {
+      headers = { Authorization: `Bearer ${token}` };
+    } else if (contact) {
       params.contact = contact;
     }
     // If neither token nor contact is provided, throw an error
@@ -329,8 +328,8 @@ export const fetchContactPreferences = async ({ token, contact }) => {
       throw new Error('Either token or contact must be provided');
     }
     
-    // Make the request with the appropriate params
-    const res = await axios.get(`${API_BASE}/preferences/user-preferences`, { params });
+    // Make the request with the appropriate params and headers
+    const res = await axios.get(`${API_BASE}/preferences/user-preferences`, { params, headers });
     console.log('Preferences response:', res.data);
     return res.data;
   } catch (error) {
@@ -358,12 +357,14 @@ export const fetchContactPreferences = async ({ token, contact }) => {
  */
 export const updateContactPreferences = async ({ token, contact, preferences = {}, programs, comment, global_opt_out }) => {
   // Prepare the payload with all required fields
-  const payload = {
-    token
-  };
-  
-  // Add contact to payload if provided and no token
-  if (contact && !token) payload.contact = contact;
+  const payload = {};
+  let headers = {};
+  // If token is provided, use it as an Authorization header
+  if (token) {
+    headers = { Authorization: `Bearer ${token}` };
+  } else if (contact) {
+    payload.contact = contact;
+  }
   
   // Handle programs array if provided (from VerbalOptIn)
   if (programs) {
@@ -378,8 +379,8 @@ export const updateContactPreferences = async ({ token, contact, preferences = {
   
   console.log('Sending preferences update with payload:', payload);
   
-  // Send request with the properly structured payload
-  const res = await axios.patch(`${API_BASE}/preferences/user-preferences`, payload);
+  // Send request with the properly structured payload and headers
+  const res = await axios.patch(`${API_BASE}/preferences/user-preferences`, payload, { headers });
   return res.data;
 };
 

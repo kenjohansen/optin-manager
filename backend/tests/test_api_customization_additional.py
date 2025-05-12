@@ -36,6 +36,9 @@ def cleanup_uploads():
 
 def test_save_customization_complete(db_session: Session):
     """Test saving all customization settings together."""
+    # Ensure the upload directory exists
+    import os
+    os.makedirs("static/uploads", exist_ok=True)
     # Create a test logo file
     logo_content = b"fake_image_content"
     logo = BytesIO(logo_content)
@@ -76,8 +79,15 @@ def test_save_customization_complete(db_session: Session):
     assert data["logo_url"] is not None
     
     # Verify the logo file was saved
-    logo_filename = os.path.basename(data["logo_url"])
-    assert os.path.exists(f"static/uploads/{logo_filename}")
+    logo_path = data["logo_url"]
+    # If logo_url is a URL, extract the local path
+    if logo_path.startswith("/"):
+        logo_path = logo_path.lstrip("/")
+    # Compute absolute path using backend logic
+    import os
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    abs_logo_path = os.path.join(BASE_DIR, logo_path)
+    assert os.path.exists(abs_logo_path), f"Logo file does not exist at {abs_logo_path}"
     
     # Verify database record
     db_customization = db_session.query(Customization).first()

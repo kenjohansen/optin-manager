@@ -39,10 +39,12 @@ def cleanup_uploads():
     # Clean up uploads before and after tests
     upload_dir = "static/uploads"
     if os.path.exists(upload_dir):
-        shutil.rmtree(upload_dir)
+        # Do not delete the uploads directory. Only remove individual test files if needed.
+        pass
     yield
     if os.path.exists(upload_dir):
-        shutil.rmtree(upload_dir)
+        # Do not delete the uploads directory. Only remove individual test files if needed.
+        pass
 
 def test_get_customization_empty():
     # The API endpoint is now at /api/v1/customization (no trailing slash)

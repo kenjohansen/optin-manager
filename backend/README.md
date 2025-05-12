@@ -1,5 +1,31 @@
 # OptIn Manager Backend
 
+## Getting Started
+
+### Clone the Repository
+```bash
+git clone https://github.com/kenjohansen/optin-manager.git
+cd optin-manager
+```
+
+### Backend Setup
+1. Create and activate a Python virtual environment:
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r backend/requirements.txt
+   ```
+3. Run backend unit tests:
+   ```bash
+   cd backend/tests
+   PYTHONPATH=.. pytest
+   ```
+
+---
+
 ## Secure Data Storage Locations
 
 - **Main Database (SQLite):**

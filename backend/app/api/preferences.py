@@ -640,6 +640,8 @@ def update_preferences(
         # Import models
         from app.models.optin import OptIn, OptInStatusEnum
         from app.models.consent import Consent, ConsentStatusEnum
+        # Extract comment if provided
+        comment = payload.get('comment', '')
         # Check if this is a global opt-out request
         global_opt_out = payload.get('global_opt_out', False)
         

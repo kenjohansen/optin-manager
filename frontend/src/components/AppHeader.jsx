@@ -103,11 +103,14 @@ export default function AppHeader({ mode, setMode, logoUrl, navLinks = [] }) {
   const userIsAdmin = isAdmin(token);
   const userIsAuthenticated = checkAuthentication(token);
 
+  // PRD-compliant: Unauthenticated users see Preferences (ContactOptOut) and Login only
   const filteredLinks = navLinks.filter(link => {
     if (link.always) return true;
-    if (link.label === 'Opt-Out') return !userIsAuthenticated; // Hide Preferences when logged in
-    if (link.label === 'Login') return !userIsAuthenticated;
+    if (!userIsAuthenticated) {
+      return link.label === 'Preferences' || link.label === 'Login';
+    }
     if (link.adminOnly) return userIsAdmin;
+    // Authenticated users: show all except Preferences/Login
     if ([
       'Dashboard',
       'Customization',
@@ -115,7 +118,7 @@ export default function AppHeader({ mode, setMode, logoUrl, navLinks = [] }) {
       'Contacts',
       'Verbal Opt-in',
     ].includes(link.label)) {
-      return userIsAuthenticated;
+      return true;
     }
     return false;
   });
